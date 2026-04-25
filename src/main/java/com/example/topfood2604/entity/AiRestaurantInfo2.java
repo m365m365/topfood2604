@@ -1,12 +1,10 @@
 package com.example.topfood2604.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "ai_restaurant_info")
-public class AiRestaurantInfo {
+public class AiRestaurantInfo2 {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,8 +17,8 @@ public class AiRestaurantInfo {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "base64_image")
     @Lob
+    @Column(name = "base64_image")
     private String base64Image;
 
     private String state;
