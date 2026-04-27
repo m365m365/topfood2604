@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top Food Now</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         body {
             background: #f5f7fb;
+            padding: 24px;
         }
 
         .page-title {
@@ -29,6 +32,7 @@
         .card-img-top {
             height: 180px;
             object-fit: cover;
+            cursor: pointer;
         }
 
         .card-title {
@@ -53,32 +57,30 @@
         }
     </style>
 </head>
+
 <body>
-<div class="d-flex justify-content-between align-items-center mb-4 top-actions flex-wrap">
-    <h2 class="page-title mb-0">Top Food Now</h2>
 
-    <div class="d-flex gap-2">
+<div class="container">
 
-        <a href="/test.html" class="btn btn-outline-dark">
-            developer
-        </a>
+    <div class="d-flex justify-content-between align-items-center mb-4 top-actions flex-wrap">
+        <h2 class="page-title mb-0">Top Food Now</h2>
 
-        <a href="/login.html" class="btn btn-outline-success">
-            登入
-        </a>
+        <div class="d-flex gap-2">
+            <a href="/test.html" class="btn btn-outline-dark">developer</a>
+            <a href="/login.html" class="btn btn-outline-success">登入</a>
 
-        <button type="button" class="btn btn-primary" id="aiSearchButton">
-            AI 搜尋
-        </button>
-
+            <button type="button" class="btn btn-primary" id="aiSearchButton">
+                AI 搜尋
+            </button>
+        </div>
     </div>
-</div>
 
     <div class="card shadow-sm section-card">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">AI 推薦餐廳</h5>
-            <span class="text-muted small">REST API 假資料示範</span>
+            <span class="text-muted small">GPT + MySQL + Google Places</span>
         </div>
+
         <div class="card-body">
             <div class="row g-3" id="ai-container">
                 <div class="col-12 text-center text-muted py-4">
@@ -87,6 +89,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 <script>
@@ -101,11 +104,11 @@
         container.innerHTML = `
             <div class="col-12 text-center py-4">
                 <div class="spinner-border text-primary" role="status"></div>
-                <p class="mt-2 mb-0">AI 推薦載入中...</p>
+                <p class="mt-2 mb-0">AI 搜尋中：GPT 產生餐廳 → Google 補圖片與地圖...</p>
             </div>
         `;
 
-        fetch("/api/restaurants/recommendations/ai")
+        fetch("/api/AiRestaurantApi/search")
             .then(response => {
                 if (!response.ok) {
                     throw new Error("HTTP status = " + response.status);
@@ -119,7 +122,7 @@
                 console.error("載入 API 失敗:", error);
                 container.innerHTML = `
                     <div class="col-12 text-center text-danger py-4">
-                        載入推薦時發生錯誤，請稍後再試。
+                        載入餐廳資料失敗，請確認後端 API 是否正常。
                     </div>
                 `;
             });
@@ -129,7 +132,7 @@
         if (!data || data.length === 0) {
             container.innerHTML = `
                 <div class="col-12 text-center text-muted py-4">
-                    目前沒有資料
+                    目前沒有餐廳資料
                 </div>
             `;
             return;
@@ -139,32 +142,55 @@
 
         data.forEach(item => {
             const name = item.name || "未命名餐廳";
-            const url = item.url || "#";
-            const photoUrl = item.photoUrl || "https://via.placeholder.com/600x400?text=No+Image";
+            const restaurantUrl = item.url || "#";
+            const imageUrl = item.imageUrl || "https://via.placeholder.com/600x400?text=No+Image";
             const address = item.address || "尚無地址資料";
+
+            const mapUrl = item.mapUrl || buildMapUrl(item.lat, item.lng, name);
 
             const cardHtml = `
                 <div class="col-12 col-sm-6 col-lg-4">
                     <div class="card shadow-sm h-100">
-                        <a href="${url}" target="_blank">
-                            <img src="${photoUrl}" class="card-img-top" alt="${escapeHtml(name)}"
+
+                        <a href="${mapUrl}" target="_blank" title="點圖片查看 Google 地圖">
+                            <img src="${imageUrl}"
+                                 class="card-img-top"
+                                 alt="${escapeHtml(name)}"
                                  onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=No+Image';">
                         </a>
+
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">${escapeHtml(name)}</h5>
-                            <p class="card-text text-muted small">${escapeHtml(address)}</p>
-                            <div class="mt-auto">
-                                <a href="${url}" target="_blank" class="btn btn-outline-primary btn-sm">
+
+                            <p class="card-text text-muted small">
+                                ${escapeHtml(address)}
+                            </p>
+
+                            <div class="mt-auto d-flex gap-2">
+                                <a href="${restaurantUrl}" target="_blank" class="btn btn-outline-primary btn-sm">
                                     查看餐廳
+                                </a>
+
+                                <a href="${mapUrl}" target="_blank" class="btn btn-outline-success btn-sm">
+                                    查看地圖
                                 </a>
                             </div>
                         </div>
+
                     </div>
                 </div>
             `;
 
             container.insertAdjacentHTML("beforeend", cardHtml);
         });
+    }
+
+    function buildMapUrl(lat, lng, name) {
+        if (lat && lng) {
+            return `https://www.google.com/maps?q=${lat},${lng}`;
+        }
+
+        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`;
     }
 
     function escapeHtml(text) {
@@ -176,5 +202,6 @@
             .replace(/'/g, "&#039;");
     }
 </script>
+
 </body>
 </html>

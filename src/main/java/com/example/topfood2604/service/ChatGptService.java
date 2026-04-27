@@ -5,10 +5,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ChatGptService {
@@ -36,7 +33,8 @@ public class ChatGptService {
         messages.add(Map.of("role", "user", "content", prompt));
         requestBody.put("messages", messages);
 
-        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+        HttpEntity<Map<String, Object>> requestEntity =
+                new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<Map> response = restTemplate.exchange(
                 apiUrl,
@@ -49,13 +47,17 @@ public class ChatGptService {
             throw new RuntimeException("OpenAI 回傳為空");
         }
 
-        List<Map<String, Object>> choices = (List<Map<String, Object>>) response.getBody().get("choices");
+        List<Map<String, Object>> choices =
+                (List<Map<String, Object>>) response.getBody().get("choices");
+
         if (choices == null || choices.isEmpty()) {
             throw new RuntimeException("OpenAI choices 為空");
         }
 
         Map<String, Object> firstChoice = choices.get(0);
-        Map<String, Object> message = (Map<String, Object>) firstChoice.get("message");
+        Map<String, Object> message =
+                (Map<String, Object>) firstChoice.get("message");
+
         if (message == null || message.get("content") == null) {
             throw new RuntimeException("OpenAI message content 為空");
         }
