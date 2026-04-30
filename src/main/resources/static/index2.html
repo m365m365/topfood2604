@@ -14,11 +14,6 @@
             padding: 24px;
         }
 
-        .page-title {
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-
         .main-shell {
             max-width: 1320px;
             margin: auto;
@@ -32,13 +27,13 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
 
+        .page-title {
+            font-weight: 800;
+        }
+
         .hero-subtitle {
             color: #666;
             margin-top: 8px;
-        }
-
-        .top-actions {
-            gap: 10px;
         }
 
         .section-card {
@@ -219,7 +214,7 @@
 <div class="main-shell">
 
     <div class="hero">
-        <div class="d-flex justify-content-between align-items-center flex-wrap top-actions">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h2 class="page-title mb-0">Top Food Now</h2>
                 <div class="hero-subtitle">
@@ -227,7 +222,7 @@
                 </div>
             </div>
 
-            <div class="d-flex gap-2 flex-wrap mt-3 mt-md-0">
+            <div class="d-flex gap-2 flex-wrap">
                 <a href="/test.html" class="btn btn-outline-dark">developer</a>
                 <a href="/login.html" class="btn btn-outline-success">登入</a>
                 <a href="/recommend.html" class="btn btn-orange">我要推薦</a>
@@ -241,13 +236,13 @@
 
     <div class="row g-4">
 
-        <!-- 左邊：AI 搜尋餐廳 -->
+        <!-- 左邊：AI 推薦餐廳 -->
         <div class="col-lg-8">
             <div class="section-card">
                 <div class="section-header d-flex justify-content-between align-items-center">
                     <div>
                         <h5 class="section-title">AI 推薦餐廳</h5>
-                        <div class="section-note">GPT + MySQL + Google Places</div>
+                        <div class="section-note">預設精選 + AI 即時搜尋</div>
                     </div>
                     <span class="badge-soft">AI Search</span>
                 </div>
@@ -255,7 +250,7 @@
                 <div class="card-body p-4">
                     <div class="row g-3" id="ai-container">
                         <div class="col-12 empty-box">
-                            餐廳資料載入中...
+                            預設餐廳載入中...
                         </div>
                     </div>
                 </div>
@@ -268,7 +263,7 @@
                 <div class="section-header d-flex justify-content-between align-items-center">
                     <div>
                         <h5 class="section-title">會員推薦餐廳</h5>
-                        <div class="section-note">來自會員上傳的真實美食照片</div>
+                        <div class="section-note">會員推薦，不足 6 筆用預設補滿</div>
                     </div>
                     <span class="badge-soft">Top 6</span>
                 </div>
@@ -295,16 +290,9 @@
         loadAiRestaurants();
     });
 
-    async function loadInitialRestaurants() {
-        aiContainer.innerHTML = `
-            <div class="col-12 text-center py-5">
-                <div class="spinner-border text-primary"></div>
-                <p class="mt-3 text-muted">載入餐廳資料中...</p>
-            </div>
-        `;
-
+    async function loadDefaultAiRestaurants() {
         try {
-            const response = await fetch("/api/AiRestaurantApi/search");
+            const response = await fetch("/api/default-restaurants/ai");
 
             if (!response.ok) {
                 throw new Error("HTTP status = " + response.status);
@@ -312,14 +300,22 @@
 
             const data = await response.json();
 
-            renderAiCards(data);
+            const converted = data.map(item => ({
+                name: item.name,
+                address: item.address,
+                imageUrl: item.imageUrl,
+                mapUrl: item.mapUrl,
+                url: item.mapUrl
+            }));
+
+            renderAiCards(converted);
 
         } catch (error) {
-            console.error("載入首頁餐廳失敗:", error);
+            console.error("載入預設 AI 餐廳失敗:", error);
 
             aiContainer.innerHTML = `
                 <div class="col-12 text-center text-danger py-5">
-                    載入餐廳資料失敗，請確認 /api/AiRestaurantApi/search 是否正常。
+                    預設餐廳載入失敗，請確認 /api/default-restaurants/ai 是否正常。
                 </div>
             `;
         }
@@ -360,7 +356,7 @@
         if (!data || data.length === 0) {
             aiContainer.innerHTML = `
                 <div class="col-12 empty-box">
-                    目前沒有 AI 餐廳資料
+                    目前沒有餐廳資料
                 </div>
             `;
             return;
@@ -370,7 +366,7 @@
 
         data.slice(0, 6).forEach(item => {
             const name = item.name || "未命名餐廳";
-            const restaurantUrl = item.url || "#";
+            const restaurantUrl = item.url || item.mapUrl || "#";
             const imageUrl = item.imageUrl || "https://via.placeholder.com/600x400?text=No+Image";
             const address = item.address || "尚無地址資料";
             const mapUrl = item.mapUrl || buildMapUrl(item.lat, item.lng, name);
@@ -415,15 +411,83 @@
         const box = document.getElementById("recommendedRestaurantList");
 
         try {
-            const response = await fetch("/api/recommended-restaurants/home");
+            const recommendedResponse = await fetch("/api/recommended-restaurants/home");
 
-            if (!response.ok) {
-                throw new Error("HTTP status = " + response.status);
+            if (!recommendedResponse.ok) {
+                throw new Error("HTTP status = " + recommendedResponse.status);
             }
 
-            const restaurants = await response.json();
+            let restaurants = await recommendedResponse.json();
 
-            renderRecommendedCards(restaurants);
+            if (!restaurants) {
+                restaurants = [];
+            }
+
+            if (restaurants.length < 6) {
+                const defaultResponse = await fetch("/api/default-restaurants/member");
+
+                if (defaultResponse.ok) {
+                    const defaults = await defaultResponse.json();
+
+                    const convertedDefaults = defaults.map(d => ({
+                        restaurantName: d.name,
+                        address: d.address,
+                        imageUrl: d.imageUrl,
+                        thumbUrl: d.imageUrl,
+                        description: d.description,
+                        starRating: 5,
+                        mapUrl: d.mapUrl
+                    }));
+
+                    restaurants = restaurants.concat(convertedDefaults).slice(0, 6);
+                }
+            } else {
+                restaurants = restaurants.slice(0, 6);
+            }
+
+            if (restaurants.length === 0) {
+                box.innerHTML = `
+                    <div class="empty-box">
+                        目前尚無會員推薦餐廳
+                    </div>
+                `;
+                return;
+            }
+
+            box.innerHTML = "";
+
+            restaurants.forEach(r => {
+                const name = r.restaurantName || "未命名餐廳";
+                const image = r.thumbUrl || r.imageUrl || "https://via.placeholder.com/400x300?text=No+Image";
+                const address = r.address || "尚無地址";
+                const description = r.description || "";
+                const starRating = Number(r.starRating || 5);
+                const mapUrl = r.mapUrl || buildMapUrl(null, null, name + " " + address);
+
+                const card = document.createElement("div");
+                card.className = "recommend-card";
+
+                card.innerHTML = `
+                    <a href="${mapUrl}" target="_blank">
+                        <img src="${image}"
+                             alt="${escapeHtml(name)}"
+                             loading="lazy"
+                             onerror="this.onerror=null;this.src='https://via.placeholder.com/400x300?text=No+Image';">
+                    </a>
+
+                    <div class="recommend-content">
+                        <div class="recommend-title">${escapeHtml(name)}</div>
+                        <div class="stars">${renderStars(starRating)}</div>
+                        <div class="recommend-address">${escapeHtml(address)}</div>
+                        <div class="recommend-desc">${escapeHtml(description)}</div>
+                        <a href="${mapUrl}" target="_blank" class="btn btn-outline-success btn-sm">
+                            地圖
+                        </a>
+                    </div>
+                `;
+
+                box.appendChild(card);
+            });
 
         } catch (error) {
             console.error("載入會員推薦失敗:", error);
@@ -434,54 +498,6 @@
                 </div>
             `;
         }
-    }
-
-    function renderRecommendedCards(restaurants) {
-        const box = document.getElementById("recommendedRestaurantList");
-
-        if (!restaurants || restaurants.length === 0) {
-            box.innerHTML = `
-                <div class="empty-box">
-                    目前尚無會員推薦餐廳
-                </div>
-            `;
-            return;
-        }
-
-        box.innerHTML = "";
-
-        restaurants.slice(0, 6).forEach(r => {
-            const name = r.restaurantName || "未命名餐廳";
-            const image = r.thumbUrl || r.imageUrl || "https://via.placeholder.com/400x300?text=No+Image";
-            const address = r.address || "尚無地址";
-            const description = r.description || "";
-            const starRating = Number(r.starRating || 0);
-            const mapUrl = r.mapUrl || buildMapUrl(null, null, name + " " + address);
-
-            const card = document.createElement("div");
-            card.className = "recommend-card";
-
-            card.innerHTML = `
-                <a href="${mapUrl}" target="_blank">
-                    <img src="${image}"
-                         alt="${escapeHtml(name)}"
-                         loading="lazy"
-                         onerror="this.onerror=null;this.src='https://via.placeholder.com/400x300?text=No+Image';">
-                </a>
-
-                <div class="recommend-content">
-                    <div class="recommend-title">${escapeHtml(name)}</div>
-                    <div class="stars">${renderStars(starRating)}</div>
-                    <div class="recommend-address">${escapeHtml(address)}</div>
-                    <div class="recommend-desc">${escapeHtml(description)}</div>
-                    <a href="${mapUrl}" target="_blank" class="btn btn-outline-success btn-sm">
-                        地圖
-                    </a>
-                </div>
-            `;
-
-            box.appendChild(card);
-        });
     }
 
     function renderStars(count) {
@@ -506,7 +522,7 @@
             .replace(/'/g, "&#039;");
     }
 
-    loadInitialRestaurants();
+    loadDefaultAiRestaurants();
     loadRecommendedRestaurants();
 </script>
 
