@@ -6,6 +6,8 @@ import com.example.topfood2604.util.JsonUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -18,10 +20,15 @@ public class AiRestaurantService {
 
     private static final String PROMPT =
             "請列出台北6家熱門美食餐廳，只回傳 JSON 陣列，不要加任何說明文字，不要加 markdown。"
-                    + "每筆包含 name 和 url。"
+                    + "每筆必須包含 name 和 url。"
+                    + "url 優先使用餐廳官方網站。"
+                    + "如果沒有官方網站，請使用該餐廳可公開瀏覽的介紹頁網址。"
+                    + "絕對不要使用 https://example.com。"
+                    + "絕對不要使用假網址。"
+                    + "絕對不要使用空字串。"
                     + "格式範例：["
                     + "{\"name\":\"鼎泰豐\",\"url\":\"https://www.dintaifung.com.tw/\"},"
-                    + "{\"name\":\"阜杭豆漿\",\"url\":\"https://example.com\"}"
+                    + "{\"name\":\"欣葉台菜\",\"url\":\"https://www.shinyeh.com.tw/\"}"
                     + "]";
 
     public AiRestaurantService(ChatGptService chatGptService,
@@ -34,39 +41,37 @@ public class AiRestaurantService {
 
     /**
      * 完整 AI 搜尋流程：
-     * 1. 先清空舊資料
-     * 2. 呼叫 GPT 取得 6 家餐廳
-     * 3. 解析 JSON
+     * 1. 清空舊 AI 餐廳資料
+     * 2. GPT 取得餐廳 name + url
+     * 3. 修正 GPT 的壞網址
      * 4. 存入 MySQL
-     * 5. 呼叫 Google Places 補圖片、地址、地圖、經緯度
-     * 6. 更新 MySQL
+     * 5. Google Places 補 imageUrl / address / mapUrl / embedMapUrl / lat / lng
+     * 6. 注意：Google mapUrl 不覆蓋 GPT url
      * 7. 回傳給前端
      */
     @Transactional
     public List<AiRestaurantInfo> aiSearchFull() {
 
-        // 1. 先清空舊資料
         aiRestaurantRepository.deleteAll();
 
-        // 2. 呼叫 GPT
         String result = chatGptService.ask(PROMPT);
 
         System.out.println("=== ChatGPT 回傳 ===");
         System.out.println(result);
 
-        // 3. JSON 轉 Java List
         List<AiRestaurantInfo> list = JsonUtil.parseRestaurantJson(result);
 
-        // 4. 初始化資料
         for (AiRestaurantInfo restaurant : list) {
             restaurant.setId(null);
             restaurant.setState("GPT_OK");
+
+            if (isBadUrl(restaurant.getUrl())) {
+                restaurant.setUrl(buildGoogleSearchUrl(restaurant.getName()));
+            }
         }
 
-        // 5. 先存入 DB，讓每筆資料取得 id
         List<AiRestaurantInfo> savedList = aiRestaurantRepository.saveAll(list);
 
-        // 6. 呼叫 Google Places 補資料
         for (AiRestaurantInfo restaurant : savedList) {
             try {
                 Map<String, String> place =
@@ -80,6 +85,7 @@ public class AiRestaurantService {
                     restaurant.setAddress(place.get("address"));
                 }
 
+                // 查看地圖使用這個
                 if (place.containsKey("mapUrl")) {
                     restaurant.setMapUrl(place.get("mapUrl"));
                 }
@@ -100,25 +106,48 @@ public class AiRestaurantService {
 
             } catch (Exception e) {
                 restaurant.setState("GOOGLE_ERROR");
+
+                if (isBadUrl(restaurant.getUrl())) {
+                    restaurant.setUrl(buildGoogleSearchUrl(restaurant.getName()));
+                }
+
                 System.out.println("Google Places 查詢失敗：" + restaurant.getName());
                 e.printStackTrace();
             }
         }
 
-        // 7. 更新 DB，回傳前端
         return aiRestaurantRepository.saveAll(savedList);
     }
 
-    /**
-     * 查詢資料庫目前所有餐廳
-     */
     public List<AiRestaurantInfo> findAll() {
         return aiRestaurantRepository.findAll();
     }
 
-
     @Transactional
     public void deleteAll() {
         aiRestaurantRepository.deleteAll();
+    }
+
+    private boolean isBadUrl(String url) {
+        if (url == null) {
+            return true;
+        }
+
+        String value = url.trim().toLowerCase();
+
+        return value.isEmpty()
+                || value.contains("example.com")
+                || value.equals("#")
+                || value.equals("null")
+                || value.equals("n/a")
+                || value.equals("無")
+                || value.equals("沒有");
+    }
+
+    private String buildGoogleSearchUrl(String name) {
+        String keyword = name == null ? "台北 餐廳" : name;
+        String encoded = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
+
+        return "https://www.google.com/search?q=" + encoded;
     }
 }

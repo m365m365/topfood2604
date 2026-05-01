@@ -9,4 +9,6 @@ public interface RecommendedRestaurantRepository
         extends JpaRepository<RecommendedRestaurant, Long> {
 
     List<RecommendedRestaurant> findTop6ByStatusOrderByStarRatingDescCreatedAtDesc(String status);
+    List<RecommendedRestaurant> findTop6ByOrderByIdDesc();
+
 }
