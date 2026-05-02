@@ -1,0 +1,1 @@
+web: java -jar topfood2604-0.0.1-SNAPSHOT.jar
