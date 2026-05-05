@@ -1,0 +1,47 @@
+/* 移除瀏覽器預設邊距 */
+body {
+    margin: 0;
+}
+
+/* 導覽列 */
+.navbar {
+    position: fixed;           /* 固定在最上面 */
+    top: 0;
+    left: 0;
+    width: 100%;
+
+    background: linear-gradient(90deg, #111827, #1f2937);
+    color: white;
+    padding: 14px 40px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    z-index: 999;              /* 確保在最上層 */
+}
+.navbar {
+    backdrop-filter: blur(6px);   /* 半透明玻璃效果 */
+}
+.nav-logo a {
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    gap: 22px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.nav-links a:hover {
+    color: #facc15;
+}

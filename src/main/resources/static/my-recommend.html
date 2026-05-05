@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <!-- 導覽列 -->
+  <!-- ✅ 正確位置 -->
+  <link rel="stylesheet" href="/navbar.css">
+  <!-- JS -->
+  <script src="/navbar.js" defer></script>
+
+  <title>我的推薦</title>
+
+
+  <style>
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 80%;
+      margin: 40px auto;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .name {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .date {
+      color: gray;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .btn {
+      background: #4CAF50;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: #45a049;
+    }
+  </style>
+</head>
+<body>
+<div id="navbar-container"></div>
+<div class="container">
+  <h1>我的推薦</h1>
+
+  <div class="card">
+    <div>
+      <div class="name">胡椒餅專賣店</div>
+      <div class="date">2026-05-05</div>
+    </div>
+    <a href="recommend-detail.html?id=1" class="btn">查看</a>
+  </div>
+
+  <div class="card">
+    <div>
+      <div class="name">小籠包世家</div>
+      <div class="date">2026-05-04</div>
+    </div>
+    <a href="recommend-detail.html?id=2" class="btn">查看</a>
+  </div>
+
+  <div class="card">
+    <div>
+      <div class="name">阿宗麵線</div>
+      <div class="date">2026-05-03</div>
+    </div>
+    <a href="recommend-detail.html?id=3" class="btn">查看</a>
+  </div>
+
+</div>
+
+</body>
+</html>
