@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>管理員後台</title>
+
+  <link rel="stylesheet" href="/navbar.css">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div style="height:80px;"></div>
+
+<h1>管理員後台</h1>
+
+<p>只有 ROLE_ADMIN 可以進來。</p>
+
+<a href="/">回首頁</a>
+
+</body>
+</html>

@@ -12,35 +12,29 @@ public class JsonUtil {
 
     public static List<AiRestaurantInfo> parseRestaurantJson(String json) {
         try {
-            String cleaned = cleanJson(json);
+            String cleanJson = json
+                    .replace("```json", "")
+                    .replace("```", "")
+                    .trim();
+
+            int start = cleanJson.indexOf("[");
+            int end = cleanJson.lastIndexOf("]");
+
+            if (start >= 0 && end > start) {
+                cleanJson = cleanJson.substring(start, end + 1);
+            }
+
+            cleanJson = cleanJson
+                    .replace("})]", "\"}]")
+                    .replace(")]", "]");
+
             return objectMapper.readValue(
-                    cleaned,
+                    cleanJson,
                     new TypeReference<List<AiRestaurantInfo>>() {}
             );
+
         } catch (Exception e) {
             throw new RuntimeException("JSON 解析失敗: " + e.getMessage(), e);
         }
-    }
-
-    private static String cleanJson(String json) {
-        if (json == null) {
-            return "[]";
-        }
-
-        String cleaned = json.trim();
-
-        if (cleaned.startsWith("```json")) {
-            cleaned = cleaned.substring(7).trim();
-        }
-
-        if (cleaned.startsWith("```")) {
-            cleaned = cleaned.substring(3).trim();
-        }
-
-        if (cleaned.endsWith("```")) {
-            cleaned = cleaned.substring(0, cleaned.length() - 3).trim();
-        }
-
-        return cleaned;
     }
 }

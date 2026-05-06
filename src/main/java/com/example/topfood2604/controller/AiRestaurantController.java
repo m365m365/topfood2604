@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/AiRestaurantApi")
 @CrossOrigin
 public class AiRestaurantController {
 
@@ -20,9 +19,13 @@ public class AiRestaurantController {
 
     /**
      * AI 搜尋餐廳
-     * 呼叫 GPT → Google Places → 存入 DB → 回傳資料
+     * 舊網址：/api/AiRestaurantApi/search
+     * 新網址：/api/restaurants/ai/search
      */
-    @GetMapping("/search")
+    @GetMapping({
+            "/api/AiRestaurantApi/search",
+            "/api/restaurants/ai/search"
+    })
     public ResponseEntity<List<AiRestaurantInfo>> aiSearchFull() {
 
         List<AiRestaurantInfo> list = aiRestaurantService.aiSearchFull();
@@ -33,7 +36,10 @@ public class AiRestaurantController {
     /**
      * 查詢目前資料庫所有餐廳
      */
-    @GetMapping("/list")
+    @GetMapping({
+            "/api/AiRestaurantApi/list",
+            "/api/restaurants/ai/list"
+    })
     public ResponseEntity<List<AiRestaurantInfo>> getRestaurants() {
 
         List<AiRestaurantInfo> list = aiRestaurantService.findAll();
@@ -44,12 +50,14 @@ public class AiRestaurantController {
     /**
      * 清空資料庫（測試用）
      */
-    @DeleteMapping("/clear")
+    @DeleteMapping({
+            "/api/AiRestaurantApi/clear",
+            "/api/restaurants/ai/clear"
+    })
     public ResponseEntity<String> clearRestaurants() {
 
         aiRestaurantService.deleteAll();
 
         return ResponseEntity.ok("資料已清空");
     }
-
 }

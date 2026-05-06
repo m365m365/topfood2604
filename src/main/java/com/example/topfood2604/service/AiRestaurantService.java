@@ -20,6 +20,7 @@ public class AiRestaurantService {
 
     private static final String PROMPT =
             "請列出台北6家熱門美食餐廳，只回傳 JSON 陣列，不要加任何說明文字，不要加 markdown。"
+                    +"只回傳合法 JSON array，最後一定是 ]，不能出現 )，不能加 markdown，不能加說明文字。"
                     + "每筆必須包含 name 和 url。"
                     + "url 優先使用餐廳官方網站。"
                     + "如果沒有官方網站，請使用該餐廳可公開瀏覽的介紹頁網址。"

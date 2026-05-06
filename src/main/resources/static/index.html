@@ -229,9 +229,12 @@
             </div>
 
             <div class="d-flex gap-2 flex-wrap mt-3 mt-md-0">
-                <a href="/test.html" class="btn btn-outline-dark">developer</a>
-                <a href="/login.html" class="btn btn-outline-success">登入</a>
-                <a href="/recommend.html" class="btn btn-orange">我要推薦</a>
+
+                <a href="/login" class="btn btn-outline-success">登入</a>
+
+                <button id="recommendButton" class="btn btn-orange">
+                    我要推薦
+                </button>
 
                 <button type="button" class="btn btn-primary" id="aiSearchButton">
                     AI 搜尋
@@ -290,6 +293,31 @@
     const aiSearchButton = document.getElementById("aiSearchButton");
     const aiContainer = document.getElementById("ai-container");
     const recommendedBox = document.getElementById("recommendedRestaurantList");
+    const recommendButton = document.getElementById("recommendButton");
+
+    recommendButton.addEventListener("click", async function () {
+        try {
+            const response = await fetch("/api/member/check-login");
+
+            if (!response.ok) {
+                throw new Error("HTTP status = " + response.status);
+            }
+
+            const data = await response.json();
+
+            if (data.loggedIn) {
+                window.location.href = "/recommend.html";
+            } else {
+                alert("請先會員登入");
+                window.location.href = "/login";
+            }
+
+        } catch (e) {
+            console.error("登入檢查失敗:", e);
+            alert("請先會員登入");
+            window.location.href = "/login";
+        }
+    });
 
     aiSearchButton.addEventListener("click", function () {
         loadAiRestaurants();
@@ -356,7 +384,7 @@
             aiSearchButton.disabled = true;
             aiSearchButton.textContent = "AI 搜尋中...";
 
-            const response = await fetch("/api/AiRestaurantApi/search");
+            const response = await fetch("/api/restaurants/ai/search");
 
             if (!response.ok) {
                 throw new Error("HTTP status = " + response.status);
@@ -371,7 +399,7 @@
 
             aiContainer.innerHTML = `
                 <div class="col-12 text-center text-danger py-5">
-                    AI 搜尋失敗，請確認 /api/AiRestaurantApi/search 是否正常。
+                    AI 搜尋失敗，請確認 /api/restaurants/ai/search 是否正常。
                 </div>
             `;
 
@@ -396,18 +424,16 @@
         data.slice(0, 6).forEach(item => {
             const name = item.name || "未命名餐廳";
 
-            // 查看餐廳：使用 GPT 查到的 url
             const restaurantUrl = item.url || "#";
 
-            // 圖片：使用 Google Places / S3 回傳的 imageUrl
             const imageUrl =
                 item.imageUrl ||
                 item.photoUrl ||
+                item.thumbUrl ||
                 "https://via.placeholder.com/600x400?text=No+Image";
 
             const address = item.address || "尚無地址資料";
 
-            // 查看地圖：使用 Google Places 查到的 mapUrl
             const mapUrl =
                 item.mapUrl ||
                 buildMapUrl(item.lat, item.lng, name);
@@ -462,6 +488,7 @@
 
         restaurants.slice(0, 6).forEach(r => {
             const name = r.restaurantName || r.name || "未命名餐廳";
+
             const image =
                 r.thumbUrl ||
                 r.imageUrl ||
