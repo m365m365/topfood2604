@@ -46,6 +46,7 @@ public class SecurityConfig {
             throws Exception {
 
         http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
 
                         // 公開頁面
@@ -65,7 +66,8 @@ public class SecurityConfig {
                                 "/api/homepage",
                                 "/api/restaurants/**",
                                 "/api/AiRestaurantApi/search",
-                                "/api/member/check-login"
+                                "/api/member/check-login",
+                                "/api/recommended-restaurants"
                         ).permitAll()
 
                         // 會員功能：必須登入
