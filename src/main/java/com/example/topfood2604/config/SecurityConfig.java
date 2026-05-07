@@ -70,14 +70,14 @@ public class SecurityConfig {
 
                         // 會員功能：必須登入
                         .requestMatchers(
-                                "/recommend.html",
-                                "/my-recommend.html",
-                                "/recommend-detail.html"
+                                "/recommend",
+                                "/my-recommend",
+                                "/recommend-detail"
                         ).authenticated()
 
                         // 後台：只有 ADMIN
                         .requestMatchers("/admin/**")
-                        .hasRole("ADMIN")
+                        .hasAuthority("ROLE_ADMIN")
 
                         // 其他全部都要登入
                         .anyRequest()

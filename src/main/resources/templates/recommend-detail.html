@@ -2,9 +2,9 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
+
   <!-- 導覽列 -->
-  <link rel="stylesheet" href="navbar.css">
-  <script src="navbar.js"></script>
+  <link rel="stylesheet" href="/navbar.css">
   <title>推薦的全部內容</title>
 
   <style>
@@ -78,6 +78,9 @@
   </style>
 </head>
 <body>
+<!-- 導覽列 -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
 <div id="navbar-container"></div>
 <div class="container">
   <h1>推薦的全部內容</h1>
@@ -112,7 +115,7 @@
     <a id="mapLink" href="#" target="_blank" class="map-btn">查看 Google Map</a>
   </div>
 
-  <a href="my-recommend.html" class="back-btn">← 返回我的推薦</a>
+  <a href="/my-recommend" class="back-btn">← 返回我的推薦</a>
 </div>
 
 <script>
@@ -155,7 +158,7 @@
     document.querySelector(".container").innerHTML = `
             <h1>找不到推薦內容</h1>
             <p>這筆推薦資料不存在。</p>
-            <a href="my-recommend.html" class="back-btn">← 返回我的推薦</a>
+
         `;
   }
 </script>

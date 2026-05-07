@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <!-- 導覽列 -->
-  <link rel="stylesheet" href="navbar.css">
-  <script src="navbar.js"></script>
+  <link rel="stylesheet" href="/navbar.css">
 
   <title>會員推薦餐廳</title>
 
@@ -78,6 +77,9 @@
 </head>
 
 <body>
+<!-- 導覽列 -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
 <div id="navbar-container"></div>
 <div class="container">
   <h1>會員推薦餐廳</h1>
