@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>會員推薦餐廳資料庫管理後台</title>
+
+  <link rel="stylesheet" href="/navbar.css">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft JhengHei", sans-serif;
+      background: #f4f6f8;
+    }
+
+    .container {
+      width: 90%;
+      margin: 100px auto 40px;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th {
+      background: #222;
+      color: white;
+      padding: 12px;
+      text-align: center;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    tr:hover {
+      background: #f1f1f1;
+    }
+
+    .status-active {
+      color: green;
+      font-weight: bold;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: white;
+      font-size: 14px;
+    }
+
+    .btn-view {
+      background: #007bff;
+    }
+
+    .btn-delete {
+      background: #dc3545;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 25px;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+
+  <h1>會員推薦餐廳資料庫管理後台</h1>
+
+  <p class="subtitle">
+    只有 ROLE_ADMIN 可以管理會員推薦餐廳資料
+  </p>
+
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>餐廳名稱</th>
+      <th>地址</th>
+      <th>星等</th>
+      <th>狀態</th>
+      <th>建立時間</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="r : ${restaurants}">
+      <td th:text="${r.id}">1</td>
+      <td th:text="${r.restaurantName}">餐廳名稱</td>
+      <td th:text="${r.address}">地址</td>
+      <td th:text="${r.starRating}">5</td>
+      <td>
+        <span class="status-active" th:text="${r.status}">ACTIVE</span>
+      </td>
+      <td th:text="${r.createdAt}">2026-05-08</td>
+      <td>
+        <a class="btn btn-view"
+           th:href="@{/admin/recommend/view/{id}(id=${r.id})}">
+          查看
+        </a>
+
+        <a class="btn btn-delete"
+           th:href="@{/admin/recommend/delete/{id}(id=${r.id})}">
+          刪除
+        </a>
+      </td>
+    </tr>
+
+    <tr th:if="${#lists.isEmpty(restaurants)}">
+      <td colspan="7">目前沒有會員推薦餐廳資料</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <a class="back-link" href="/">← 回首頁</a>
+
+</div>
+
+</body>
+</html>

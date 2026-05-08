@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>推薦餐廳詳細資料</title>
+  <link rel="stylesheet" href="/navbar.css">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft JhengHei", sans-serif;
+      background: #f4f6f8;
+    }
+
+    .container {
+      width: 80%;
+      margin: 100px auto 40px;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .info-row {
+      margin: 16px 0;
+      font-size: 18px;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .restaurant-img {
+      max-width: 420px;
+      width: 100%;
+      border-radius: 12px;
+      margin-top: 15px;
+    }
+
+    .btn-back {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 10px 16px;
+      background: #333;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+
+  <h1>推薦餐廳詳細資料</h1>
+
+  <div class="info-row">
+    <span class="label">ID：</span>
+    <span th:text="${restaurant.id}"></span>
+  </div>
+
+  <div class="info-row">
+    <span class="label">餐廳名稱：</span>
+    <span th:text="${restaurant.restaurantName}"></span>
+  </div>
+
+  <div class="info-row">
+    <span class="label">地址：</span>
+    <span th:text="${restaurant.address}"></span>
+  </div>
+
+  <div class="info-row">
+    <span class="label">星等：</span>
+    <span th:text="${restaurant.starRating}"></span>
+  </div>
+
+  <div class="info-row">
+    <span class="label">狀態：</span>
+    <span th:text="${restaurant.status}"></span>
+  </div>
+
+  <div class="info-row">
+    <span class="label">描述：</span>
+    <p th:text="${restaurant.description}"></p>
+  </div>
+
+  <div class="info-row" th:if="${restaurant.imageUrl != null}">
+    <span class="label">圖片：</span><br>
+    <img class="restaurant-img" th:src="${restaurant.imageUrl}">
+  </div>
+
+  <div class="info-row" th:if="${restaurant.mapUrl != null}">
+    <span class="label">地圖：</span>
+    <a th:href="${restaurant.mapUrl}" target="_blank">開啟 Google 地圖</a>
+  </div>
+
+  <a class="btn-back" href="/admin">← 回管理後台</a>
+
+</div>
+
+</body>
+</html>

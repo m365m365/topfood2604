@@ -10,7 +10,7 @@
 
   <div class="nav-links">
 
-    <a th:href="@{/}">首頁</a>
+    <a th:href="@{/index.html}">首頁</a>
 
     <a th:href="@{/my-recommend}">我的推薦</a>
 
@@ -26,7 +26,7 @@
 
     <!-- 只有 admin 才能看到 -->
     <a th:if="${loggedIn and loginUsername == 'admin'}"
-       th:href="@{/templates/adminok.html}">
+       th:href="@{/admin}">
       管理者
     </a>
 

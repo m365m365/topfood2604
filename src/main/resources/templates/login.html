@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <!-- 導覽列 -->
-    <!-- ✅ 正確位置 -->
     <link rel="stylesheet" href="/navbar.css">
-    <!-- JS -->
-    <script src="/navbar.js" defer></script>
     <title>會員登入</title>
 
     <style>
@@ -78,6 +75,7 @@
 </head>
 
 <body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 <div id="navbar-container"></div>
 <div class="login-box">
 
