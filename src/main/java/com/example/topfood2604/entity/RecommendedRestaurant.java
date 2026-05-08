@@ -37,4 +37,16 @@ public class RecommendedRestaurant {
 
     @Column(name="created_at")
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+
+        if (status == null) {
+            status = "ACTIVE";
+        }
+    }
 }

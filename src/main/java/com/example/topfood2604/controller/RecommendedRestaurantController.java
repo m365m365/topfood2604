@@ -1,68 +1,66 @@
 package com.example.topfood2604.controller;
 
 import com.example.topfood2604.entity.RecommendedRestaurant;
-import com.example.topfood2604.repository.RecommendedRestaurantRepository;
-import com.example.topfood2604.service.S3ImageService;
-import com.example.topfood2604.service.S3ImageService.ImageResult;
+import com.example.topfood2604.service.RecommendRestaurantService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/recommended-restaurants")
 public class RecommendedRestaurantController {
 
-    private final RecommendedRestaurantRepository repository;
-    private final S3ImageService s3ImageService;
+    private final RecommendRestaurantService recommendRestaurantService;
 
     public RecommendedRestaurantController(
-            RecommendedRestaurantRepository repository,
-            S3ImageService s3ImageService
+            RecommendRestaurantService recommendRestaurantService
     ) {
-        this.repository = repository;
-        this.s3ImageService = s3ImageService;
+        this.recommendRestaurantService = recommendRestaurantService;
     }
 
     @PostMapping
-    public RecommendedRestaurant create(
-            @RequestParam String restaurantName,
+    public ResponseEntity<RecommendedRestaurant> createRecommend(
+
+            @RequestParam String name,
+
             @RequestParam String address,
-            @RequestParam Integer starRating,
+
+            @RequestParam Integer rating,
+
             @RequestParam String description,
+
             @RequestParam MultipartFile photo
+
     ) throws Exception {
 
-        RecommendedRestaurant restaurant = new RecommendedRestaurant();
+        Long memberId = 1L;
 
-        restaurant.setRestaurantName(restaurantName);
+        RecommendedRestaurant restaurant =
+                new RecommendedRestaurant();
+
+        restaurant.setRestaurantName(name);
+
         restaurant.setAddress(address);
-        restaurant.setStarRating(starRating);
+
+        restaurant.setStarRating(rating);
+
         restaurant.setDescription(description);
-        restaurant.setStatus("APPROVED");
-        restaurant.setCreatedAt(LocalDateTime.now());
 
-        String mapUrl = "https://www.google.com/maps/search/?api=1&query="
-                + URLEncoder.encode(address, StandardCharsets.UTF_8);
+        RecommendedRestaurant saved =
+                recommendRestaurantService.createRecommend(
+                        memberId,
+                        restaurant,
+                        photo
+                );
 
-        restaurant.setMapUrl(mapUrl);
-
-        RecommendedRestaurant saved = repository.save(restaurant);
-
-        ImageResult imageResult =
-                s3ImageService.uploadRestaurantImage(saved.getId(), photo);
-
-        saved.setImageUrl(imageResult.imageUrl());
-        saved.setThumbUrl(imageResult.thumbUrl());
-
-        return repository.save(saved);
+        return ResponseEntity.ok(saved);
     }
 
     @GetMapping("/home")
-    public List<RecommendedRestaurant> home() {
-        return repository.findTop6ByStatusOrderByStarRatingDescCreatedAtDesc("APPROVED");
+    public ResponseEntity<?> home() {
+
+        return ResponseEntity.ok(
+                recommendRestaurantService.home()
+        );
     }
 }

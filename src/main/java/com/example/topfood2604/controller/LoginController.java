@@ -13,7 +13,7 @@ public class LoginController {
 
     @GetMapping("/")
     public String homePage() {
-        return "index";
+        return "adminok";
     }
 
     @GetMapping("/admin/dashboard")

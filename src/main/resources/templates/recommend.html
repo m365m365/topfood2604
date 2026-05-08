@@ -121,49 +121,115 @@
   const form = document.getElementById("recommendForm");
   const message = document.getElementById("message");
 
+  // 圖片預覽
   photoInput.addEventListener("change", function () {
+
     const file = this.files[0];
 
     if (file) {
+
       previewImage.src = URL.createObjectURL(file);
+
       previewImage.style.display = "block";
     }
   });
 
+  // 表單送出
   form.addEventListener("submit", async function (e) {
+
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("restaurantName", document.getElementById("restaurantName").value);
-    formData.append("address", document.getElementById("address").value);
-    formData.append("starRating", document.getElementById("starRating").value);
-    formData.append("description", document.getElementById("description").value);
-    formData.append("photo", document.getElementById("photo").files[0]);
+    // 檢查是否有選圖片
+    const photoFile =
+            document.getElementById("photo").files[0];
 
+    if (!photoFile) {
+
+      message.style.color = "red";
+
+      message.textContent = "請選擇圖片";
+
+      return;
+    }
+
+    // 建立 FormData
+    const formData = new FormData();
+
+    formData.append(
+            "name",
+            document.getElementById("restaurantName").value
+    );
+
+    formData.append(
+            "address",
+            document.getElementById("address").value
+    );
+
+    formData.append(
+            "rating",
+            document.getElementById("starRating").value
+    );
+
+    formData.append(
+            "description",
+            document.getElementById("description").value
+    );
+
+    formData.append(
+            "photo",
+            photoFile
+    );
+
+    // UI 提示
     message.style.color = "#333";
+
     message.textContent = "上傳中，請稍候...";
 
     try {
-      const response = await fetch("/api/recommended-restaurants", {
-        method: "POST",
-        body: formData
-      });
 
-      if (response.ok) {
-        message.style.color = "green";
-        message.textContent = "推薦成功！";
-        form.reset();
-        previewImage.style.display = "none";
-      } else {
-        message.style.color = "red";
-        message.textContent = "推薦失敗。";
+      // 呼叫後端 API
+      const response = await fetch(
+              "/api/recommended-restaurants",
+              {
+                method: "POST",
+                body: formData
+              }
+      );
+
+      // 讀取 JSON
+      const result = await response.json();
+
+      // 失敗
+      if (!response.ok) {
+
+        throw new Error(result.message || "upload failed");
       }
+
+      console.log("推薦成功:", result);
+
+      // 成功提示
+      message.style.color = "green";
+
+      message.textContent = "推薦成功！";
+
+      // 清空表單
+      form.reset();
+
+      // 清空圖片預覽
+      previewImage.src = "";
+
+      previewImage.style.display = "none";
+
     } catch (error) {
+
+      console.error(error);
+
       message.style.color = "red";
-      message.textContent = "系統錯誤。";
+
+      message.textContent =
+              "推薦失敗：" + error.message;
     }
   });
 </script>
-
 </body>
 </html>
