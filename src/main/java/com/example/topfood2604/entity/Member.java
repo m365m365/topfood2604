@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -14,6 +15,7 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String username;
 
     private String password;
@@ -24,11 +26,14 @@ public class Member {
 
     private String role;
 
-    @Column(name = "recommendID")
-    private Long recommendID;
-
     private String state;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    /**
+     * 會員推薦的餐廳關聯
+     */
+    @OneToMany(mappedBy = "member")
+    private List<MemberRecommendRestaurant> recommendRestaurants;
 }

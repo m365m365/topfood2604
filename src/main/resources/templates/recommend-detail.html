@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
 
-  <!-- 導覽列 -->
   <link rel="stylesheet" href="/navbar.css">
   <title>推薦的全部內容</title>
 
@@ -39,13 +38,21 @@
 
     .image-box {
       margin-top: 10px;
-      height: 220px;
+      height: 260px;
       background: #eee;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #777;
+      overflow: hidden;
+    }
+
+    .image-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
     }
 
     .back-btn {
@@ -77,91 +84,69 @@
     }
   </style>
 </head>
+
 <body>
-<!-- 導覽列 -->
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div id="navbar-container"></div>
-<div class="container">
+<div class="container" th:if="${restaurant != null}">
   <h1>推薦的全部內容</h1>
 
   <div class="section">
     <span class="label">餐廳名稱：</span>
-    <span id="name"></span>
+    <span th:text="${restaurant.restaurantName}">餐廳名稱</span>
   </div>
 
   <div class="section">
     <span class="label">推薦日期：</span>
-    <span id="date"></span>
+    <span th:text="${#temporals.format(restaurant.createdAt, 'yyyy-MM-dd HH:mm')}">推薦日期</span>
+  </div>
+
+  <div class="section">
+    <span class="label">星等評分：</span>
+    <span th:text="${restaurant.starRating} + ' 星'">5 星</span>
   </div>
 
   <div class="section">
     <span class="label">推薦理由：</span>
-    <div id="reason"></div>
+    <div th:text="${restaurant.description}">推薦理由</div>
   </div>
 
   <div class="section">
     <span class="label">餐廳圖片：</span>
-    <div class="image-box" id="imageBox">之後會顯示圖片</div>
+    <div class="image-box">
+      <img th:if="${restaurant.imageUrl != null}"
+           th:src="${restaurant.imageUrl}"
+           alt="餐廳圖片">
+
+      <span th:if="${restaurant.imageUrl == null}">
+        沒有圖片
+      </span>
+    </div>
   </div>
 
   <div class="section">
     <span class="label">地址：</span>
-    <span id="address"></span>
+    <span th:text="${restaurant.address}">地址</span>
   </div>
 
   <div class="section">
     <span class="label">地圖：</span><br>
-    <a id="mapLink" href="#" target="_blank" class="map-btn">查看 Google Map</a>
+    <a th:href="${restaurant.mapUrl}"
+       target="_blank"
+       class="map-btn">
+      查看 Google Map
+    </a>
   </div>
 
   <a href="/my-recommend" class="back-btn">← 返回我的推薦</a>
 </div>
 
-<script>
-  const recommendations = {
-    1: {
-      name: "胡椒餅專賣店",
-      date: "2026-05-05",
-      reason: "外皮酥脆、內餡多汁，是來台北一定要吃的美食。",
-      address: "台北市萬華區艋舺夜市附近",
-      mapUrl: "https://www.google.com/maps/search/?api=1&query=胡椒餅專賣店 台北"
-    },
-    2: {
-      name: "小籠包世家",
-      date: "2026-05-04",
-      reason: "湯汁飽滿，皮薄餡多，很適合推薦給第一次來台北的朋友。",
-      address: "台北市大安區信義路附近",
-      mapUrl: "https://www.google.com/maps/search/?api=1&query=小籠包 台北"
-    },
-    3: {
-      name: "阿宗麵線",
-      date: "2026-05-03",
-      reason: "口味濃郁，排隊名店，適合當作台北小吃代表。",
-      address: "台北市萬華區西門町附近",
-      mapUrl: "https://www.google.com/maps/search/?api=1&query=阿宗麵線"
-    }
-  };
-
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
-
-  const data = recommendations[id];
-
-  if (data) {
-    document.getElementById("name").textContent = data.name;
-    document.getElementById("date").textContent = data.date;
-    document.getElementById("reason").textContent = data.reason;
-    document.getElementById("address").textContent = data.address;
-    document.getElementById("mapLink").href = data.mapUrl;
-  } else {
-    document.querySelector(".container").innerHTML = `
-            <h1>找不到推薦內容</h1>
-            <p>這筆推薦資料不存在。</p>
-
-        `;
-  }
-</script>
+<div class="container" th:if="${restaurant == null}">
+  <h1>找不到推薦內容</h1>
+  <p>這筆推薦資料不存在，或不是你的推薦資料。</p>
+  <a href="/my-recommend" class="back-btn">← 返回我的推薦</a>
+</div>
 
 </body>
 </html>

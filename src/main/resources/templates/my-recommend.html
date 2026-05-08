@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <!-- 導覽列 -->
+
   <link rel="stylesheet" href="/navbar.css">
 
   <title>我的推薦</title>
 
-
   <style>
-
     body {
       font-family: Arial, sans-serif;
       background: #f5f6fa;
@@ -59,41 +57,47 @@
     .btn:hover {
       background: #45a049;
     }
+
+    .empty {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      color: #777;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
+
 <body>
-<!-- 導覽列 -->
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div id="navbar-container"></div>
 <div class="container">
   <h1>我的推薦</h1>
 
-  <div class="card">
-    <div>
-      <div class="name">胡椒餅專賣店</div>
-      <div class="date">2026-05-05</div>
-    </div>
-    <a th:href="@{/recommend-detail(id=1)}" class="btn">查看</a>
+  <div th:if="${#lists.isEmpty(recommendList)}" class="empty">
+    目前還沒有推薦餐廳
   </div>
 
-  <div class="card">
+  <div class="card" th:each="item : ${recommendList}">
     <div>
-      <div class="name">小籠包世家</div>
-      <div class="date">2026-05-04</div>
+      <div class="name" th:text="${item.restaurant.restaurantName}">
+        餐廳名稱
+      </div>
+
+      <div class="date" th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd HH:mm')}">
+        推薦日期
+      </div>
     </div>
-    <a th:href="@{/recommend-detail(id=2)}" class="btn">查看</a>
+
+    <a th:href="@{/recommend-detail(id=${item.id})}" class="btn">
+      查看
+    </a>
+  </div>
   </div>
 
-  <div class="card">
-    <div>
-      <div class="name">阿宗麵線</div>
-      <div class="date">2026-05-03</div>
-    </div>
-    <a th:href="@{/recommend-detail(id=3)}" class="btn">查看</a>
-  </div>
 
-</div>
 
 </body>
 </html>

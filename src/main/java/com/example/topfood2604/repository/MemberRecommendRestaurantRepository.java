@@ -8,5 +8,6 @@ import java.util.List;
 public interface MemberRecommendRestaurantRepository
         extends JpaRepository<MemberRecommendRestaurant, Long> {
 
-    List<MemberRecommendRestaurant> findByMemberIdOrderByCreatedAtDesc(Long memberId);
+    List<MemberRecommendRestaurant>
+    findByMemberIdOrderByIdDesc(Long memberId);
 }

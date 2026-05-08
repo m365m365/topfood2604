@@ -61,20 +61,25 @@ public class SecurityConfig {
                                 "/favicon.ico"
                         ).permitAll()
 
-                        // 公開 API：首頁與 AI 搜尋不需要登入
+                        // 公開 API：首頁、AI 搜尋、登入檢查、首頁推薦卡片
                         .requestMatchers(
                                 "/api/homepage",
                                 "/api/restaurants/**",
                                 "/api/AiRestaurantApi/search",
                                 "/api/member/check-login",
-                                "/api/recommended-restaurants"
+                                "/api/recommended-restaurants/home"
                         ).permitAll()
 
-                        // 會員功能：必須登入
+                        // 會員頁面：必須登入
                         .requestMatchers(
                                 "/recommend",
                                 "/my-recommend",
                                 "/recommend-detail"
+                        ).authenticated()
+
+                        // 會員 API：上傳推薦餐廳必須登入
+                        .requestMatchers(
+                                "/api/recommended-restaurants"
                         ).authenticated()
 
                         // 後台：只有 ADMIN
