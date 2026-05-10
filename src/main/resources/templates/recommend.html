@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <!-- 導覽列 -->
+
   <link rel="stylesheet" href="/navbar.css">
 
   <title>會員推薦餐廳</title>
@@ -16,16 +16,30 @@
 
     .container {
       max-width: 560px;
-      margin-top: 100px;
+      margin: 100px auto 0;
       background: white;
       padding: 32px;
       border-radius: 18px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-
     }
 
     h1 {
       text-align: center;
+    }
+
+    .upload-limit-box {
+      margin: 18px 0;
+      padding: 14px;
+      background: #f7f7f7;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .upload-limit-box.zero {
+      background: #ffecec;
+      color: #e74c3c;
     }
 
     label {
@@ -59,6 +73,11 @@
       cursor: pointer;
     }
 
+    button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+
     .preview {
       margin-top: 16px;
       width: 100%;
@@ -77,12 +96,16 @@
 </head>
 
 <body>
-<!-- 導覽列 -->
+
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div id="navbar-container"></div>
 <div class="container">
   <h1>會員推薦餐廳</h1>
+
+  <div id="uploadLimitBox" class="upload-limit-box">
+    今日剩餘上傳次數：
+    <span id="remainText">讀取中...</span>
+  </div>
 
   <form id="recommendForm">
 
@@ -109,7 +132,7 @@
     <label>推薦描述</label>
     <textarea id="description" required></textarea>
 
-    <button type="submit">送出推薦</button>
+    <button id="submitBtn" type="submit">送出推薦</button>
 
     <div id="message" class="message"></div>
   </form>
@@ -120,116 +143,118 @@
   const previewImage = document.getElementById("previewImage");
   const form = document.getElementById("recommendForm");
   const message = document.getElementById("message");
+  const remainText = document.getElementById("remainText");
+  const uploadLimitBox = document.getElementById("uploadLimitBox");
+  const submitBtn = document.getElementById("submitBtn");
 
-  // 圖片預覽
+  async function loadUploadLimit() {
+    try {
+      const response = await fetch("/api/recommended-restaurants/upload-limit");
+      const data = await response.json();
+
+      if (data.success) {
+        remainText.textContent = data.remaining + " / " + data.dailyLimit;
+
+        if (data.remaining <= 0) {
+          uploadLimitBox.classList.add("zero");
+          submitBtn.disabled = true;
+          submitBtn.textContent = "今日上傳已達上限";
+        } else {
+          uploadLimitBox.classList.remove("zero");
+          submitBtn.disabled = false;
+          submitBtn.textContent = "送出推薦";
+        }
+
+      } else {
+        remainText.textContent = data.message;
+        uploadLimitBox.classList.add("zero");
+        submitBtn.disabled = true;
+        submitBtn.textContent = "請先登入";
+      }
+
+    } catch (error) {
+      remainText.textContent = "讀取失敗";
+      uploadLimitBox.classList.add("zero");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "暫時無法上傳";
+    }
+  }
+
   photoInput.addEventListener("change", function () {
-
     const file = this.files[0];
 
     if (file) {
-
       previewImage.src = URL.createObjectURL(file);
-
       previewImage.style.display = "block";
     }
   });
 
-  // 表單送出
   form.addEventListener("submit", async function (e) {
-
     e.preventDefault();
 
-    // 檢查是否有選圖片
-    const photoFile =
-            document.getElementById("photo").files[0];
+    const photoFile = photoInput.files[0];
 
     if (!photoFile) {
-
       message.style.color = "red";
-
       message.textContent = "請選擇圖片";
-
       return;
     }
 
-    // 建立 FormData
     const formData = new FormData();
 
-    formData.append(
-            "name",
-            document.getElementById("restaurantName").value
-    );
+    formData.append("name", document.getElementById("restaurantName").value);
+    formData.append("address", document.getElementById("address").value);
+    formData.append("rating", document.getElementById("starRating").value);
+    formData.append("description", document.getElementById("description").value);
+    formData.append("photo", photoFile);
 
-    formData.append(
-            "address",
-            document.getElementById("address").value
-    );
-
-    formData.append(
-            "rating",
-            document.getElementById("starRating").value
-    );
-
-    formData.append(
-            "description",
-            document.getElementById("description").value
-    );
-
-    formData.append(
-            "photo",
-            photoFile
-    );
-
-    // UI 提示
     message.style.color = "#333";
-
     message.textContent = "上傳中，請稍候...";
 
+    submitBtn.disabled = true;
+    submitBtn.textContent = "上傳中...";
+
     try {
+      const response = await fetch("/api/recommended-restaurants", {
+        method: "POST",
+        body: formData
+      });
 
-      // 呼叫後端 API
-      const response = await fetch(
-              "/api/recommended-restaurants",
-              {
-                method: "POST",
-                body: formData
-              }
-      );
-
-      // 讀取 JSON
       const result = await response.json();
 
-      // 失敗
-      if (!response.ok) {
-
-        throw new Error(result.message || "upload failed");
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "推薦失敗");
       }
 
-      console.log("推薦成功:", result);
-
-      // 成功提示
       message.style.color = "green";
+      message.textContent = result.message;
 
-      message.textContent = "推薦成功！";
+      remainText.textContent = result.remaining + " / " + result.dailyLimit;
 
-      // 清空表單
+      if (result.remaining <= 0) {
+        uploadLimitBox.classList.add("zero");
+        submitBtn.disabled = true;
+        submitBtn.textContent = "今日上傳已達上限";
+      } else {
+        uploadLimitBox.classList.remove("zero");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "送出推薦";
+      }
+
       form.reset();
-
-      // 清空圖片預覽
       previewImage.src = "";
-
       previewImage.style.display = "none";
 
     } catch (error) {
-
-      console.error(error);
-
       message.style.color = "red";
+      message.textContent = "推薦失敗：" + error.message;
 
-      message.textContent =
-              "推薦失敗：" + error.message;
+      await loadUploadLimit();
     }
   });
+
+  loadUploadLimit();
 </script>
+
 </body>
 </html>

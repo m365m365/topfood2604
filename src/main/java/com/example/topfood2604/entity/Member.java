@@ -31,9 +31,10 @@ public class Member {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    /**
-     * 會員推薦的餐廳關聯
-     */
+    @ManyToOne
+    @JoinColumn(name = "tier_id")
+    private MemberTier tier;
+
     @OneToMany(mappedBy = "member")
     private List<MemberRecommendRestaurant> recommendRestaurants;
 }

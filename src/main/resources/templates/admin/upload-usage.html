@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>會員每日上傳次數管理</title>
+
+    <link rel="stylesheet" href="/navbar.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            background: #f5f6fa;
+        }
+
+        .container {
+            width: 90%;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .filter-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 10px;
+        }
+
+        .filter-box form {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="date"],
+        input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button,
+        .btn {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-search {
+            background: #3498db;
+        }
+
+        .btn-reset {
+            background: #f39c12;
+        }
+
+        .btn-update {
+            background: #27ae60;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+        }
+
+        .btn-all {
+            background: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+            padding: 12px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        .remain-ok {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .remain-zero {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .action-form {
+            display: inline-block;
+            margin: 2px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+
+    <h1>會員每日上傳次數管理</h1>
+
+    <div class="filter-box">
+
+        <form method="get" th:action="@{/admin/upload-usage}">
+            <input type="date" name="date" th:value="${selectedDate}">
+            <button type="submit" class="btn-search">查詢日期</button>
+        </form>
+
+        <a th:href="@{/admin/upload-usage}" class="btn btn-all">查看全部</a>
+
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>日期</th>
+            <th>會員ID</th>
+            <th>帳號</th>
+            <th>會員等級</th>
+            <th>每日上限</th>
+            <th>已用次數</th>
+            <th>剩餘次數</th>
+            <th>建立時間</th>
+            <th>控制</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:if="${#lists.isEmpty(usages)}">
+            <td colspan="10" class="empty">目前沒有上傳紀錄</td>
+        </tr>
+
+        <tr th:each="usage : ${usages}">
+
+            <td th:text="${usage.id}">1</td>
+
+            <td th:text="${usage.uploadDate}">2026-05-10</td>
+
+            <td th:text="${usage.member.id}">1</td>
+
+            <td th:text="${usage.member.username}">test</td>
+
+            <td th:text="${usage.member.tier != null ? usage.member.tier.tierName : '未設定'}">
+                普通會員
+            </td>
+
+            <td th:text="${usage.member.tier != null ? usage.member.tier.dailyUploadLimit : 0}">
+                5
+            </td>
+
+            <td>
+                <form class="action-form"
+                      method="post"
+                      th:action="@{/admin/upload-usage/{id}/update(id=${usage.id})}">
+
+                    <input type="number"
+                           name="usedCount"
+                           min="0"
+                           th:value="${usage.usedCount}"
+                           style="width:70px;">
+
+                    <button type="submit" class="btn-update">修改</button>
+                </form>
+            </td>
+
+            <td>
+                <span th:with="limit=${usage.member.tier != null ? usage.member.tier.dailyUploadLimit : 0},
+                               remain=${limit - usage.usedCount}"
+                      th:text="${remain}"
+                      th:classappend="${remain <= 0} ? 'remain-zero' : 'remain-ok'">
+                    3
+                </span>
+            </td>
+
+            <td th:text="${#temporals.format(usage.createdAt, 'yyyy-MM-dd HH:mm')}">
+                2026-05-10 12:00
+            </td>
+
+            <td>
+                <form class="action-form"
+                      method="post"
+                      th:action="@{/admin/upload-usage/{id}/reset(id=${usage.id})}"
+                      onsubmit="return confirm('確定要重置這筆紀錄嗎？')">
+
+                    <button type="submit" class="btn-reset">重置</button>
+                </form>
+
+                <form class="action-form"
+                      method="post"
+                      th:action="@{/admin/upload-usage/{id}/delete(id=${usage.id})}"
+                      onsubmit="return confirm('確定要刪除這筆紀錄嗎？')">
+
+                    <button type="submit" class="btn-delete">刪除</button>
+                </form>
+            </td>
+
+        </tr>
+
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>

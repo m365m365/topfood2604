@@ -30,6 +30,12 @@
       管理者
     </a>
 
+    <!-- 上傳次數管理 -->
+    <a th:if="${loggedIn and loginUsername == 'admin'}"
+       th:href="@{/admin/upload-usage}">
+      上傳次數管理
+    </a>
+
     <!-- 登出 -->
     <form th:if="${loggedIn}"
           method="post"
