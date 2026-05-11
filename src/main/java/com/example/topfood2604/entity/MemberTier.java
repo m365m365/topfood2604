@@ -12,8 +12,11 @@ public class MemberTier {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
+    private String code;
+
     @Column(name="tier_name")
-    private String tierName;
+    private String name;
 
     @Column(name="daily_upload_limit")
     private Integer dailyUploadLimit;

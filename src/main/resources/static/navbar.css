@@ -75,3 +75,50 @@ body {
 .logout-btn:hover {
     background: #dc2626;
 }
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-btn {
+    background: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 8px 12px;
+}
+
+.dropdown-btn:hover {
+    color: #ffd166;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 35px;
+    right: 0;
+    background-color: white;
+    min-width: 170px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-radius: 8px;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.dropdown-content a {
+    display: block;
+    color: #333;
+    padding: 12px 14px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f5f9;
+    color: #2563eb;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}

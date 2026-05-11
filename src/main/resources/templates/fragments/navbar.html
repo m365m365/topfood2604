@@ -21,20 +21,32 @@
 
     <!-- 已登入 -->
     <span th:if="${loggedIn}" class="welcome-user">
-            Hi, <span th:text="${loginUsername}">user</span>
-        </span>
+      Hi, <span th:text="${loginUsername}">user</span>
+    </span>
 
-    <!-- 只有 admin 才能看到 -->
-    <a th:if="${loggedIn and loginUsername == 'admin'}"
-       th:href="@{/admin}">
-      管理者
-    </a>
+    <!-- 管理者下拉選單 -->
+    <div class="dropdown"
+         th:if="${loggedIn and loginUsername == 'admin'}">
 
-    <!-- 上傳次數管理 -->
-    <a th:if="${loggedIn and loginUsername == 'admin'}"
-       th:href="@{/admin/upload-usage}">
-      上傳次數管理
-    </a>
+      <button class="dropdown-btn" type="button">
+        管理者後台 ▼
+      </button>
+
+      <div class="dropdown-content">
+        <a th:href="@{/admin}">
+          推薦餐廳管理
+        </a>
+
+        <a th:href="@{/admin/upload-usage}">
+          上傳次數管理
+        </a>
+
+        <a th:href="@{/admin/members}">
+          會員等級管理
+        </a>
+      </div>
+
+    </div>
 
     <!-- 登出 -->
     <form th:if="${loggedIn}"

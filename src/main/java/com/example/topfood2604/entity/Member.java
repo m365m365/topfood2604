@@ -1,5 +1,6 @@
 package com.example.topfood2604.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,26 +16,56 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String username;
 
+    @Column(nullable = false)
     private String password;
 
     private String name;
 
     private String email;
 
+    /**
+     * USER / ADMIN
+     */
     private String role;
 
+    /**
+     * ACTIVE / DISABLED
+     */
     private String state;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @ManyToOne
+    /**
+     * 會員等級
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tier_id")
     private MemberTier tier;
 
+    /**
+     * 使用者推薦過的餐廳
+     */
+    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<MemberRecommendRestaurant> recommendRestaurants;
+
+    @PrePersist
+    public void prePersist() {
+
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+
+        if (role == null) {
+            role = "USER";
+        }
+
+        if (state == null) {
+            state = "ACTIVE";
+        }
+    }
 }
