@@ -51,7 +51,8 @@ public class SecurityConfig {
 
                         // 公開頁面
                         .requestMatchers(
-                                "/",
+                                "/register",
+                                "/verify-email",
                                 "/index.html",
                                 "/login",
                                 "/css/**",

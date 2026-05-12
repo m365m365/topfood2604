@@ -1,6 +1,7 @@
 package com.example.topfood2604.config;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -19,7 +20,21 @@ public class NavbarControllerAdvice {
         model.addAttribute("loggedIn", loggedIn);
 
         if (loggedIn) {
-            model.addAttribute("loginUsername", authentication.getName());
+
+            // 帳號
+            model.addAttribute(
+                    "loginUsername",
+                    authentication.getName()
+            );
+
+            // 角色
+            String role = authentication.getAuthorities()
+                    .stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .findFirst()
+                    .orElse("");
+
+            model.addAttribute("loginRole", role);
         }
     }
 }

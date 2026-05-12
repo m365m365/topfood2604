@@ -46,6 +46,15 @@ public class Member {
     @JoinColumn(name = "tier_id")
     private MemberTier tier;
 
+
+
+    @Column(nullable = false)
+    private Boolean emailVerified = false;
+
+    @Column(length = 255)
+    private String verificationToken;
+
+    private LocalDateTime verificationTokenExpiredAt;
     /**
      * 使用者推薦過的餐廳
      */

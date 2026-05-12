@@ -4,8 +4,10 @@
 
 body {
     margin: 0;
+    padding-top: 64px;
 }
 
+/* 導覽列 */
 .navbar {
     position: fixed;
     top: 0;
@@ -18,7 +20,6 @@ body {
     color: white;
 
     display: flex;
-    justify-content: space-between;
     align-items: center;
 
     padding: 0 32px;
@@ -27,34 +28,60 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
-.nav-logo a {
+/* 左、中、右三區 */
+.nav-left,
+.nav-center,
+.nav-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.nav-left {
+    justify-content: flex-start;
+}
+
+.nav-center {
+    justify-content: center;
+}
+
+.nav-right {
+    justify-content: flex-end;
+    gap: 24px;
+}
+
+/* Logo */
+.nav-logo {
     color: white;
     font-size: 22px;
     font-weight: bold;
     text-decoration: none;
 }
 
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 24px;
+.nav-logo:hover {
+    color: #38bdf8;
 }
 
-.nav-links a {
+/* 右側連結 */
+.nav-right a {
     color: white;
     text-decoration: none;
     font-weight: bold;
 }
 
-.nav-links a:hover {
+.nav-right a:hover {
     color: #38bdf8;
 }
 
+/* 中間問候語 */
 .welcome-user {
     color: #facc15;
     font-weight: bold;
+    font-size: 18px;
+    white-space: nowrap;
 }
 
+/* 登出 */
 .logout-form {
     margin: 0;
 }
@@ -75,6 +102,8 @@ body {
 .logout-btn:hover {
     background: #dc2626;
 }
+
+/* 管理者下拉選單 */
 .dropdown {
     position: relative;
     display: inline-block;
@@ -86,6 +115,7 @@ body {
     border: none;
     cursor: pointer;
     font-size: 15px;
+    font-weight: bold;
     padding: 8px 12px;
 }
 
@@ -96,7 +126,7 @@ body {
 .dropdown-content {
     display: none;
     position: absolute;
-    top: 35px;
+    top: 36px;
     right: 0;
     background-color: white;
     min-width: 170px;

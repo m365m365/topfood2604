@@ -2,6 +2,7 @@ package com.example.topfood2604.security;
 
 import com.example.topfood2604.entity.Member;
 import com.example.topfood2604.repository.MemberRepository;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
@@ -25,12 +26,18 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() ->
                         new UsernameNotFoundException("找不到會員：" + username));
 
-        boolean enabled = "ACTIVE".equalsIgnoreCase(member.getState());
+        // 帳號狀態不是 ACTIVE
+        boolean active = "ACTIVE".equalsIgnoreCase(member.getState());
+
+        // Email 尚未驗證
+        if (!Boolean.TRUE.equals(member.getEmailVerified())) {
+            throw new DisabledException("請先完成 Email 驗證");
+        }
 
         return new User(
                 member.getUsername(),
                 member.getPassword(),
-                enabled,
+                active,
                 true,
                 true,
                 true,
