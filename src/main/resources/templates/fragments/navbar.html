@@ -6,56 +6,71 @@
 
   <!-- 左邊 Logo -->
   <div class="nav-left">
-    <a th:href="@{/index.html}" class="nav-logo">TopFood AI</a>
+
+    <a th:href="@{/index.html}" class="nav-logo">
+      TopFood AI
+    </a>
+
   </div>
 
   <!-- 中間問候語 -->
   <div class="nav-center">
+
     <span th:if="${loggedIn}" class="welcome-user">
-      Hi, <span th:text="${loginUsername}">user</span>
+      歡迎光臨 Hi,
+      <span th:text="${loginUsername}">
+        user
+      </span>
     </span>
+
   </div>
 
   <!-- 右邊選單 -->
   <div class="nav-right">
 
-    <a th:href="@{/index.html}">首頁</a>
+    <!-- 首頁 -->
+    <a th:href="@{/index.html}">
+      首頁
+    </a>
 
-    <a th:href="@{/my-recommend}">我的推薦</a>
+    <!-- 我的推薦 -->
+    <a th:href="@{/my-recommend}">
+      我推薦的餐廳
+    </a>
 
-    <a th:if="${!loggedIn}" th:href="@{/login}">
+    <!-- 未登入 -->
+    <a th:if="${!loggedIn}"
+       th:href="@{/login}">
       登入
     </a>
 
-
-      <!-- 管理者下拉選單 -->
+    <!-- 管理者下拉選單 -->
     <div class="dropdown"
          th:if="${loggedIn and loginRole == 'ROLE_ADMIN'}">
 
-        <button class="dropdown-btn" type="button">
-          管理者後台 ▼
-        </button>
+      <button class="dropdown-btn" type="button">
+        管理者後台 ▼
+      </button>
 
-        <div class="dropdown-content">
+      <div class="dropdown-content">
 
-          <a th:href="@{/admin}">
-            推薦餐廳管理
-          </a>
+        <a th:href="@{/admin}">
+          推薦餐廳管理
+        </a>
 
-          <a th:href="@{/admin/upload-usage}">
-            上傳次數管理
-          </a>
+        <a th:href="@{/admin/upload-usage}">
+          上傳次數管理
+        </a>
 
-          <a th:href="@{/admin/members}">
-            會員等級管理
-          </a>
-
-        </div>
+        <a th:href="@{/admin/members}">
+          會員等級管理
+        </a>
 
       </div>
 
     </div>
 
+    <!-- 登出 -->
     <form th:if="${loggedIn}"
           method="post"
           th:action="@{/logout}"

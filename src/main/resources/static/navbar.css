@@ -4,7 +4,13 @@
 
 body {
     margin: 0;
-    padding-top: 64px;
+
+    /* 關鍵 */
+    /* 避免內容被 fixed navbar 蓋住 */
+    padding-top: 84px;
+
+    background: #f5f6fa;
+    font-family: Arial, sans-serif;
 }
 
 /* 導覽列 */
@@ -47,7 +53,7 @@ body {
 
 .nav-right {
     justify-content: flex-end;
-    gap: 24px;
+    gap: 32px;
 }
 
 /* Logo */
@@ -128,18 +134,26 @@ body {
     position: absolute;
     top: 36px;
     right: 0;
+
     background-color: white;
+
     min-width: 170px;
+
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
     border-radius: 8px;
+
     z-index: 9999;
     overflow: hidden;
 }
 
 .dropdown-content a {
     display: block;
+
     color: #333;
+
     padding: 12px 14px;
+
     text-decoration: none;
     white-space: nowrap;
 }
