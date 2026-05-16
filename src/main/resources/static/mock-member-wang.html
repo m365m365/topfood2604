@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>會員的推薦</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            background: #f3f5f9;
+        }
+
+        .navbar {
+            height: 64px;
+            background: #111827;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 22px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 82%;
+            max-width: 1300px;
+            margin: 60px auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .summary {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .list-box {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .table-header,
+        .recommend-row {
+            display: grid;
+            grid-template-columns: 80px 1.8fr 1.2fr 120px 120px 120px;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table-header {
+            background: #fff1e8;
+            font-weight: bold;
+        }
+
+        .recommend-row:hover {
+            background: #fffaf5;
+        }
+
+        .rank {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #ff6b35;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .restaurant-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .time {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .like-count {
+            color: #ff4d4f;
+            font-weight: bold;
+        }
+
+        .like-btn {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .like-btn:hover {
+            background: #e68900;
+        }
+
+        .view-btn {
+            background: #4caf50;
+            color: white;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .pagination {
+            margin-top: 22px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: #e5e7eb;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .pagination button.active {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div><strong>TopFood AI</strong></div>
+
+    <div>
+        <a href="/index.html">首頁</a>
+        <a href="/my-recommend">我的推薦的餐廳</a>
+        <a href="/logout">登出</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <h1 id="pageTitle">會員的推薦</h1>
+
+    <div class="summary">
+        推薦總數：<span id="totalCount">32</span> 筆，
+        每頁顯示 5 筆
+    </div>
+
+    <div class="list-box">
+
+        <div class="table-header">
+            <div>名次</div>
+            <div>餐廳名稱</div>
+            <div>推薦時間</div>
+            <div>總讚數</div>
+            <div>按讚</div>
+            <div>查看</div>
+        </div>
+
+        <div id="recommendList"></div>
+
+    </div>
+
+    <div id="pagination" class="pagination"></div>
+
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const memberName =
+        urlParams.get("name") || "王小明";
+
+    const pageSize = 5;
+    let currentPage = 1;
+
+    const fakeRestaurants = [];
+
+    const restaurantNames = [
+        "食令shabu", "林東芳牛肉麵", "鼎泰豐 信義店", "永康牛肉麵", "金峰魯肉飯",
+        "阿宗麵線", "阜杭豆漿", "牛店精燉牛肉麵", "小王煮瓜", "富霸王豬腳",
+        "欣葉台菜", "馬辣頂級麻辣鴛鴦火鍋", "橘色涮涮屋", "點水樓", "RAW",
+        "教父牛排", "胡同燒肉", "饗食天堂", "寒舍艾美探索廚房", "晶華栢麗廳",
+        "寧夏夜市蚵仔煎", "劉山東牛肉麵", "建宏牛肉麵", "雙月食品社", "春水堂",
+        "段純貞牛肉麵", "瓦城泰國料理", "添好運", "了凡油雞飯", "老四川巴蜀麻辣燙",
+        "米其林滷肉飯", "台北港式飲茶"
+    ];
+
+    for (let i = 0; i < 32; i++) {
+        fakeRestaurants.push({
+            id: i + 1,
+            name: restaurantNames[i],
+            time: "2026-05-" +
+                String(8 - Math.floor(i / 5)).padStart(2, "0") +
+                " " +
+                String(10 + (i % 8)).padStart(2, "0") +
+                ":50",
+            likeCount: 32 - i + 5
+        });
+    }
+
+    document.getElementById("pageTitle").innerText =
+        memberName + "的推薦";
+
+    document.title =
+        memberName + "的推薦";
+
+    document.getElementById("totalCount").innerText =
+        fakeRestaurants.length;
+
+    function renderList() {
+        const listBox = document.getElementById("recommendList");
+
+        const start = (currentPage - 1) * pageSize;
+        const end = start + pageSize;
+        const pageData = fakeRestaurants.slice(start, end);
+
+        listBox.innerHTML = "";
+
+        pageData.forEach((item, index) => {
+            const realRank = start + index + 1;
+
+            listBox.innerHTML += `
+                <div class="recommend-row">
+
+                    <div>
+                        <div class="rank">${realRank}</div>
+                    </div>
+
+                    <div class="restaurant-name">
+                        ${escapeHtml(item.name)}
+                    </div>
+
+                    <div class="time">
+                        ${escapeHtml(item.time)}
+                    </div>
+
+                    <div class="like-count">
+                        <span id="like-${item.id}">
+                            ${item.likeCount}
+                        </span>
+                        讚
+                    </div>
+
+                    <div>
+                        <button class="like-btn"
+                                onclick="addLike(${item.id})">
+                            按讚
+                        </button>
+                    </div>
+
+                    <div>
+                        <a class="view-btn"
+                           href="/recommend/detail/${item.id}"
+                           target="_blank">
+                            查看
+                        </a>
+                    </div>
+
+                </div>
+            `;
+        });
+
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const pagination = document.getElementById("pagination");
+        const totalPages = Math.ceil(fakeRestaurants.length / pageSize);
+
+        pagination.innerHTML = "";
+
+        pagination.innerHTML += `
+            <button onclick="changePage(${currentPage - 1})"
+                    ${currentPage === 1 ? "disabled" : ""}>
+                上一頁
+            </button>
+        `;
+
+        for (let i = 1; i <= totalPages; i++) {
+            pagination.innerHTML += `
+                <button onclick="changePage(${i})"
+                        class="${currentPage === i ? "active" : ""}">
+                    ${i}
+                </button>
+            `;
+        }
+
+        pagination.innerHTML += `
+            <button onclick="changePage(${currentPage + 1})"
+                    ${currentPage === totalPages ? "disabled" : ""}>
+                下一頁
+            </button>
+        `;
+    }
+
+    function changePage(page) {
+        const totalPages = Math.ceil(fakeRestaurants.length / pageSize);
+
+        if (page < 1 || page > totalPages) {
+            return;
+        }
+
+        currentPage = page;
+        renderList();
+    }
+
+    async function addLike(id) {
+
+        try {
+            const response = await fetch("/api/member/check-login");
+
+            if (!response.ok) {
+                throw new Error("login check failed");
+            }
+
+            const data = await response.json();
+
+            if (!data.loggedIn) {
+                alert("請先登入會員才能按讚");
+                window.location.href = "/login";
+                return;
+            }
+
+            const item = fakeRestaurants.find(r => r.id === id);
+
+            if (!item) {
+                return;
+            }
+
+            item.likeCount++;
+
+            const likeText = document.getElementById("like-" + id);
+
+            if (likeText) {
+                likeText.innerText = item.likeCount;
+            }
+
+        } catch (error) {
+            alert("請先登入會員才能按讚");
+            window.location.href = "/login";
+        }
+    }
+
+    function escapeHtml(text) {
+        return String(text || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    renderList();
+</script>
+
+</body>
+</html>

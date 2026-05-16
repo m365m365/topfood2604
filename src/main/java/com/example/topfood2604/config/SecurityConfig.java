@@ -47,49 +47,83 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
+
                 .authorizeHttpRequests(auth -> auth
 
+                        // =========================
                         // 公開頁面
+                        // =========================
                         .requestMatchers(
+                                "/",
+                                "/index.html",
+
                                 "/register",
                                 "/verify-email",
-                                "/index.html",
                                 "/login",
+
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
                                 "/navbar.css",
-                                "/favicon.ico"
+                                "/favicon.ico",
+
+                                // mock 測試頁
+                                "/mock-member-wang.html",
+
+                                // 會員排行榜頁
+                                "/member-rankings/**",
+
+                                // 推薦詳細頁公開
+                                "/recommend-detail",
+                                "/recommend/detail/**"
                         ).permitAll()
 
-                        // 公開 API：首頁、AI 搜尋、登入檢查、首頁推薦卡片
+                        // =========================
+                        // 公開 API
+                        // =========================
                         .requestMatchers(
                                 "/api/homepage",
                                 "/api/restaurants/**",
                                 "/api/AiRestaurantApi/search",
+
                                 "/api/member/check-login",
+
                                 "/api/recommended-restaurants/home"
                         ).permitAll()
 
-                        // 會員頁面：必須登入
+                        // =========================
+                        // 按讚 API：需要登入
+                        // =========================
                         .requestMatchers(
-                                "/recommend",
-                                "/my-recommend",
-                                "/recommend-detail"
+                                "/api/recommend/*/like"
                         ).authenticated()
 
-                        // 會員 API：上傳推薦餐廳必須登入
+                        // =========================
+                        // 會員功能：需要登入
+                        // =========================
+                        .requestMatchers(
+                                "/recommend",
+                                "/my-recommend"
+                        ).authenticated()
+
+                        // =========================
+                        // 上傳推薦 API：需要登入
+                        // =========================
                         .requestMatchers(
                                 "/api/recommended-restaurants"
                         ).authenticated()
 
-                        // 後台：只有 ADMIN
+                        // =========================
+                        // ADMIN
+                        // =========================
                         .requestMatchers("/admin/**")
                         .hasAuthority("ROLE_ADMIN")
 
-                        // 其他全部都要登入
+                        // =========================
+                        // 其他全部允許
+                        // =========================
                         .anyRequest()
-                        .authenticated()
+                        .permitAll()
                 )
 
                 .formLogin(form -> form
