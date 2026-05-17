@@ -44,7 +44,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
             throws Exception {
-
+        System.out.println("===== SecurityConfig Loaded =====");
         http
                 .csrf(csrf -> csrf.disable())
 
@@ -54,13 +54,10 @@ public class SecurityConfig {
                         // 公開頁面
                         // =========================
                         .requestMatchers(
-                                "/",
                                 "/index.html",
-
                                 "/register",
                                 "/verify-email",
                                 "/login",
-
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",

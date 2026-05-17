@@ -150,7 +150,25 @@
   async function loadUploadLimit() {
     try {
       const response = await fetch("/api/recommended-restaurants/upload-limit");
-      const data = await response.json();
+      // 先拿原始文字
+      const text = await response.text();
+
+      console.log("upload-limit 原始回傳：", text);
+
+      // 再自己轉 JSON
+      let data;
+
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+
+        console.error("不是 JSON：", text);
+
+        throw new Error(
+                "後端回傳不是 JSON，可能是登入頁、403、404 或 500 錯誤頁"
+        );
+      }
+
 
       if (data.success) {
         remainText.textContent = data.remaining + " / " + data.dailyLimit;
@@ -220,7 +238,15 @@
         body: formData
       });
 
-      const result = await response.json();
+      const text = await response.text();
+
+      let result;
+      try {
+        result = JSON.parse(text);
+      } catch (e) {
+        console.error("後端實際回傳：", text);
+        throw new Error("後端回傳不是 JSON，可能是登入頁、403、404 或 500 錯誤頁");
+      }
 
       if (!response.ok || !result.success) {
         throw new Error(result.message || "推薦失敗");
