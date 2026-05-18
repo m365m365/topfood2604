@@ -6,7 +6,8 @@ import com.example.topfood2604.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import com.example.topfood2604.entity.MemberTier;
+import com.example.topfood2604.repository.MemberTierRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ public class RegisterService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
+    private final MemberTierRepository memberTierRepository;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -23,11 +25,13 @@ public class RegisterService {
     public RegisterService(
             MemberRepository memberRepository,
             PasswordEncoder passwordEncoder,
-            MailService mailService
+            MailService mailService,
+            MemberTierRepository memberTierRepository
     ) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
         this.mailService = mailService;
+        this.memberTierRepository = memberTierRepository;
     }
 
     public void register(RegisterRequestDto dto) {
@@ -43,6 +47,10 @@ public class RegisterService {
         String token = UUID.randomUUID().toString();
 
         Member member = new Member();
+        MemberTier normalTier = memberTierRepository.findByCode("NORMAL")
+                .orElseThrow(() -> new RuntimeException("找不到 NORMAL 會員等級"));
+
+        member.setTier(normalTier);
         member.setEmail(dto.getEmail());
         member.setUsername(dto.getEmail());
         member.setName(dto.getName());

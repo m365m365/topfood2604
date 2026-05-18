@@ -11,9 +11,9 @@ public class LoginController {
         return "login";
     }
 
-    @GetMapping("/index.html")
+    @GetMapping("/")
     public String homePage() {
-        return "/index.html";
+        return "/static/index.html";
     }
 
     @GetMapping("/admin/dashboard")
