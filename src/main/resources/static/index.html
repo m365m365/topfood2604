@@ -459,41 +459,11 @@
     const memberRankingList = document.getElementById("memberRankingList");
     const rankingPagination = document.getElementById("rankingPagination");
 
+
+    let memberRankingData = [];
     let currentRankingType = "recommend";
     let currentRankingPage = 1;
     const rankingPageSize = 5;
-
-    const memberRankingData = {
-        recommend: [
-            { id: 1, username: "王小明", recommendCount: 36, likeCount: 128, latestRestaurant: "鼎泰豐 信義店", time: "5分鐘前" },
-            { id: 2, username: "Amy", recommendCount: 29, likeCount: 96, latestRestaurant: "阜杭豆漿", time: "12分鐘前" },
-            { id: 3, username: "Kevin", recommendCount: 21, likeCount: 88, latestRestaurant: "阿宗麵線", time: "1小時前" },
-            { id: 4, username: "Linda", recommendCount: 18, likeCount: 72, latestRestaurant: "金峰魯肉飯", time: "2小時前" },
-            { id: 5, username: "Tom", recommendCount: 15, likeCount: 66, latestRestaurant: "永康牛肉麵", time: "3小時前" },
-            { id: 6, username: "Mary", recommendCount: 12, likeCount: 52, latestRestaurant: "牛店牛肉麵", time: "昨天" },
-            { id: 7, username: "Jack", recommendCount: 9, likeCount: 41, latestRestaurant: "小王煮瓜", time: "昨天" }
-        ],
-
-        like: [
-            { id: 2, username: "Amy", recommendCount: 29, likeCount: 196, latestRestaurant: "阜杭豆漿", time: "12分鐘前" },
-            { id: 1, username: "王小明", recommendCount: 36, likeCount: 128, latestRestaurant: "鼎泰豐 信義店", time: "5分鐘前" },
-            { id: 3, username: "Kevin", recommendCount: 21, likeCount: 88, latestRestaurant: "阿宗麵線", time: "1小時前" },
-            { id: 4, username: "Linda", recommendCount: 18, likeCount: 72, latestRestaurant: "金峰魯肉飯", time: "2小時前" },
-            { id: 5, username: "Tom", recommendCount: 15, likeCount: 66, latestRestaurant: "永康牛肉麵", time: "3小時前" },
-            { id: 6, username: "Mary", recommendCount: 12, likeCount: 52, latestRestaurant: "牛店牛肉麵", time: "昨天" },
-            { id: 7, username: "Jack", recommendCount: 9, likeCount: 41, latestRestaurant: "小王煮瓜", time: "昨天" }
-        ],
-
-        recent: [
-            { id: 3, username: "Kevin", recommendCount: 21, likeCount: 88, latestRestaurant: "阿宗麵線", time: "剛剛" },
-            { id: 1, username: "王小明", recommendCount: 36, likeCount: 128, latestRestaurant: "鼎泰豐 信義店", time: "5分鐘前" },
-            { id: 2, username: "Amy", recommendCount: 29, likeCount: 96, latestRestaurant: "阜杭豆漿", time: "12分鐘前" },
-            { id: 4, username: "Linda", recommendCount: 18, likeCount: 72, latestRestaurant: "金峰魯肉飯", time: "2小時前" },
-            { id: 5, username: "Tom", recommendCount: 15, likeCount: 66, latestRestaurant: "永康牛肉麵", time: "3小時前" },
-            { id: 6, username: "Mary", recommendCount: 12, likeCount: 52, latestRestaurant: "牛店牛肉麵", time: "昨天" },
-            { id: 7, username: "Jack", recommendCount: 9, likeCount: 41, latestRestaurant: "小王煮瓜", time: "昨天" }
-        ]
-    };
 
     recommendButton.addEventListener("click", async function () {
         try {
@@ -534,13 +504,13 @@
         radio.addEventListener("change", function () {
             currentRankingType = this.value;
             currentRankingPage = 1;
-            renderMemberRanking();
+            loadMemberRanking();
         });
     });
 
     document.addEventListener("DOMContentLoaded", function () {
         loadHomepage();
-        renderMemberRanking();
+        loadMemberRanking();
     });
 
     async function loadHomepage() {
@@ -742,16 +712,40 @@
         });
     }
 
-    function renderMemberRanking() {
-        const list = memberRankingData[currentRankingType] || [];
+    async function loadMemberRanking() {
+        memberRankingList.innerHTML = `
+        <div class="empty-box">會員排行榜載入中...</div>
+    `;
 
-        const start = (currentRankingPage - 1) * rankingPageSize;
-        const end = start + rankingPageSize;
-        const pageList = list.slice(start, end);
+        try {
+            const response = await fetch(
+                `/api/member-ranking?type=${currentRankingType}&page=${currentRankingPage}&size=${rankingPageSize}`
+            );
 
+            if (!response.ok) {
+                throw new Error("HTTP status = " + response.status);
+            }
+
+            const data = await response.json();
+
+            memberRankingData = data.content || [];
+            renderMemberRanking(memberRankingData, data.totalPages || 1);
+
+        } catch (error) {
+            console.error("會員排行榜載入失敗:", error);
+            memberRankingList.innerHTML = `
+            <div class="empty-box text-danger">
+                會員排行榜載入失敗，請確認 /api/member-ranking 是否正常。
+            </div>
+        `;
+            rankingPagination.innerHTML = "";
+        }
+    }
+
+    function renderMemberRanking(list, totalPages) {
         memberRankingList.innerHTML = "";
 
-        if (pageList.length === 0) {
+        if (!list || list.length === 0) {
             memberRankingList.innerHTML = `
             <div class="empty-box">
                 目前尚無會員排行榜資料
@@ -761,11 +755,11 @@
             return;
         }
 
-        pageList.forEach((member, index) => {
-            const realRank = start + index + 1;
+        list.forEach((member, index) => {
+            const realRank = (currentRankingPage - 1) * rankingPageSize + index + 1;
 
             const memberPageUrl =
-                "/mock-member-wang.html?name=" + encodeURIComponent(member.username);
+                "/member/" + encodeURIComponent(member.memberId) + "/restaurants";
 
             memberRankingList.innerHTML += `
             <div class="ranking-row">
@@ -781,22 +775,21 @@
                     </a>
                 </div>
 
-                <div>${member.recommendCount} 家</div>
+                <div>${member.recommendCount || 0} 家</div>
 
-                <div class="like-count">${member.likeCount} 讚</div>
+                <div class="like-count">${member.likeCount || 0} 讚</div>
 
-                <div>${escapeHtml(member.latestRestaurant)}</div>
+                <div>${escapeHtml(member.latestRestaurant || "尚無資料")}</div>
 
-                <div>${escapeHtml(member.time)}</div>
+                <div>${escapeHtml(member.latestTime || "")}</div>
             </div>
         `;
         });
 
-        renderRankingPagination(list.length);
+        renderRankingPagination(totalPages);
     }
-    function renderRankingPagination(totalCount) {
-        const totalPages = Math.ceil(totalCount / rankingPageSize);
 
+    function renderRankingPagination(totalPages) {
         rankingPagination.innerHTML = "";
 
         if (totalPages <= 1) {
@@ -804,40 +797,36 @@
         }
 
         rankingPagination.innerHTML += `
-            <button onclick="changeRankingPage(${currentRankingPage - 1})"
-                    ${currentRankingPage === 1 ? "disabled" : ""}>
-                上一頁
-            </button>
-        `;
+        <button onclick="changeRankingPage(${currentRankingPage - 1})"
+                ${currentRankingPage === 1 ? "disabled" : ""}>
+            上一頁
+        </button>
+    `;
 
         for (let i = 1; i <= totalPages; i++) {
             rankingPagination.innerHTML += `
-                <button onclick="changeRankingPage(${i})"
-                        class="${currentRankingPage === i ? "active-page" : ""}">
-                    ${i}
-                </button>
-            `;
+            <button onclick="changeRankingPage(${i})"
+                    class="${currentRankingPage === i ? "active-page" : ""}">
+                ${i}
+            </button>
+        `;
         }
 
         rankingPagination.innerHTML += `
-            <button onclick="changeRankingPage(${currentRankingPage + 1})"
-                    ${currentRankingPage === totalPages ? "disabled" : ""}>
-                下一頁
-            </button>
-        `;
+        <button onclick="changeRankingPage(${currentRankingPage + 1})"
+                ${currentRankingPage === totalPages ? "disabled" : ""}>
+            下一頁
+        </button>
+    `;
     }
 
     function changeRankingPage(page) {
-        const totalPages = Math.ceil(
-            memberRankingData[currentRankingType].length / rankingPageSize
-        );
-
-        if (page < 1 || page > totalPages) {
+        if (page < 1) {
             return;
         }
 
         currentRankingPage = page;
-        renderMemberRanking();
+        loadMemberRanking();
     }
 
     function renderStars(count) {

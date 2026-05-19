@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${memberName} + ' 的推薦餐廳'">會員推薦餐廳</title>
+
+    <style>
+        body {
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            background: #f7f7f7;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        }
+
+        .card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .content {
+            padding: 16px;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .stars {
+            color: #ff9800;
+            margin-bottom: 8px;
+        }
+
+        .address,
+        .desc {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .like {
+            color: #ff4d4f;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            background: #198754;
+            color: white;
+            font-size: 14px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #ff6b35;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .empty {
+            background: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 16px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a href="/index.html" class="back">← 回首頁</a>
+
+    <h1>
+        <span th:text="${memberName}">會員</span>
+        的推薦餐廳
+    </h1>
+
+    <div th:if="${#lists.isEmpty(restaurants)}" class="empty">
+        這位會員目前尚無推薦餐廳
+    </div>
+
+    <div class="grid" th:if="${!#lists.isEmpty(restaurants)}">
+
+        <div class="card" th:each="r : ${restaurants}">
+            <img th:src="${r.thumbUrl != null ? r.thumbUrl : r.imageUrl}"
+                 alt="餐廳圖片">
+
+            <div class="content">
+                <div class="title" th:text="${r.restaurantName}">
+                    餐廳名稱
+                </div>
+
+                <div class="stars">
+                    ★★★★★
+                </div>
+
+                <div class="address" th:text="${r.address}">
+                    地址
+                </div>
+
+                <div class="desc" th:text="${r.description}">
+                    描述
+                </div>
+
+                <div class="like">
+                    <span th:text="${r.likeCount}">0</span> 讚
+                </div>
+
+                <a class="btn"
+                   th:href="${r.mapUrl}"
+                   target="_blank">
+                    查看地圖
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
