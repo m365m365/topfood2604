@@ -1,22 +1,66 @@
+/* 全域設定 */
 * {
     box-sizing: border-box;
 }
 
 body {
     margin: 0;
-
-    /* 關鍵 */
-    /* 避免內容被 fixed navbar 蓋住 */
-    padding-top: 84px;
-
+    padding: 0;
     background: #f5f6fa;
     font-family: Arial, sans-serif;
 }
 
-/* 導覽列 */
-.navbar {
-    position: fixed;
+
+/* =========================
+   第一條：總導覽列
+========================= */
+
+.main-navbar {
+
+    width: 100%;
+    height: 52px;
+
+    background: #2c3e50;
+
+    border-bottom: 1px solid #1f2d3a;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+
+    position: sticky;
     top: 0;
+
+    z-index: 10000;
+}
+
+.main-navbar a {
+
+    text-decoration: none;
+    color: white;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+.main-navbar a:hover {
+
+    color: #f1c40f;
+}
+
+
+/* =========================
+   第二條：會員 navbar
+========================= */
+
+.navbar {
+
+    position: sticky;
+
+    top: 52px;
     left: 0;
 
     width: 100%;
@@ -31,14 +75,19 @@ body {
     padding: 0 32px;
 
     z-index: 9999;
+
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
-/* 左、中、右三區 */
+
+/* 左、中、右 */
+
 .nav-left,
 .nav-center,
 .nav-right {
+
     flex: 1;
+
     display: flex;
     align-items: center;
 }
@@ -52,86 +101,129 @@ body {
 }
 
 .nav-right {
+
     justify-content: flex-end;
+
     gap: 32px;
 }
 
+
 /* Logo */
+
 .nav-logo {
+
     color: white;
+
     font-size: 22px;
     font-weight: bold;
+
     text-decoration: none;
 }
 
 .nav-logo:hover {
+
     color: #38bdf8;
 }
 
-/* 右側連結 */
+
+/* navbar 右邊連結 */
+
 .nav-right a {
+
     color: white;
+
     text-decoration: none;
+
     font-weight: bold;
 }
 
 .nav-right a:hover {
+
     color: #38bdf8;
 }
 
-/* 中間問候語 */
+
+/* 問候語 */
+
 .welcome-user {
+
     color: #facc15;
+
     font-weight: bold;
+
     font-size: 18px;
+
     white-space: nowrap;
 }
 
-/* 登出 */
+
+/* 登出按鈕 */
+
 .logout-form {
+
     margin: 0;
 }
 
 .logout-btn {
+
     background: #ef4444;
+
     color: white;
 
     border: none;
+
     padding: 8px 14px;
 
     border-radius: 8px;
+
     cursor: pointer;
 
     font-weight: bold;
 }
 
 .logout-btn:hover {
+
     background: #dc2626;
 }
 
-/* 管理者下拉選單 */
+
+/* 管理員下拉 */
+
 .dropdown {
+
     position: relative;
+
     display: inline-block;
 }
 
 .dropdown-btn {
+
     background: transparent;
+
     color: white;
+
     border: none;
+
     cursor: pointer;
+
     font-size: 15px;
+
     font-weight: bold;
+
     padding: 8px 12px;
 }
 
 .dropdown-btn:hover {
+
     color: #ffd166;
 }
 
 .dropdown-content {
+
     display: none;
+
     position: absolute;
+
     top: 36px;
     right: 0;
 
@@ -144,10 +236,12 @@ body {
     border-radius: 8px;
 
     z-index: 9999;
+
     overflow: hidden;
 }
 
 .dropdown-content a {
+
     display: block;
 
     color: #333;
@@ -155,14 +249,62 @@ body {
     padding: 12px 14px;
 
     text-decoration: none;
+
     white-space: nowrap;
 }
 
 .dropdown-content a:hover {
+
     background-color: #f1f5f9;
+
     color: #2563eb;
 }
 
 .dropdown:hover .dropdown-content {
+
     display: block;
+}
+
+
+/* =========================
+   頁面內容區
+========================= */
+
+.page-container {
+
+    width: 85%;
+
+    margin: 40px auto;
+}
+
+
+/* 頁面標題 */
+
+.page-title {
+
+    text-align: center;
+
+    margin-bottom: 40px;
+
+    font-size: 36px;
+
+    color: #2c3e50;
+}
+
+
+/* 卡片 */
+
+.card-box {
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 14px;
+
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+
+    margin-bottom: 30px;
+
+    line-height: 1.8;
 }

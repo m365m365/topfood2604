@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+
 <body>
 
 <nav class="navbar" th:fragment="navbar">
@@ -16,12 +17,15 @@
   <!-- 中間問候語 -->
   <div class="nav-center">
 
-    <span th:if="${loggedIn}" class="welcome-user">
-      歡迎光臨 Hi,
-      <span th:text="${loginUsername}">
-        user
-      </span>
-    </span>
+        <span th:if="${loggedIn}" class="welcome-user">
+
+            歡迎光臨 Hi,
+
+            <span th:text="${loginUsername}">
+                user
+            </span>
+
+        </span>
 
   </div>
 
@@ -44,12 +48,14 @@
       登入
     </a>
 
-    <!-- 管理者下拉選單 -->
+    <!-- 管理者後台 -->
     <div class="dropdown"
          th:if="${loggedIn and loginRole == 'ROLE_ADMIN'}">
 
       <button class="dropdown-btn" type="button">
+
         管理者後台 ▼
+
       </button>
 
       <div class="dropdown-content">
@@ -76,8 +82,11 @@
           th:action="@{/logout}"
           class="logout-form">
 
-      <button type="submit" class="logout-btn">
+      <button type="submit"
+              class="logout-btn">
+
         登出
+
       </button>
 
     </form>
@@ -87,4 +96,5 @@
 </nav>
 
 </body>
+
 </html>

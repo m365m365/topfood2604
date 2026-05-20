@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>關於我</title>
+  <link rel="stylesheet" th:href="@{/navbar.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="page-container">
+
+  <h1 class="page-title">關於 TopFood AI</h1>
+
+  <div class="card-box">
+    <h2>網站介紹</h2>
+
+    <p>
+      TopFood AI 是一個 AI 美食推薦平台，
+      結合 ChatGPT、Google Places API、
+      會員推薦、排行榜與按讚系統，
+      提供智慧化的餐廳探索體驗。
+    </p>
+  </div>
+
+</div>
+
+</body>
+</html>

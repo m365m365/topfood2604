@@ -17,15 +17,118 @@ import java.util.List;
 public class PageController {
 
     private final MyRecommendPageService myRecommendPageService;
+
     private final MemberRepository memberRepository;
 
     public PageController(
             MyRecommendPageService myRecommendPageService,
             MemberRepository memberRepository
     ) {
+
         this.myRecommendPageService = myRecommendPageService;
+
         this.memberRepository = memberRepository;
     }
+
+    /* =========================
+       首頁
+    ========================= */
+
+    @GetMapping({"/", "/index.html"})
+    public String index(
+            Model model,
+            Authentication authentication
+    ) {
+
+        addLoginInfo(model, authentication);
+
+        return "index";
+    }
+
+
+    /* =========================
+       精準尋查
+    ========================= */
+
+    @GetMapping("/search")
+    public String search(
+            Model model,
+            Authentication authentication
+    ) {
+
+        addLoginInfo(model, authentication);
+
+        return "search";
+    }
+
+
+    /* =========================
+       商業活動
+    ========================= */
+
+    @GetMapping("/business")
+    public String business(
+            Model model,
+            Authentication authentication
+    ) {
+
+        addLoginInfo(model, authentication);
+
+        return "business";
+    }
+
+
+    /* =========================
+       討論區
+    ========================= */
+
+    @GetMapping("/forum")
+    public String forum(
+            Model model,
+            Authentication authentication
+    ) {
+
+        addLoginInfo(model, authentication);
+
+        return "forum";
+    }
+
+
+    /* =========================
+       會員專區
+    ========================= */
+
+    @GetMapping("/member-center")
+    public String memberCenter(
+            Model model,
+            Authentication authentication
+    ) {
+
+        addLoginInfo(model, authentication);
+
+        return "member-center";
+    }
+
+
+    /* =========================
+       關於我
+    ========================= */
+
+    @GetMapping("/about")
+    public String about(
+            Model model,
+            Authentication authentication
+    ) {
+
+        addLoginInfo(model, authentication);
+
+        return "about";
+    }
+
+
+    /* =========================
+       推薦頁
+    ========================= */
 
     @GetMapping("/recommend")
     public String recommendFormPage(
@@ -37,6 +140,11 @@ public class PageController {
 
         return "recommend";
     }
+
+
+    /* =========================
+       推薦詳細頁
+    ========================= */
 
     @GetMapping("/recommend-detail")
     public String recommendDetailPage(
@@ -68,6 +176,11 @@ public class PageController {
 
         return "recommend-detail";
     }
+
+
+    /* =========================
+       我的推薦
+    ========================= */
 
     @GetMapping("/my-recommend")
     public String myRecommendPage(
@@ -106,6 +219,11 @@ public class PageController {
         return "my-recommend";
     }
 
+
+    /* =========================
+       共用登入資訊
+    ========================= */
+
     private void addLoginInfo(
             Model model,
             Authentication authentication
@@ -119,7 +237,11 @@ public class PageController {
         model.addAttribute("loggedIn", loggedIn);
 
         if (loggedIn) {
-            model.addAttribute("loginUsername", authentication.getName());
+
+            model.addAttribute(
+                    "loginUsername",
+                    authentication.getName()
+            );
         }
     }
 }

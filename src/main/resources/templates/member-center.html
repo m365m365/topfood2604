@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>會員專區</title>
+    <link rel="stylesheet" th:href="@{/navbar.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="page-container">
+
+    <h1 class="page-title">會員專區</h1>
+
+    <div class="card-box">
+        <h2>會員功能中心</h2>
+        <p>這裡未來可以放會員相關功能。</p>
+
+        <ul>
+            <li>我的推薦餐廳</li>
+            <li>我的按讚紀錄</li>
+            <li>會員等級</li>
+            <li>每日使用次數</li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>
