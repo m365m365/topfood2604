@@ -1,22 +1,38 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <!-- 導覽列 -->
-    <link rel="stylesheet" href="/navbar.css">
+
     <title>會員登入</title>
 
+    <!-- 導覽列 CSS -->
+    <link rel="stylesheet" th:href="@{/navbar.css}">
+
     <style>
+
         body {
             margin: 0;
             font-family: Arial, "Microsoft JhengHei", sans-serif;
             background: linear-gradient(135deg, #fff7ed, #fee2e2);
-            height: 100vh;
+            min-height: 100vh;
+        }
+
+        /*
+         * 登入頁區域
+         */
+        .login-page {
+            min-height: calc(100vh - 64px);
+            padding-top: 64px;
+
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
+        /*
+         * 登入框
+         */
         .login-box {
             width: 360px;
             background: white;
@@ -41,8 +57,10 @@
             width: 100%;
             padding: 12px;
             margin-top: 8px;
+
             border-radius: 10px;
             border: 1px solid #ddd;
+
             box-sizing: border-box;
         }
 
@@ -50,12 +68,17 @@
             width: 100%;
             margin-top: 24px;
             padding: 12px;
+
             border: none;
             border-radius: 12px;
+
             background: #ef4444;
             color: white;
+
             font-size: 16px;
             cursor: pointer;
+
+            transition: 0.2s;
         }
 
         button:hover {
@@ -71,35 +94,59 @@
         .logout {
             color: green;
         }
+
     </style>
+
 </head>
 
 <body>
+
+<!-- 導覽列 -->
 <div th:replace="~{fragments/navbar :: navbar}"></div>
-<div id="navbar-container"></div>
-<div class="login-box">
 
-    <h2>會員登入</h2>
+<!-- 登入頁 -->
+<div class="login-page">
 
-    <div class="msg" th:if="${param.error}">
-        帳號或密碼錯誤，或帳號已停用
+    <div class="login-box">
+
+        <h2>會員登入</h2>
+
+        <!-- 登入失敗 -->
+        <div class="msg" th:if="${param.error}">
+            帳號或密碼錯誤，或帳號已停用
+        </div>
+
+        <!-- 登出成功 -->
+        <div class="msg logout" th:if="${param.logout}">
+            已成功登出
+        </div>
+
+        <!-- 登入表單 -->
+        <form method="post" th:action="@{/login}">
+
+            <label>帳號</label>
+            <input
+                    type="text"
+                    name="username"
+                    placeholder="請輸入帳號"
+                    required
+            >
+
+            <label>密碼</label>
+            <input
+                    type="password"
+                    name="password"
+                    placeholder="請輸入密碼"
+                    required
+            >
+
+            <button type="submit">
+                登入
+            </button>
+
+        </form>
+
     </div>
-
-    <div class="msg logout" th:if="${param.logout}">
-        已成功登出
-    </div>
-
-    <form method="post" action="/login">
-
-        <label>帳號</label>
-        <input type="text" name="username" placeholder="請輸入帳號">
-
-        <label>密碼</label>
-        <input type="password" name="password" placeholder="請輸入密碼">
-
-        <button type="submit">登入</button>
-
-    </form>
 
 </div>
 

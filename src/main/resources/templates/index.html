@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +7,6 @@
     <title>Top Food Now</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- 原本如果有 navbar.css，可保留 -->
-    <!-- <link rel="stylesheet" href="/navbar.css"> -->
 
     <style>
         body {
@@ -42,6 +40,14 @@
 
         .top-actions {
             gap: 10px;
+        }
+
+        .login-greeting {
+            font-weight: 800;
+            color: #0d6efd;
+            padding: 6px 10px;
+            background: #eef5ff;
+            border-radius: 999px;
         }
 
         .section-card {
@@ -197,7 +203,6 @@
             color: white;
         }
 
-        /* 新增：會員排行榜 */
         .member-ranking-card {
             margin-top: 24px;
         }
@@ -316,8 +321,9 @@
 </head>
 
 <body>
+
 <div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+
 <div class="main-shell">
 
     <div class="hero">
@@ -329,11 +335,22 @@
                 </div>
             </div>
 
-            <div class="d-flex gap-2 flex-wrap mt-3 mt-md-0">
-                <a href="/login" class="btn btn-outline-success">登入</a>
+            <div class="d-flex align-items-center gap-2 flex-wrap mt-3 mt-md-0">
 
-                <a href="/register" class="btn btn-outline-dark">
+                <div th:if="${loggedIn}" class="login-greeting">
+                    Hi, <span th:text="${loginDisplayName}">會員</span>
+                </div>
+
+                <a th:if="${!loggedIn}" th:href="@{/login}" class="btn btn-outline-success">
+                    登入
+                </a>
+
+                <a th:if="${!loggedIn}" th:href="@{/register}" class="btn btn-outline-dark">
                     註冊
+                </a>
+
+                <a th:if="${loggedIn}" th:href="@{/logout}" class="btn btn-outline-danger">
+                    登出
                 </a>
 
                 <button id="recommendButton" class="btn btn-orange">
@@ -344,9 +361,12 @@
                     AI 搜尋
                 </button>
 
-                <button type="button" class="btn btn-outline-warning" id="memberRankingButton">
-                    會員排行榜
+                <button type="button"
+                        class="btn btn-success fw-bold"
+                        id="memberRankingButton">
+                    🏆 會員排行榜
                 </button>
+
             </div>
         </div>
     </div>
@@ -373,7 +393,6 @@
                 </div>
             </div>
 
-            <!-- 新增：會員排行榜 -->
             <div class="section-card member-ranking-card" id="memberRankingBox">
                 <div class="section-header d-flex justify-content-between align-items-center">
                     <div>
@@ -460,7 +479,6 @@
     const memberRankingBox = document.getElementById("memberRankingBox");
     const memberRankingList = document.getElementById("memberRankingList");
     const rankingPagination = document.getElementById("rankingPagination");
-
 
     let memberRankingData = [];
     let currentRankingType = "recommend";
@@ -716,8 +734,8 @@
 
     async function loadMemberRanking() {
         memberRankingList.innerHTML = `
-        <div class="empty-box">會員排行榜載入中...</div>
-    `;
+            <div class="empty-box">會員排行榜載入中...</div>
+        `;
 
         try {
             const response = await fetch(
@@ -736,10 +754,10 @@
         } catch (error) {
             console.error("會員排行榜載入失敗:", error);
             memberRankingList.innerHTML = `
-            <div class="empty-box text-danger">
-                會員排行榜載入失敗，請確認 /api/member-ranking 是否正常。
-            </div>
-        `;
+                <div class="empty-box text-danger">
+                    會員排行榜載入失敗，請確認 /api/member-ranking 是否正常。
+                </div>
+            `;
             rankingPagination.innerHTML = "";
         }
     }
@@ -749,43 +767,41 @@
 
         if (!list || list.length === 0) {
             memberRankingList.innerHTML = `
-            <div class="empty-box">
-                目前尚無會員排行榜資料
-            </div>
-        `;
+                <div class="empty-box">
+                    目前尚無會員排行榜資料
+                </div>
+            `;
             rankingPagination.innerHTML = "";
             return;
         }
 
         list.forEach((member, index) => {
             const realRank = (currentRankingPage - 1) * rankingPageSize + index + 1;
-
-            const memberPageUrl =
-                "/member/" + encodeURIComponent(member.memberId) + "/restaurants";
+            const memberPageUrl = "/member/" + encodeURIComponent(member.memberId) + "/restaurants";
 
             memberRankingList.innerHTML += `
-            <div class="ranking-row">
-                <div>
-                    <div class="rank-number">${realRank}</div>
+                <div class="ranking-row">
+                    <div>
+                        <div class="rank-number">${realRank}</div>
+                    </div>
+
+                    <div>
+                        <a href="${memberPageUrl}"
+                           target="_blank"
+                           class="member-link">
+                            ${escapeHtml(member.username)}
+                        </a>
+                    </div>
+
+                    <div>${member.recommendCount || 0} 家</div>
+
+                    <div class="like-count">${member.likeCount || 0} 讚</div>
+
+                    <div>${escapeHtml(member.latestRestaurant || "尚無資料")}</div>
+
+                    <div>${escapeHtml(member.latestTime || "")}</div>
                 </div>
-
-                <div>
-                    <a href="${memberPageUrl}"
-                       target="_blank"
-                       class="member-link">
-                        ${escapeHtml(member.username)}
-                    </a>
-                </div>
-
-                <div>${member.recommendCount || 0} 家</div>
-
-                <div class="like-count">${member.likeCount || 0} 讚</div>
-
-                <div>${escapeHtml(member.latestRestaurant || "尚無資料")}</div>
-
-                <div>${escapeHtml(member.latestTime || "")}</div>
-            </div>
-        `;
+            `;
         });
 
         renderRankingPagination(totalPages);
@@ -799,27 +815,27 @@
         }
 
         rankingPagination.innerHTML += `
-        <button onclick="changeRankingPage(${currentRankingPage - 1})"
-                ${currentRankingPage === 1 ? "disabled" : ""}>
-            上一頁
-        </button>
-    `;
+            <button onclick="changeRankingPage(${currentRankingPage - 1})"
+                    ${currentRankingPage === 1 ? "disabled" : ""}>
+                上一頁
+            </button>
+        `;
 
         for (let i = 1; i <= totalPages; i++) {
             rankingPagination.innerHTML += `
-            <button onclick="changeRankingPage(${i})"
-                    class="${currentRankingPage === i ? "active-page" : ""}">
-                ${i}
-            </button>
-        `;
+                <button onclick="changeRankingPage(${i})"
+                        class="${currentRankingPage === i ? "active-page" : ""}">
+                    ${i}
+                </button>
+            `;
         }
 
         rankingPagination.innerHTML += `
-        <button onclick="changeRankingPage(${currentRankingPage + 1})"
-                ${currentRankingPage === totalPages ? "disabled" : ""}>
-            下一頁
-        </button>
-    `;
+            <button onclick="changeRankingPage(${currentRankingPage + 1})"
+                    ${currentRankingPage === totalPages ? "disabled" : ""}>
+                下一頁
+            </button>
+        `;
     }
 
     function changeRankingPage(page) {

@@ -21,13 +21,20 @@ public class NavbarControllerAdvice {
 
         if (loggedIn) {
 
-            // 帳號
-            model.addAttribute(
-                    "loginUsername",
-                    authentication.getName()
-            );
+            String username = authentication.getName();
 
-            // 角色
+            String displayName = username;
+
+            if (displayName != null && displayName.contains("@")) {
+                displayName = displayName.substring(0, displayName.indexOf("@"));
+            }
+
+            // 原始帳號
+            model.addAttribute("loginUsername", username);
+
+            // 顯示用名稱，只顯示 @ 前面
+            model.addAttribute("loginDisplayName", displayName);
+
             String role = authentication.getAuthorities()
                     .stream()
                     .map(GrantedAuthority::getAuthority)
