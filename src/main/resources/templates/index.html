@@ -361,9 +361,7 @@
                     AI 搜尋
                 </button>
 
-                <button type="button"
-                        class="btn btn-success fw-bold"
-                        id="memberRankingButton">
+                <button type="button" class="btn btn-success fw-bold" id="memberRankingButton">
                     🏆 會員排行榜
                 </button>
 
@@ -564,13 +562,15 @@
 
             aiContainer.innerHTML = `
                 <div class="col-12 text-center text-danger py-5">
-                    首頁 AI 舊資料載入失敗，請確認 /api/homepage 是否正常。
+                    首頁 AI 舊資料載入失敗，請確認 /api/homepage 是否正常。<br>
+                    ${escapeHtml(error.message)}
                 </div>
             `;
 
             recommendedBox.innerHTML = `
                 <div class="empty-box text-danger">
-                    會員推薦載入失敗，請確認 /api/homepage 是否正常。
+                    會員推薦載入失敗，請確認 /api/homepage 是否正常。<br>
+                    ${escapeHtml(error.message)}
                 </div>
             `;
         }
@@ -605,7 +605,8 @@
 
             aiContainer.innerHTML = `
                 <div class="col-12 text-center text-danger py-5">
-                    AI 搜尋失敗，請確認 /api/restaurants/ai/search 是否正常。
+                    AI 搜尋失敗，請確認 /api/restaurants/ai/search 是否正常。<br>
+                    ${escapeHtml(error.message)}
                 </div>
             `;
 
@@ -639,9 +640,16 @@
 
             const address = item.address || "尚無地址資料";
 
+            const detailUrl =
+                "/restaurant-ai-detail.html?name=" +
+                encodeURIComponent(name) +
+                "&address=" +
+                encodeURIComponent(address) +
+                "&imageUrl=" +
+                encodeURIComponent(imageUrl);
             const mapUrl =
                 item.mapUrl ||
-                buildMapUrl(item.lat, item.lng, name);
+                buildMapUrl(item.lat, item.lng, name + " " + address);
 
             const cardHtml = `
                 <div class="col-12 col-sm-6 col-xl-4">
@@ -662,7 +670,7 @@
                             </p>
 
                             <div class="mt-auto d-flex gap-2 flex-wrap">
-                                <a href="${restaurantUrl}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <a href="${detailUrl}" target="_blank" class="btn btn-outline-primary btn-sm">
                                     查看餐廳
                                 </a>
 
@@ -722,9 +730,10 @@
                     <div class="recommend-address">${escapeHtml(address)}</div>
                     <div class="recommend-desc">${escapeHtml(description)}</div>
 
-                   <button class="map-btn" onclick="openCorrectMap(${r.id})">
-                    地圖
-                   </button>
+                    <button class="btn btn-outline-success btn-sm"
+                            onclick="openCorrectMap(${r.id})">
+                        地圖
+                    </button>
                 </div>
             `;
 
@@ -755,7 +764,8 @@
             console.error("會員排行榜載入失敗:", error);
             memberRankingList.innerHTML = `
                 <div class="empty-box text-danger">
-                    會員排行榜載入失敗，請確認 /api/member-ranking 是否正常。
+                    會員排行榜載入失敗，請確認 /api/member-ranking 是否正常。<br>
+                    ${escapeHtml(error.message)}
                 </div>
             `;
             rankingPagination.innerHTML = "";
@@ -868,6 +878,7 @@
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
     }
+
     function openCorrectMap(id) {
         fetch(`/api/recommended-restaurants/${id}/map`)
             .then(response => response.json())

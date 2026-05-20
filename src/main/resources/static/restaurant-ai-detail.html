@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 餐廳詳細介紹</title>
+
+    <style>
+        body {
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            background: #f5f6fa;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #222;
+        }
+
+        .hero-image {
+            width: 100%;
+            max-height: 420px;
+            object-fit: cover;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .address {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .loading {
+            color: #ff6b35;
+            font-weight: bold;
+        }
+
+        .progress-wrap {
+            margin: 18px 0 28px;
+        }
+
+        .progress-text {
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 12px;
+            background: #eee;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35, #ffb347);
+            border-radius: 999px;
+            transition: width 0.5s ease;
+        }
+
+        .content {
+            line-height: 1.9;
+            white-space: pre-line;
+            font-size: 17px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 18px;
+            background: #2d4059;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .back-btn:hover {
+            background: #1d2d3f;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <img id="restaurantImage" class="hero-image" alt="餐廳圖片">
+
+    <h1 id="restaurantName">AI 餐廳詳細介紹</h1>
+    <div class="address" id="restaurantAddress"></div>
+
+    <div id="loading" class="loading">
+        AI 正在查詢餐廳詳細資料，請稍候...
+
+        <div class="progress-wrap">
+            <div id="progressText" class="progress-text">AI 分析中... 0%</div>
+            <div class="progress-bar-bg">
+                <div id="progressBar" class="progress-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="content" class="content"></div>
+
+    <a href="/index.html" class="back-btn">回首頁</a>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+
+    const name = params.get("name") || "";
+    const address = params.get("address") || "";
+    const imageUrl = params.get("imageUrl") || "";
+
+    document.getElementById("restaurantName").innerText = name || "餐廳詳細介紹";
+    document.getElementById("restaurantAddress").innerText = address;
+
+    const restaurantImage = document.getElementById("restaurantImage");
+
+    if (imageUrl) {
+        restaurantImage.src = imageUrl;
+        restaurantImage.style.display = "block";
+    }
+
+    restaurantImage.onerror = function () {
+        restaurantImage.style.display = "none";
+    };
+
+    let fakeProgress = 0;
+    let progressTimer = null;
+
+    function startFakeProgress() {
+        const progressBar = document.getElementById("progressBar");
+        const progressText = document.getElementById("progressText");
+
+        progressTimer = setInterval(() => {
+            if (fakeProgress < 90) {
+                fakeProgress += 1.5;
+            } else if (fakeProgress < 98) {
+                fakeProgress += 0.2;
+            }
+
+            const percent = Math.min(Math.floor(fakeProgress), 98);
+
+            progressBar.style.width = percent + "%";
+            progressText.innerText = "AI 分析中... " + percent + "%";
+        }, 900);
+    }
+
+    function finishProgress() {
+        const progressBar = document.getElementById("progressBar");
+        const progressText = document.getElementById("progressText");
+
+        clearInterval(progressTimer);
+
+        progressBar.style.width = "100%";
+        progressText.innerText = "分析完成 100%";
+    }
+
+    async function loadDetail() {
+        startFakeProgress();
+
+        try {
+            const url =
+                "/api/restaurants/ai/detail?name=" +
+                encodeURIComponent(name) +
+                "&address=" +
+                encodeURIComponent(address);
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error("API 請求失敗");
+            }
+
+            const text = await response.text();
+
+            finishProgress();
+
+            setTimeout(() => {
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("content").innerText = text;
+            }, 300);
+
+        } catch (e) {
+            clearInterval(progressTimer);
+
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("content").innerText =
+                "查詢失敗，請稍後再試。";
+        }
+    }
+
+    loadDetail();
+</script>
+
+</body>
+</html>
