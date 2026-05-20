@@ -96,4 +96,44 @@ public class GooglePlacesService {
 
         return result;
     }
+
+    // 新增：只查詢正確 Google Map URL
+    public String searchMapUrl(String query) throws Exception {
+
+        String url = "https://places.googleapis.com/v1/places:searchText";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-Goog-Api-Key", apiKey);
+        headers.set("X-Goog-FieldMask",
+                "places.id,places.displayName,places.formattedAddress,places.location");
+
+        String body = """
+                {
+                  "textQuery": "%s",
+                  "languageCode": "zh-TW",
+                  "regionCode": "TW"
+                }
+                """.formatted(query);
+
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                entity,
+                String.class
+        );
+
+        JsonNode root = objectMapper.readTree(response.getBody());
+        JsonNode firstPlace = root.path("places").get(0);
+
+        if (firstPlace == null) {
+            return null;
+        }
+
+        String placeId = firstPlace.path("id").asText();
+
+        return "https://www.google.com/maps/place/?q=place_id:" + placeId;
+    }
 }

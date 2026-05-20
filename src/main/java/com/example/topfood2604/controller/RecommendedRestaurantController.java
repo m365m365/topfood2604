@@ -24,6 +24,7 @@ public class RecommendedRestaurantController {
     private final UploadLimitService uploadLimitService;
     private final MemberRepository memberRepository;
 
+
     public RecommendedRestaurantController(
             RecommendRestaurantService recommendRestaurantService,
             S3ImageService s3ImageService,
@@ -196,5 +197,16 @@ public class RecommendedRestaurantController {
                         "dailyLimit", dailyLimit
                 )
         );
+    }
+    @GetMapping("/{id}/map")
+    @ResponseBody
+    public Map<String, String> getCorrectMapUrl(
+            @PathVariable Long id
+    ) {
+
+        String mapUrl =
+                recommendRestaurantService.findCorrectMapUrl(id);
+
+        return Map.of("mapUrl", mapUrl);
     }
 }

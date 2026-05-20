@@ -17,15 +17,18 @@ public class RecommendRestaurantService {
     private final RecommendedRestaurantRepository recommendedRestaurantRepository;
     private final MemberRecommendRestaurantRepository memberRecommendRestaurantRepository;
     private final MemberRepository memberRepository;
+    private final GooglePlacesService googlePlacesService;
 
     public RecommendRestaurantService(
             RecommendedRestaurantRepository recommendedRestaurantRepository,
             MemberRecommendRestaurantRepository memberRecommendRestaurantRepository,
-            MemberRepository memberRepository
+            MemberRepository memberRepository,
+            GooglePlacesService googlePlacesService
     ) {
         this.recommendedRestaurantRepository = recommendedRestaurantRepository;
         this.memberRecommendRestaurantRepository = memberRecommendRestaurantRepository;
         this.memberRepository = memberRepository;
+        this.googlePlacesService = googlePlacesService;
     }
 
     @Transactional
@@ -97,5 +100,25 @@ public class RecommendRestaurantService {
         memberRecommendRestaurantRepository.save(relation);
 
         return savedRestaurant;
+    }
+
+    // 新增：重新查詢正確 Google 地圖
+    public String findCorrectMapUrl(Long id) {
+
+        RecommendedRestaurant restaurant =
+                recommendedRestaurantRepository.findById(id)
+                        .orElseThrow(() ->
+                                new RuntimeException("找不到餐廳"));
+
+        String name = restaurant.getRestaurantName();
+        String address = restaurant.getAddress();
+
+        String query = name + " " + address;
+
+        try {
+            return googlePlacesService.searchMapUrl(query);
+        } catch (Exception e) {
+            throw new RuntimeException("Google Places 地圖查詢失敗", e);
+        }
     }
 }
