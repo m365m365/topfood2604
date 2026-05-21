@@ -32,6 +32,10 @@
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .card img {
@@ -47,6 +51,10 @@
 
         .content {
             padding: 16px;
+
+            display: flex;
+            flex-direction: column;
+            flex: 1;
         }
 
         .title {
@@ -87,6 +95,8 @@
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+
+            margin-top: auto;
         }
 
         .btn {
@@ -97,10 +107,16 @@
             background: #198754;
             color: white;
             font-size: 14px;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-detail {
             background: #ff6b35;
+        }
+
+        .btn-report {
+            background: #6c757d;
         }
 
         .back {
@@ -125,7 +141,7 @@
 
 <div class="container">
 
-    <a href="/templates/index.html" class="back">← 回首頁</a>
+    <a href="/index.html" class="back">← 回首頁</a>
 
     <h1>
         <span th:text="${memberName}">會員</span>
@@ -176,11 +192,10 @@
                         查看詳情
                     </a>
 
-                    <a class="btn"
-                       th:href="${r.mapUrl}"
-                       target="_blank">
-                        查看地圖
-                    </a>
+                    <button class="btn btn-report"
+                            type="button">
+                        檢舉不當內容
+                    </button>
                 </div>
 
             </div>

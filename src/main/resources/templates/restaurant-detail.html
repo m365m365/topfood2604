@@ -118,6 +118,59 @@
                 font-size: 24px;
             }
         }
+        .like-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .like-tip {
+            color: #ff5722;
+            font-size: 18px;
+            font-weight: bold;
+
+            animation: blinkLikeTip 1.2s infinite;
+        }
+
+        @keyframes blinkLikeTip {
+
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+        #fireworksBox {
+            position: fixed;
+            left: 50%;
+            top: 45%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .firework {
+            position: absolute;
+            font-size: 28px;
+            animation: fireworkBoom 0.9s ease-out forwards;
+        }
+
+        @keyframes fireworkBoom {
+            0% {
+                transform: scale(0.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2.5) translateY(-40px);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
@@ -126,7 +179,7 @@
 <div style="max-width:950px; margin:0 auto 16px;">
     <a href="/index.html" class="back">← 回首頁</a>
 </div>
-
+<div id="fireworksBox"></div>
 <div class="container">
 
     <img class="cover"
@@ -152,14 +205,25 @@
             餐廳描述
         </div>
 
-        <div class="like">
-            <button id="likeButton"
-                    th:data-id="${restaurant['id']}"
-                    style="border:none; background:none; cursor:pointer; font-size:22px;">
-                ❤️
-            </button>
+        <div class="like-wrapper">
 
-            <span id="likeCount" th:text="${restaurant['like_count']}">0</span> 讚
+            <div class="like-tip">
+                ✨ 右邊愛心鈕加入會員可按讚！
+            </div>
+
+            <div class="like">
+
+                <button id="likeButton"
+                        th:data-id="${restaurant['id']}"
+                        style="border:none; background:none; cursor:pointer; font-size:22px;">
+                    ❤️
+                </button>
+
+                <span id="likeCount"
+                      th:text="${restaurant['like_count']}">0</span> 讚
+
+            </div>
+
         </div>
 
 
@@ -178,11 +242,9 @@
         </div>
 
         <div class="btn-row">
-            <a class="btn btn-map"
-               th:href="${restaurant['map_url']}"
-               target="_blank">
+            <button class="map-btn" onclick="openCorrectMap(restaurantId)">
                 查看 Google 地圖
-            </a>
+            </button>
 
             <a class="btn btn-member"
                th:if="${restaurant['member_id'] != null}"
@@ -214,7 +276,16 @@
             const data = await response.json();
 
             if (data.success) {
+
                 likeCount.textContent = data.likeCount;
+
+                for (let i = 0; i < 5; i++) {
+
+                    setTimeout(() => {
+                        showFireworks();
+                    }, i * 500);
+
+                }
             } else {
                 alert(data.message || "按讚失敗");
             }
@@ -226,6 +297,42 @@
             likeButton.disabled = false;
         }
     });
+    const restaurantId = window.location.pathname.split("/").pop();
+
+    function openCorrectMap(id) {
+        fetch(`/api/recommended-restaurants/${id}/map`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.mapUrl) {
+                    window.open(data.mapUrl, "_blank");
+                } else {
+                    alert("找不到正確地圖");
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert("地圖查詢失敗");
+            });
+    }
+    function showFireworks() {
+        const box = document.getElementById("fireworksBox");
+
+        for (let i = 0; i < 12; i++) {
+            const fw = document.createElement("div");
+            fw.className = "firework";
+            fw.textContent = ["🎆", "✨", "🎇", "💥"][Math.floor(Math.random() * 4)];
+
+            fw.style.left = (Math.random() * 220 - 110) + "px";
+            fw.style.top = (Math.random() * 120 - 60) + "px";
+
+            box.appendChild(fw);
+
+            setTimeout(() => {
+                fw.remove();
+            }, 900);
+        }
+    }
+
 </script>
 </body>
 </html>
