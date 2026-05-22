@@ -41,6 +41,12 @@ public class RecommendedRestaurant {
     @Column(name="created_at")
     private LocalDateTime createdAt;
 
+    @Transient
+    private Boolean reportBlocked = false;
+
+    @Transient
+    private Long reportRemainingSeconds = 0L;
+
     @PrePersist
     public void prePersist() {
 

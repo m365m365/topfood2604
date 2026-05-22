@@ -32,7 +32,6 @@
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-
             display: flex;
             flex-direction: column;
             height: 100%;
@@ -51,7 +50,6 @@
 
         .content {
             padding: 16px;
-
             display: flex;
             flex-direction: column;
             flex: 1;
@@ -95,7 +93,6 @@
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
-
             margin-top: auto;
         }
 
@@ -134,6 +131,36 @@
             border-radius: 16px;
             color: #777;
         }
+
+        .reported-box {
+            min-height: 420px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f1f3f5;
+            color: #555;
+            text-align: center;
+        }
+
+        .reported-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: #dc3545;
+            margin-bottom: 12px;
+        }
+
+        .reported-text {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .countdown {
+            font-size: 20px;
+            font-weight: 900;
+            color: #ff6b35;
+        }
     </style>
 </head>
 
@@ -156,54 +183,165 @@
 
         <div class="card" th:each="r : ${restaurants}">
 
-            <a th:href="@{'/restaurant/' + ${r.id}}">
-                <img th:src="${r.thumbUrl != null ? r.thumbUrl : r.imageUrl}"
-                     alt="餐廳圖片">
-            </a>
-
-            <div class="content">
-
-                <div class="title">
-                    <a th:href="@{'/restaurant/' + ${r.id}}"
-                       th:text="${r.restaurantName}">
-                        餐廳名稱
-                    </a>
+            <div th:if="${r.reportBlocked == true}"
+                 class="reported-box"
+                 th:data-seconds="${r.reportRemainingSeconds}">
+                <div class="reported-title">⚠️ 檢舉通知</div>
+                <div class="reported-text">內容被會員檢舉，遮蔽 72 小時</div>
+                <div class="countdown">
+                    <span class="countdown-number">載入中...</span>
                 </div>
-
-                <div class="stars">
-                    ★★★★★
-                </div>
-
-                <div class="address" th:text="${r.address}">
-                    地址
-                </div>
-
-                <div class="desc" th:text="${r.description}">
-                    描述
-                </div>
-
-                <div class="like">
-                    <span th:text="${r.likeCount}">0</span> 讚
-                </div>
-
-                <div class="btn-row">
-                    <a class="btn btn-detail"
-                       th:href="@{'/restaurant/' + ${r.id}}">
-                        查看詳情
-                    </a>
-
-                    <button class="btn btn-report"
-                            type="button">
-                        檢舉不當內容
-                    </button>
-                </div>
-
             </div>
+
+            <div th:if="${r.reportBlocked != true}" style="display:flex; flex-direction:column; height:100%;">
+
+                <a th:href="@{'/restaurant/' + ${r.id}}">
+                    <img th:src="${r.thumbUrl != null ? r.thumbUrl : r.imageUrl}"
+                         alt="餐廳圖片">
+                </a>
+
+                <div class="content">
+
+                    <div class="title">
+                        <a th:href="@{'/restaurant/' + ${r.id}}"
+                           th:text="${r.restaurantName}">
+                            餐廳名稱
+                        </a>
+                    </div>
+
+                    <div class="stars">★★★★★</div>
+
+                    <div class="address" th:text="${r.address}">
+                        地址
+                    </div>
+
+                    <div class="desc" th:text="${r.description}">
+                        描述
+                    </div>
+
+                    <div class="like">
+                        <span th:text="${r.likeCount}">0</span> 讚
+                    </div>
+
+                    <div class="btn-row">
+                        <a class="btn btn-detail"
+                           th:href="@{'/restaurant/' + ${r.id}}">
+                            查看詳情
+                        </a>
+
+                        <button class="btn btn-report"
+                                type="button"
+                                th:data-id="${r.id}"
+                                onclick="reportRestaurant(this)">
+                            檢舉不當內容
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
 
     </div>
 
 </div>
+
+<script>
+    function reportRestaurant(button) {
+        const card = button.closest(".card");
+        const restaurantId = button.dataset.id;
+
+        if (!card || !restaurantId) {
+            alert("找不到餐廳資料");
+            return;
+        }
+
+        const originalHtml = card.innerHTML;
+
+        fetch(`/api/reports/restaurants/${restaurantId}`, {
+            method: "POST"
+        })
+            .then(response => response.json())
+            .then(data => {
+                showReportMask(card, originalHtml, data.message, data.countdownSeconds);
+            })
+            .catch(error => {
+                console.error(error);
+                alert("檢舉失敗，請稍後再試");
+            });
+    }
+
+    function showReportMask(card, originalHtml, message, seconds) {
+        let left = Number(seconds || 0);
+
+        card.innerHTML = `
+            <div class="reported-box">
+                <div class="reported-title">⚠️ 檢舉通知</div>
+                <div class="reported-text">${message}</div>
+                <div class="countdown">
+                    <span class="countdown-number">${formatCountdown(left)}</span>
+                </div>
+            </div>
+        `;
+
+        const timer = setInterval(() => {
+            left--;
+
+            const countdown = card.querySelector(".countdown-number");
+
+            if (countdown) {
+                countdown.textContent = formatCountdown(left);
+            }
+
+            if (left <= 0) {
+                clearInterval(timer);
+                card.innerHTML = originalHtml;
+            }
+
+        }, 1000);
+    }
+
+    function startExistingBlockedCountdowns() {
+        document.querySelectorAll(".reported-box").forEach(box => {
+            let seconds = Number(box.dataset.seconds || 0);
+            const countdown = box.querySelector(".countdown-number");
+
+            if (!countdown) {
+                return;
+            }
+
+            function update() {
+                countdown.textContent = formatCountdown(seconds);
+
+                if (seconds <= 0) {
+                    location.reload();
+                    return;
+                }
+
+                seconds--;
+            }
+
+            update();
+            setInterval(update, 1000);
+        });
+    }
+
+    function formatCountdown(seconds) {
+        seconds = Number(seconds || 0);
+
+        if (seconds >= 3600) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+
+            return `${hours} 小時 ${minutes} 分 ${secs} 秒後恢復`;
+        }
+
+        return `${seconds} 秒後恢復`;
+    }
+
+    document.addEventListener("DOMContentLoaded", startExistingBlockedCountdowns);
+</script>
 
 </body>
 </html>

@@ -11,7 +11,7 @@ public class LoginController {
         return "login";
     }
 
-    @GetMapping("/")
+    @GetMapping("/home")
     public String homePage() {
         return "/static/index.html";
     }

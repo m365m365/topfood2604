@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>檢舉管理後台</title>
+
+  <style>
+    body {
+      font-family: Arial, "Microsoft JhengHei", sans-serif;
+      background: #f7f7f7;
+      padding: 30px;
+    }
+
+    table {
+      width: 100%;
+      background: white;
+      border-collapse: collapse;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #26394d;
+      color: white;
+    }
+
+    .status {
+      font-weight: bold;
+      color: #ff6b35;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>檢舉管理後台</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>檢舉會員</th>
+    <th>被檢舉會員</th>
+    <th>檢舉餐廳</th>
+    <th>檢舉時間</th>
+    <th>遮蔽到期</th>
+    <th>倒數秒數</th>
+    <th>審查通過</th>
+    <th>狀態</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr th:each="r : ${reports}">
+    <td th:text="${r.id}">1</td>
+    <td th:text="${r.reporterMemberId}">1</td>
+    <td th:text="${r.reportedMemberId}">2</td>
+    <td th:text="${r.restaurantId}">10</td>
+    <td th:text="${r.reportTime}">time</td>
+    <td th:text="${r.blockedUntil}">time</td>
+    <td th:text="${r.countdownSeconds}">0</td>
+    <td th:text="${r.reviewPassed}">false</td>
+    <td class="status" th:text="${r.status}">PENDING</td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
