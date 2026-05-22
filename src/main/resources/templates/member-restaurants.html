@@ -183,9 +183,10 @@
 
         <div class="card" th:each="r : ${restaurants}">
 
-            <div th:if="${r.reportBlocked == true}"
+            <!-- 被檢舉遮蔽中的卡片 -->
+            <div th:if="${r.status == 'BLOCKED'}"
                  class="reported-box"
-                 th:data-seconds="${r.reportRemainingSeconds}">
+                 th:data-seconds="259200">
                 <div class="reported-title">⚠️ 檢舉通知</div>
                 <div class="reported-text">內容被會員檢舉，遮蔽 72 小時</div>
                 <div class="countdown">
@@ -193,7 +194,9 @@
                 </div>
             </div>
 
-            <div th:if="${r.reportBlocked != true}" style="display:flex; flex-direction:column; height:100%;">
+            <!-- 正常餐廳卡片 -->
+            <div th:if="${r.status != 'BLOCKED'}"
+                 style="display:flex; flex-direction:column; height:100%;">
 
                 <a th:href="@{'/restaurant/' + ${r.id}}">
                     <img th:src="${r.thumbUrl != null ? r.thumbUrl : r.imageUrl}"
@@ -275,7 +278,7 @@
         let left = Number(seconds || 0);
 
         card.innerHTML = `
-            <div class="reported-box">
+            <div class="reported-box" data-seconds="${left}">
                 <div class="reported-title">⚠️ 檢舉通知</div>
                 <div class="reported-text">${message}</div>
                 <div class="countdown">
@@ -303,7 +306,7 @@
 
     function startExistingBlockedCountdowns() {
         document.querySelectorAll(".reported-box").forEach(box => {
-            let seconds = Number(box.dataset.seconds || 0);
+            let seconds = Number(box.dataset.seconds || 259200);
             const countdown = box.querySelector(".countdown-number");
 
             if (!countdown) {

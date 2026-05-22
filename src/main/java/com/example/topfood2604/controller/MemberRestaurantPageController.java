@@ -44,12 +44,24 @@ public class MemberRestaurantPageController {
                     rr.star_rating,
                     rr.description,
                     rr.map_url,
-                    rr.status,
+
+                    CASE
+                        WHEN rp.id IS NOT NULL
+                             AND rp.blocked_until > NOW()
+                             AND rp.status IN ('ACTIVE', 'BLOCKED')
+                        THEN 'BLOCKED'
+                        ELSE rr.status
+                    END AS status,
+
                     rr.created_at,
                     rr.like_count
                 FROM member_recommend_restaurant mrr
                 JOIN recommended_restaurant rr
                     ON rr.id = mrr.restaurant_id
+                LEFT JOIN restaurant_report rp
+                    ON rp.restaurant_id = rr.id
+                   AND rp.status IN ('ACTIVE', 'BLOCKED')
+                   AND rp.blocked_until > NOW()
                 WHERE mrr.member_id = ?
                   AND rr.status = 'ACTIVE'
                 ORDER BY rr.created_at DESC
@@ -59,6 +71,7 @@ public class MemberRestaurantPageController {
                 sql,
                 (rs, rowNum) -> {
                     RecommendedRestaurant r = new RecommendedRestaurant();
+
                     r.setId(rs.getLong("id"));
                     r.setRestaurantName(rs.getString("restaurant_name"));
                     r.setAddress(rs.getString("address"));
@@ -68,8 +81,15 @@ public class MemberRestaurantPageController {
                     r.setDescription(rs.getString("description"));
                     r.setMapUrl(rs.getString("map_url"));
                     r.setStatus(rs.getString("status"));
-                    r.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+
+                    if (rs.getTimestamp("created_at") != null) {
+                        r.setCreatedAt(
+                                rs.getTimestamp("created_at").toLocalDateTime()
+                        );
+                    }
+
                     r.setLikeCount(rs.getInt("like_count"));
+
                     return r;
                 },
                 id

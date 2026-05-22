@@ -42,8 +42,8 @@ public class RestaurantReportService {
             return new ReportResponseDto(
                     true,
                     "GUEST_30_SECONDS",
-                    "內容被檢舉，效果版先遮蔽 30 秒",
-                    30
+                    "內容被檢舉，非會員效果版先遮蔽 15 秒,加入會員檢舉將遮蔽72小時審查",
+                    15
             );
         }
 
@@ -79,7 +79,7 @@ public class RestaurantReportService {
         report.setBlockedUntil(LocalDateTime.now().plusHours(72));
         report.setCountdownSeconds(72L * 60L * 60L);
         report.setReviewPassed(false);
-        report.setStatus("BLOCKED");
+        report.setStatus("ACTIVE");
 
         reportRepository.save(report);
 
