@@ -58,10 +58,21 @@ public class MemberRestaurantPageController {
                 FROM member_recommend_restaurant mrr
                 JOIN recommended_restaurant rr
                     ON rr.id = mrr.restaurant_id
+
+                LEFT JOIN (
+                    SELECT
+                        restaurant_id,
+                        MAX(id) AS latest_report_id
+                    FROM restaurant_report
+                    WHERE status IN ('ACTIVE', 'BLOCKED')
+                      AND blocked_until > NOW()
+                    GROUP BY restaurant_id
+                ) latest_report
+                    ON latest_report.restaurant_id = rr.id
+
                 LEFT JOIN restaurant_report rp
-                    ON rp.restaurant_id = rr.id
-                   AND rp.status IN ('ACTIVE', 'BLOCKED')
-                   AND rp.blocked_until > NOW()
+                    ON rp.id = latest_report.latest_report_id
+
                 WHERE mrr.member_id = ?
                   AND rr.status = 'ACTIVE'
                 ORDER BY rr.created_at DESC

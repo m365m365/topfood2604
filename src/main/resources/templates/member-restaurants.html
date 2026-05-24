@@ -116,6 +116,12 @@
             background: #6c757d;
         }
 
+        .btn-report:disabled {
+            background: #999;
+            cursor: not-allowed;
+            opacity: 0.75;
+        }
+
         .back {
             display: inline-block;
             margin-bottom: 20px;
@@ -183,7 +189,6 @@
 
         <div class="card" th:each="r : ${restaurants}">
 
-            <!-- 被檢舉遮蔽中的卡片 -->
             <div th:if="${r.status == 'BLOCKED'}"
                  class="reported-box"
                  th:data-seconds="259200">
@@ -194,7 +199,6 @@
                 </div>
             </div>
 
-            <!-- 正常餐廳卡片 -->
             <div th:if="${r.status != 'BLOCKED'}"
                  style="display:flex; flex-direction:column; height:100%;">
 
@@ -232,7 +236,7 @@
                             查看詳情
                         </a>
 
-                        <button class="btn btn-report"
+                        <button class="btn btn-report report-btn"
                                 type="button"
                                 th:data-id="${r.id}"
                                 onclick="reportRestaurant(this)">
@@ -250,6 +254,23 @@
 </div>
 
 <script>
+    function loadReportStatus() {
+        fetch('/api/reports/status')
+            .then(res => res.json())
+            .then(data => {
+                if (!data.canReport) {
+                    document.querySelectorAll(".report-btn")
+                        .forEach(btn => {
+                            btn.disabled = true;
+                            btn.innerText = "今日檢舉次數已滿";
+                        });
+                }
+            })
+            .catch(error => {
+                console.error("讀取檢舉狀態失敗", error);
+            });
+    }
+
     function reportRestaurant(button) {
         const card = button.closest(".card");
         const restaurantId = button.dataset.id;
@@ -259,6 +280,9 @@
             return;
         }
 
+        button.disabled = true;
+        button.innerText = "檢舉處理中...";
+
         const originalHtml = card.innerHTML;
 
         fetch(`/api/reports/restaurants/${restaurantId}`, {
@@ -266,11 +290,21 @@
         })
             .then(response => response.json())
             .then(data => {
-                showReportMask(card, originalHtml, data.message, data.countdownSeconds);
+                showReportMask(
+                    card,
+                    originalHtml,
+                    data.message,
+                    data.countdownSeconds
+                );
+
+                loadReportStatus();
             })
             .catch(error => {
                 console.error(error);
                 alert("檢舉失敗，請稍後再試");
+
+                button.disabled = false;
+                button.innerText = "檢舉不當內容";
             });
     }
 
@@ -299,6 +333,7 @@
             if (left <= 0) {
                 clearInterval(timer);
                 card.innerHTML = originalHtml;
+                loadReportStatus();
             }
 
         }, 1000);
@@ -343,7 +378,10 @@
         return `${seconds} 秒後恢復`;
     }
 
-    document.addEventListener("DOMContentLoaded", startExistingBlockedCountdowns);
+    document.addEventListener("DOMContentLoaded", () => {
+        startExistingBlockedCountdowns();
+        loadReportStatus();
+    });
 </script>
 
 </body>

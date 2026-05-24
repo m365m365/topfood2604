@@ -20,4 +20,7 @@ public class MemberTier {
 
     @Column(name="daily_upload_limit")
     private Integer dailyUploadLimit;
+
+    @Column(name = "daily_report_limit")
+    private Integer dailyReportLimit;
 }
