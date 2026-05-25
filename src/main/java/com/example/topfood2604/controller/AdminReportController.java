@@ -49,6 +49,7 @@ public class AdminReportController {
                 FROM restaurant_report rp
                 LEFT JOIN recommended_restaurant rr
                     ON rr.id = rp.restaurant_id
+                WHERE rp.status IN ('ACTIVE', 'BLOCKED')
                 ORDER BY rp.report_time DESC
                 """;
 
