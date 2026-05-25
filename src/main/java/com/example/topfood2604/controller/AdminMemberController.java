@@ -51,4 +51,29 @@ public class AdminMemberController {
 
         return "redirect:/admin/members";
     }
+    @PostMapping("/{id}/ban")
+    public String banMember(@PathVariable Long id) {
+
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("找不到會員"));
+
+        member.setState("DISABLED");
+
+        memberRepository.save(member);
+
+        return "redirect:/admin/members";
+    }
+
+    @PostMapping("/{id}/unban")
+    public String unbanMember(@PathVariable Long id) {
+
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("找不到會員"));
+
+        member.setState("ACTIVE");
+
+        memberRepository.save(member);
+
+        return "redirect:/admin/members";
+    }
 }

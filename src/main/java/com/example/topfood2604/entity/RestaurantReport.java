@@ -22,6 +22,7 @@ public class RestaurantReport {
 
     private String reason;
 
+    @Column(name = "report_time")
     private LocalDateTime reportTime;
 
     private LocalDateTime blockedUntil;

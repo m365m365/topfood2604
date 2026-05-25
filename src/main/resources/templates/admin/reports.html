@@ -11,12 +11,17 @@
       padding: 30px;
     }
 
+    h1 {
+      margin-bottom: 20px;
+    }
+
     table {
       width: 100%;
       background: white;
       border-collapse: collapse;
       border-radius: 12px;
       overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     }
 
     th, td {
@@ -35,6 +40,56 @@
       font-weight: bold;
       color: #ff6b35;
     }
+
+    .status-passed {
+      color: #198754;
+      font-weight: bold;
+    }
+
+    .status-released {
+      color: #0d6efd;
+      font-weight: bold;
+    }
+
+    .status-banned {
+      color: #dc3545;
+      font-weight: bold;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 7px 10px;
+      color: white;
+      cursor: pointer;
+      font-size: 13px;
+      margin: 2px;
+    }
+
+    .btn-pass {
+      background: #198754;
+    }
+
+    .btn-release {
+      background: #0d6efd;
+    }
+
+    .btn-ban {
+      background: #dc3545;
+    }
+
+    .btn:disabled {
+      background: #999;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .empty {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      color: #777;
+    }
   </style>
 </head>
 
@@ -42,7 +97,11 @@
 
 <h1>檢舉管理後台</h1>
 
-<table>
+<div th:if="${#lists.isEmpty(reports)}" class="empty">
+  目前沒有檢舉紀錄
+</div>
+
+<table th:if="${!#lists.isEmpty(reports)}">
   <thead>
   <tr>
     <th>ID</th>
@@ -54,6 +113,7 @@
     <th>倒數秒數</th>
     <th>審查通過</th>
     <th>狀態</th>
+    <th>操作</th>
   </tr>
   </thead>
 
@@ -62,12 +122,81 @@
     <td th:text="${r.id}">1</td>
     <td th:text="${r.reporterMemberId}">1</td>
     <td th:text="${r.reportedMemberId}">2</td>
-    <td th:text="${r.restaurantId}">10</td>
+    <td>
+      <span th:text="${r.restaurantName}">餐廳名稱</span>
+      <br>
+      <small style="color:#777;">
+        ID: <span th:text="${r.restaurantId}">10</span>
+      </small>
+    </td>
     <td th:text="${r.reportTime}">time</td>
     <td th:text="${r.blockedUntil}">time</td>
     <td th:text="${r.countdownSeconds}">0</td>
-    <td th:text="${r.reviewPassed}">false</td>
-    <td class="status" th:text="${r.status}">PENDING</td>
+    <td th:text="${r.reviewPassed ? '是' : '否'}">否</td>
+
+    <td>
+      <span th:if="${r.status == 'ACTIVE'}"
+            class="status">
+        ACTIVE
+      </span>
+
+      <span th:if="${r.status == 'PASSED'}"
+            class="status-passed">
+        PASSED
+      </span>
+
+      <span th:if="${r.status == 'RELEASED'}"
+            class="status-released">
+        RELEASED
+      </span>
+
+      <span th:if="${r.status == 'MEMBER_BANNED'}"
+            class="status-banned">
+        MEMBER_BANNED
+      </span>
+
+      <span th:if="${r.status != 'ACTIVE'
+                and r.status != 'PASSED'
+                and r.status != 'RELEASED'
+                and r.status != 'MEMBER_BANNED'}"
+            class="status"
+            th:text="${r.status}">
+        STATUS
+      </span>
+    </td>
+
+    <td>
+      <form th:action="@{'/admin/reports/' + ${r.id} + '/pass'}"
+            method="post"
+            style="display:inline;">
+        <button class="btn btn-pass"
+                type="submit"
+                th:disabled="${r.status != 'ACTIVE' and r.status != 'BLOCKED'}">
+          通過
+        </button>
+      </form>
+
+      <form th:action="@{'/admin/reports/' + ${r.id} + '/release'}"
+            method="post"
+            style="display:inline;">
+        <button class="btn btn-release"
+                type="submit"
+                th:disabled="${r.status != 'ACTIVE' and r.status != 'BLOCKED'}">
+          解除遮蔽
+        </button>
+      </form>
+
+      <form th:action="@{'/admin/reports/' + ${r.id} + '/ban-member'}"
+            method="post"
+            style="display:inline;"
+            onsubmit="return confirm('確定要封鎖這位會員嗎？');">
+        <button class="btn btn-ban"
+                type="submit"
+                th:disabled="${r.status == 'MEMBER_BANNED'}">
+          封鎖會員
+        </button>
+      </form>
+    </td>
   </tr>
   </tbody>
 </table>

@@ -16,8 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class RestaurantReportService {
@@ -106,6 +108,34 @@ public class RestaurantReportService {
             throw new RuntimeException("你今日檢舉次數已達上限。");
         }
 
+        Optional<RestaurantReport> existingReport =
+                reportRepository.findTopByRestaurantIdAndStatusOrderByIdDesc(
+                        restaurantId,
+                        "ACTIVE"
+                );
+
+        if (existingReport.isPresent()) {
+
+            RestaurantReport existing = existingReport.get();
+
+            if (existing.getBlockedUntil() != null &&
+                    existing.getBlockedUntil().isAfter(LocalDateTime.now())) {
+
+                long remainingSeconds =
+                        Duration.between(
+                                LocalDateTime.now(),
+                                existing.getBlockedUntil()
+                        ).getSeconds();
+
+                return new ReportResponseDto(
+                        true,
+                        "ALREADY_BLOCKED",
+                        "此餐廳已在檢舉審查中",
+                        remainingSeconds
+                );
+            }
+        }
+
         RestaurantReport report = new RestaurantReport();
 
         report.setReporterMemberId(reporter.getId());
@@ -150,7 +180,6 @@ public class RestaurantReportService {
         dto.setGlobalUsed(globalUsed);
         dto.setGlobalLimit(GLOBAL_DAILY_REPORT_LIMIT);
 
-        // 未登入：仍然允許點檢舉按鈕，走 15 秒效果版
         if (authentication == null ||
                 !authentication.isAuthenticated() ||
                 "anonymousUser".equals(authentication.getPrincipal())) {

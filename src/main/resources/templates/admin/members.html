@@ -59,6 +59,42 @@
         button:hover {
             background: #1d4ed8;
         }
+
+        .state-active {
+            color: #198754;
+            font-weight: bold;
+        }
+
+        .state-disabled {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .btn-ban {
+            background: #dc3545;
+        }
+
+        .btn-ban:hover {
+            background: #b02a37;
+        }
+
+        .btn-unban {
+            background: #198754;
+        }
+
+        .btn-unban:hover {
+            background: #146c43;
+        }
+
+        .btn-disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        .action-form {
+            display: inline-block;
+            margin: 2px;
+        }
     </style>
 </head>
 
@@ -78,8 +114,10 @@
             <th>姓名</th>
             <th>Email</th>
             <th>角色</th>
+            <th>會員狀態</th>
             <th>目前等級</th>
             <th>修改等級</th>
+            <th>帳號操作</th>
         </tr>
         </thead>
 
@@ -90,6 +128,23 @@
             <td th:text="${member.name}">name</td>
             <td th:text="${member.email}">email</td>
             <td th:text="${member.role}">USER</td>
+
+            <td>
+                <span th:if="${member.state == 'ACTIVE'}"
+                      class="state-active">
+                    ACTIVE
+                </span>
+
+                <span th:if="${member.state == 'DISABLED'}"
+                      class="state-disabled">
+                    DISABLED
+                </span>
+
+                <span th:if="${member.state != 'ACTIVE' and member.state != 'DISABLED'}"
+                      th:text="${member.state}">
+                    UNKNOWN
+                </span>
+            </td>
 
             <td th:text="${member.tier != null ? member.tier.name : '尚未設定'}">
                 普通會員
@@ -108,6 +163,33 @@
                     </select>
 
                     <button type="submit">更新</button>
+                </form>
+            </td>
+
+            <td>
+                <form class="action-form"
+                      th:action="@{'/admin/members/' + ${member.id} + '/ban'}"
+                      method="post"
+                      onsubmit="return confirm('確定要封鎖這位會員嗎？');">
+
+                    <button type="submit"
+                            class="btn-ban"
+                            th:disabled="${member.state == 'DISABLED'}"
+                            th:classappend="${member.state == 'DISABLED'} ? ' btn-disabled'">
+                        封鎖
+                    </button>
+                </form>
+
+                <form class="action-form"
+                      th:action="@{'/admin/members/' + ${member.id} + '/unban'}"
+                      method="post">
+
+                    <button type="submit"
+                            class="btn-unban"
+                            th:disabled="${member.state == 'ACTIVE'}"
+                            th:classappend="${member.state == 'ACTIVE'} ? ' btn-disabled'">
+                        解除封鎖
+                    </button>
                 </form>
             </td>
         </tr>

@@ -15,6 +15,5 @@ public interface RestaurantReportRepository
             String status
     );
 
-    List<RestaurantReport>
-    findAllByOrderByCreatedAtDesc();
+    List<RestaurantReport> findAllByOrderByReportTimeDesc();
 }
