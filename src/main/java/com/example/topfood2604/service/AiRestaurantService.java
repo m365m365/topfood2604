@@ -4,7 +4,6 @@ import com.example.topfood2604.entity.AiRestaurantInfo;
 import com.example.topfood2604.repository.AiRestaurantRepository;
 import com.example.topfood2604.util.JsonUtil;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -20,7 +19,7 @@ public class AiRestaurantService {
 
     private static final String PROMPT =
             "請列出台北6家熱門美食餐廳，只回傳 JSON 陣列，不要加任何說明文字，不要加 markdown。"
-                    +"只回傳合法 JSON array，最後一定是 ]，不能出現 )，不能加 markdown，不能加說明文字。"
+                    + "只回傳合法 JSON array，最後一定是 ]，不能出現 )，不能加 markdown，不能加說明文字。"
                     + "每筆必須包含 name 和 url。"
                     + "url 優先使用餐廳官方網站。"
                     + "如果沒有官方網站，請使用該餐廳可公開瀏覽的介紹頁網址。"
@@ -41,19 +40,13 @@ public class AiRestaurantService {
     }
 
     /**
-     * 完整 AI 搜尋流程：
-     * 1. 清空舊 AI 餐廳資料
-     * 2. GPT 取得餐廳 name + url
-     * 3. 修正 GPT 的壞網址
-     * 4. 存入 MySQL
-     * 5. Google Places 補 imageUrl / address / mapUrl / embedMapUrl / lat / lng
-     * 6. 注意：Google mapUrl 不覆蓋 GPT url
-     * 7. 回傳給前端
+     * AI 搜尋流程：
+     * 1. GPT 取得餐廳 name + url
+     * 2. 修正 GPT 壞網址
+     * 3. Google Places 補 imageUrl / address / mapUrl / embedMapUrl / lat / lng
+     * 4. 不存 MySQL，直接回傳給前端
      */
-    @Transactional
     public List<AiRestaurantInfo> aiSearchFull() {
-
-        aiRestaurantRepository.deleteAll();
 
         String result = chatGptService.ask(PROMPT);
 
@@ -63,17 +56,15 @@ public class AiRestaurantService {
         List<AiRestaurantInfo> list = JsonUtil.parseRestaurantJson(result);
 
         for (AiRestaurantInfo restaurant : list) {
+
+            // 不存資料庫，所以 id 保持 null
             restaurant.setId(null);
             restaurant.setState("GPT_OK");
 
             if (isBadUrl(restaurant.getUrl())) {
                 restaurant.setUrl(buildGoogleSearchUrl(restaurant.getName()));
             }
-        }
 
-        List<AiRestaurantInfo> savedList = aiRestaurantRepository.saveAll(list);
-
-        for (AiRestaurantInfo restaurant : savedList) {
             try {
                 Map<String, String> place =
                         googlePlacesService.findRestaurantPhoto(restaurant.getName());
@@ -86,7 +77,6 @@ public class AiRestaurantService {
                     restaurant.setAddress(place.get("address"));
                 }
 
-                // 查看地圖使用這個
                 if (place.containsKey("mapUrl")) {
                     restaurant.setMapUrl(place.get("mapUrl"));
                 }
@@ -117,14 +107,13 @@ public class AiRestaurantService {
             }
         }
 
-        return aiRestaurantRepository.saveAll(savedList);
+        return list;
     }
 
     public List<AiRestaurantInfo> findAll() {
         return aiRestaurantRepository.findAll();
     }
 
-    @Transactional
     public void deleteAll() {
         aiRestaurantRepository.deleteAll();
     }

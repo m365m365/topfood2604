@@ -4,37 +4,53 @@ import com.example.topfood2604.entity.AiRestaurantInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JsonUtil {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     public static List<AiRestaurantInfo> parseRestaurantJson(String json) {
+
         try {
-            String cleanJson = json
-                    .replace("```json", "")
+
+            if (json == null || json.isBlank()) {
+                return new ArrayList<>();
+            }
+
+            // 去除 markdown
+            json = json.replace("```json", "")
                     .replace("```", "")
                     .trim();
 
-            int start = cleanJson.indexOf("[");
-            int end = cleanJson.lastIndexOf("]");
+            // 找到第一個 [
+            int start = json.indexOf("[");
 
-            if (start >= 0 && end > start) {
-                cleanJson = cleanJson.substring(start, end + 1);
+            // 找到最後一個 ]
+            int end = json.lastIndexOf("]");
+
+            if (start >= 0 && end >= 0) {
+                json = json.substring(start, end + 1);
             }
 
-            cleanJson = cleanJson
-                    .replace("})]", "\"}]")
-                    .replace(")]", "]");
+            System.out.println("=== 修正後 JSON ===");
+            System.out.println(json);
 
-            return objectMapper.readValue(
-                    cleanJson,
+            return mapper.readValue(
+                    json,
                     new TypeReference<List<AiRestaurantInfo>>() {}
             );
 
         } catch (Exception e) {
-            throw new RuntimeException("JSON 解析失敗: " + e.getMessage(), e);
+
+            System.out.println("=== JSON 解析失敗 ===");
+            System.out.println(json);
+
+            throw new RuntimeException(
+                    "JSON 解析失敗: " + e.getMessage(),
+                    e
+            );
         }
     }
 }

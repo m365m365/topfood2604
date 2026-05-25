@@ -478,6 +478,8 @@
     const memberRankingList = document.getElementById("memberRankingList");
     const rankingPagination = document.getElementById("rankingPagination");
 
+    const AI_LOCAL_STORAGE_KEY = "aiRestaurants";
+
     let memberRankingData = [];
     let currentRankingType = "recommend";
     let currentRankingPage = 1;
@@ -527,7 +529,23 @@
     });
 
     document.addEventListener("DOMContentLoaded", function () {
-        loadHomepage();
+
+        const savedAiRestaurants = localStorage.getItem(AI_LOCAL_STORAGE_KEY);
+
+        if (savedAiRestaurants) {
+            try {
+                const aiRestaurants = JSON.parse(savedAiRestaurants);
+                renderAiCards(aiRestaurants);
+                loadRecommendedRestaurantsOnly();
+            } catch (e) {
+                console.error("localStorage AI 資料解析失敗:", e);
+                localStorage.removeItem(AI_LOCAL_STORAGE_KEY);
+                loadHomepage();
+            }
+        } else {
+            loadHomepage();
+        }
+
         loadMemberRanking();
     });
 
@@ -576,6 +594,36 @@
         }
     }
 
+    async function loadRecommendedRestaurantsOnly() {
+        recommendedBox.innerHTML = `
+            <div class="empty-box">
+                會員推薦載入中...
+            </div>
+        `;
+
+        try {
+            const response = await fetch("/api/homepage");
+
+            if (!response.ok) {
+                throw new Error("HTTP status = " + response.status);
+            }
+
+            const data = await response.json();
+
+            renderRecommendedCards(data.recommendedRestaurants || data.userRecommend || []);
+
+        } catch (error) {
+            console.error("會員推薦載入失敗:", error);
+
+            recommendedBox.innerHTML = `
+                <div class="empty-box text-danger">
+                    會員推薦載入失敗，請確認 /api/homepage 是否正常。<br>
+                    ${escapeHtml(error.message)}
+                </div>
+            `;
+        }
+    }
+
     async function loadAiRestaurants() {
         aiContainer.innerHTML = `
             <div class="col-12 text-center py-5">
@@ -597,6 +645,8 @@
             }
 
             const data = await response.json();
+
+            localStorage.setItem(AI_LOCAL_STORAGE_KEY, JSON.stringify(data));
 
             renderAiCards(data);
 
@@ -647,6 +697,7 @@
                 encodeURIComponent(address) +
                 "&imageUrl=" +
                 encodeURIComponent(imageUrl);
+
             const mapUrl =
                 item.mapUrl ||
                 buildMapUrl(item.lat, item.lng, name + " " + address);
@@ -655,12 +706,11 @@
                 <div class="col-12 col-sm-6 col-xl-4">
                     <div class="card ai-card">
 
-                            <img src="${imageUrl}"
-                                 class="card-img-top"
-                                 alt="${escapeHtml(name)}"
-                                 loading="lazy"
-                                 onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=No+Image';">
-
+                        <img src="${imageUrl}"
+                             class="card-img-top"
+                             alt="${escapeHtml(name)}"
+                             loading="lazy"
+                             onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=No+Image';">
 
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">${escapeHtml(name)}</h5>
@@ -711,7 +761,6 @@
             const address = r.address || "尚無地址";
             const description = r.description || "";
             const starRating = Number(r.starRating || r.rating || 0);
-            const mapUrl = r.mapUrl || buildMapUrl(r.lat, r.lng, name + " " + address);
 
             const card = document.createElement("div");
             card.className = "recommend-card";
