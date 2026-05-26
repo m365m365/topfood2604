@@ -15,4 +15,6 @@ public interface MemberRepository
     boolean existsByEmail(String email);
 
     Optional<Member> findByVerificationToken(String verificationToken);
+
+    Optional<Member> findByResetPasswordToken(String resetPasswordToken);
 }

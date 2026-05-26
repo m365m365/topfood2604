@@ -46,7 +46,11 @@ public class Member {
     @JoinColumn(name = "tier_id")
     private MemberTier tier;
 
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
 
+    @Column(name = "reset_password_token_expire_at")
+    private LocalDateTime resetPasswordTokenExpireAt;
 
     @Column(nullable = false)
     private Boolean emailVerified = false;
