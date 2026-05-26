@@ -5,12 +5,42 @@
   <meta charset="UTF-8">
   <title>關於我</title>
   <link rel="stylesheet" th:href="@{/navbar.css}">
+
 </head>
 
 <body>
 
-<div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div th:replace="fragments/main-navbar :: mainNavbar"></div>
+<div th:replace="fragments/sub-navbar :: subNavbar"></div>
+
+<style>
+  .sub-navbar {
+    height: 46px;
+    background: #eef5f8;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 36px;
+
+    border-bottom: 1px solid #d9e4ea;
+
+    position: sticky;
+    top: 64px;
+
+    z-index: 900;
+  }
+
+  .sub-navbar a {
+    color: #24384a;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .sub-navbar a:hover {
+    color: #0d6efd;
+  }
+</style>
 
 <div class="page-container">
 
