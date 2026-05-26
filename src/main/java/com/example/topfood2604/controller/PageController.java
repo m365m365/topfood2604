@@ -15,7 +15,7 @@ public class PageController {
     }
 
     // 首頁
-    @GetMapping("/")
+    @GetMapping({"/", "/index.html"})
     public String homePage(Model model) {
 
         model.addAttribute(
@@ -83,5 +83,15 @@ public class PageController {
         );
 
         return "about";
+    }
+    @GetMapping("/recommend")
+    public String recommendPage(Model model) {
+
+        model.addAttribute(
+                "subMenus",
+                pageConfigService.getSubMenu("recommend")
+        );
+
+        return "recommend";
     }
 }
