@@ -19,8 +19,8 @@ public class AiRestaurantController {
 
     /**
      * AI 搜尋餐廳
-     * 舊網址：/api/AiRestaurantApi/search
-     * 新網址：/api/restaurants/ai/search
+     * 不寫入資料庫
+     * 直接回傳 JSON 給前端
      */
     @GetMapping({
             "/api/AiRestaurantApi/search",
@@ -34,7 +34,8 @@ public class AiRestaurantController {
     }
 
     /**
-     * 查詢目前資料庫所有餐廳
+     * 首頁初始載入舊資料
+     * 這個可以暫時保留
      */
     @GetMapping({
             "/api/AiRestaurantApi/list",
@@ -45,19 +46,5 @@ public class AiRestaurantController {
         List<AiRestaurantInfo> list = aiRestaurantService.findAll();
 
         return ResponseEntity.ok(list);
-    }
-
-    /**
-     * 清空資料庫（測試用）
-     */
-    @DeleteMapping({
-            "/api/AiRestaurantApi/clear",
-            "/api/restaurants/ai/clear"
-    })
-    public ResponseEntity<String> clearRestaurants() {
-
-        aiRestaurantService.deleteAll();
-
-        return ResponseEntity.ok("資料已清空");
     }
 }
