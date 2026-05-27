@@ -1,97 +1,75 @@
 package com.example.topfood2604.controller;
 
+import com.example.topfood2604.entity.Member;
+import com.example.topfood2604.entity.MemberRecommendRestaurant;
+import com.example.topfood2604.repository.MemberRepository;
+import com.example.topfood2604.service.MyRecommendPageService;
 import com.example.topfood2604.service.PageConfigService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.List;
 
 @Controller
 public class PageController {
 
     private final PageConfigService pageConfigService;
+    private final MemberRepository memberRepository;
+    private final MyRecommendPageService myRecommendPageService;
 
-    public PageController(PageConfigService pageConfigService) {
+    public PageController(
+            PageConfigService pageConfigService,
+            MemberRepository memberRepository,
+            MyRecommendPageService myRecommendPageService
+    ) {
         this.pageConfigService = pageConfigService;
+        this.memberRepository = memberRepository;
+        this.myRecommendPageService = myRecommendPageService;
     }
 
-    // 首頁
     @GetMapping({"/", "/index.html"})
     public String homePage(Model model) {
-
-        model.addAttribute(
-                "subMenus",
-                pageConfigService.getSubMenu("home")
-        );
-
+        model.addAttribute("subMenus", pageConfigService.getSubMenu("home"));
         return "index";
     }
 
-    // 精準尋查
     @GetMapping("/search")
     public String searchPage(Model model) {
-
-        model.addAttribute(
-                "subMenus",
-                pageConfigService.getSubMenu("search")
-        );
-
+        model.addAttribute("subMenus", pageConfigService.getSubMenu("search"));
         return "search";
     }
 
-    // 商業活動
     @GetMapping("/business")
     public String businessPage(Model model) {
-
-        model.addAttribute(
-                "subMenus",
-                pageConfigService.getSubMenu("business")
-        );
-
+        model.addAttribute("subMenus", pageConfigService.getSubMenu("business"));
         return "business";
     }
 
-    // 討論區
     @GetMapping("/forum")
     public String forumPage(Model model) {
-
-        model.addAttribute(
-                "subMenus",
-                pageConfigService.getSubMenu("forum")
-        );
-
+        model.addAttribute("subMenus", pageConfigService.getSubMenu("forum"));
         return "forum";
     }
 
-    // 會員專區
     @GetMapping("/member-center")
     public String memberCenterPage(Model model) {
-
-        model.addAttribute(
-                "subMenus",
-                pageConfigService.getSubMenu("member-center")
-        );
-
+        model.addAttribute("subMenus", pageConfigService.getSubMenu("member-center"));
         return "member-center";
     }
-    // 關於我
+
     @GetMapping("/about")
     public String aboutPage(Model model) {
-
-        model.addAttribute(
-                "subMenus",
-                pageConfigService.getSubMenu("about")
-        );
-
+        model.addAttribute("subMenus", pageConfigService.getSubMenu("about"));
         return "about";
     }
+
     @GetMapping("/recommend")
     public String recommendPage(Model model) {
-
-        model.addAttribute(
-                "subMenus",
-                pageConfigService.getSubMenu("recommend")
-        );
-
+        model.addAttribute("subMenus", pageConfigService.getSubMenu("recommend"));
         return "recommend";
     }
+
+
 }

@@ -38,7 +38,8 @@
     </a>
 
     <!-- 我的推薦 -->
-    <a th:href="@{/my-recommend}">
+    <a th:if="${loggedIn}"
+       th:href="@{'/member/' + ${loginMemberId} + '/restaurants'}">
       我推薦的餐廳
     </a>
 

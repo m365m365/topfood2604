@@ -1,5 +1,7 @@
 package com.example.topfood2604.config;
 
+import com.example.topfood2604.entity.Member;
+import com.example.topfood2604.repository.MemberRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.ui.Model;
@@ -8,6 +10,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 @ControllerAdvice
 public class NavbarControllerAdvice {
+
+    private final MemberRepository memberRepository;
+
+    public NavbarControllerAdvice(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
 
     @ModelAttribute
     public void addLoginInfo(Model model, Authentication authentication) {
@@ -19,29 +27,34 @@ public class NavbarControllerAdvice {
 
         model.addAttribute("loggedIn", loggedIn);
 
-        if (loggedIn) {
+        if (!loggedIn) {
+            return;
+        }
 
-            String username = authentication.getName();
+        String username = authentication.getName();
 
-            String displayName = username;
+        String displayName = username;
+        if (displayName != null && displayName.contains("@")) {
+            displayName = displayName.substring(0, displayName.indexOf("@"));
+        }
 
-            if (displayName != null && displayName.contains("@")) {
-                displayName = displayName.substring(0, displayName.indexOf("@"));
-            }
+        model.addAttribute("loginUsername", username);
+        model.addAttribute("loginDisplayName", displayName);
 
-            // 原始帳號
-            model.addAttribute("loginUsername", username);
+        String role = authentication.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElse("");
 
-            // 顯示用名稱，只顯示 @ 前面
-            model.addAttribute("loginDisplayName", displayName);
+        model.addAttribute("loginRole", role);
 
-            String role = authentication.getAuthorities()
-                    .stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .findFirst()
-                    .orElse("");
+        Member member = memberRepository
+                .findByUsername(username)
+                .orElse(null);
 
-            model.addAttribute("loginRole", role);
+        if (member != null) {
+            model.addAttribute("loginMemberId", member.getId());
         }
     }
 }
