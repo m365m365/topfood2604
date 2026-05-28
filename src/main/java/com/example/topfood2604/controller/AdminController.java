@@ -2,11 +2,12 @@ package com.example.topfood2604.controller;
 
 import com.example.topfood2604.entity.RecommendedRestaurant;
 import com.example.topfood2604.repository.RecommendedRestaurantRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 public class AdminController {
@@ -18,12 +19,17 @@ public class AdminController {
     }
 
     @GetMapping("/admin")
-    public String adminPage(Model model) {
+    public String adminPage(
+            @RequestParam(defaultValue = "0") int page,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page, 10);
 
-        List<RecommendedRestaurant> restaurants =
-                recommendedRestaurantRepository.findAll();
+        Page<RecommendedRestaurant> restaurantPage =
+                recommendedRestaurantRepository.findAllByOrderByIdDesc(pageable);
 
-        model.addAttribute("restaurants", restaurants);
+        model.addAttribute("restaurants", restaurantPage.getContent());
+        model.addAttribute("restaurantPage", restaurantPage);
 
         return "admin";
     }
@@ -41,6 +47,7 @@ public class AdminController {
 
         return "redirect:/admin";
     }
+
     @GetMapping("/admin/recommend/view/{id}")
     public String viewRecommend(@PathVariable Long id, Model model) {
 

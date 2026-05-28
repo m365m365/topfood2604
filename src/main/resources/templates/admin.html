@@ -85,6 +85,32 @@
       color: #333;
       font-weight: bold;
     }
+
+    .pagination {
+      margin-top: 30px;
+      text-align: center;
+    }
+
+    .pagination a {
+      display: inline-block;
+      margin: 0 5px;
+      padding: 8px 14px;
+      background: #eee;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .pagination a:hover {
+      background: #007bff;
+      color: white;
+    }
+
+    .active-page {
+      background: #007bff !important;
+      color: white !important;
+    }
   </style>
 </head>
 
@@ -141,6 +167,27 @@
     </tr>
     </tbody>
   </table>
+
+  <div class="pagination" th:if="${restaurantPage.totalPages > 1}">
+
+    <a th:if="${restaurantPage.hasPrevious()}"
+       th:href="@{/admin(page=${restaurantPage.number - 1})}">
+      上一頁
+    </a>
+
+    <span th:each="i : ${#numbers.sequence(0, restaurantPage.totalPages - 1)}">
+      <a th:href="@{/admin(page=${i})}"
+         th:text="${i + 1}"
+         th:classappend="${i == restaurantPage.number} ? 'active-page'">
+      </a>
+    </span>
+
+    <a th:if="${restaurantPage.hasNext()}"
+       th:href="@{/admin(page=${restaurantPage.number + 1})}">
+      下一頁
+    </a>
+
+  </div>
 
   <a class="back-link" th:href="@{/}">← 回首頁</a>
 
