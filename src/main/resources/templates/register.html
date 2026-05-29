@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="/navbar.css">
+
   <title>會員註冊</title>
 
 
@@ -63,6 +64,11 @@
       text-align: center;
       margin-top: 18px;
     }
+    .warning-text1 {
+      color: #dc3545;
+
+
+    }
   </style>
 </head>
 
@@ -72,6 +78,15 @@
 
 <div class="container">
   <h1>會員註冊</h1>
+  <p>
+    TopFood AI 目前是一個實驗作品平台，
+    網站防護性可能尚未完善。
+
+    <span class="warning-text1">
+                                  會員註冊時，密碼請勿使用重要或常用密碼，
+                            </span>
+    以避免資料外洩造成損失。
+  </p>
 
   <div class="error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
 

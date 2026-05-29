@@ -3,62 +3,233 @@
 
 <head>
     <meta charset="UTF-8">
-    <div th:replace="fragments/sub-navbar :: subNavbar"></div>
     <title>會員專區</title>
+
     <link rel="stylesheet" th:href="@{/navbar.css}">
+
+    <style>
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            background: #f4f6f8;
+        }
+
+        .sub-navbar {
+            height: 46px;
+            background: #eef5f8;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 36px;
+
+            border-bottom: 1px solid #d9e4ea;
+
+            position: sticky;
+            top: 64px;
+
+            z-index: 900;
+        }
+
+        .sub-navbar a {
+            color: #24384a;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .sub-navbar a:hover {
+            color: #0d6efd;
+        }
+
+        .page-container {
+            width: 85%;
+            max-width: 1200px;
+            margin: 80px auto 50px;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 42px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 40px;
+        }
+
+        .info-card {
+
+            scroll-margin-top: 130px;
+
+            background: white;
+            border-radius: 14px;
+            padding: 28px 32px;
+            margin-bottom: 25px;
+
+            box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+
+            border-left: 8px solid #0d6efd;
+        }
+
+        #likes {
+            border-left-color: #20c997;
+        }
+
+        #tier {
+            border-left-color: #fd7e14;
+        }
+
+        #usage {
+            border-left-color: #6f42c1;
+        }
+
+        .info-card h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .info-card p {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .info-card ul {
+            padding-left: 24px;
+        }
+
+        .info-card li {
+            font-size: 18px;
+            line-height: 2;
+        }
+
+        .highlight {
+            color: #0d6efd;
+            font-weight: bold;
+        }
+
+    </style>
+
 </head>
 
 <body>
 
-<div th:replace="fragments/main-navbar :: mainNavbar"></div>
-<div th:replace="fragments/sub-navbar :: subNavbar"></div>
+<div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
 
-<style>
-    .sub-navbar {
-        height: 46px;
-        background: #eef5f8;
+<div class="sub-navbar">
 
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 36px;
+    <a href="#recommend">我的推薦餐廳</a>
 
-        border-bottom: 1px solid #d9e4ea;
+    <a href="#likes">我的按讚紀錄</a>
 
-        position: sticky;
-        top: 64px;
+    <a href="#tier">會員等級</a>
 
-        z-index: 900;
-    }
+    <a href="#usage">每日使用次數</a>
 
-    .sub-navbar a {
-        color: #24384a;
-        font-weight: 700;
-        text-decoration: none;
-    }
-
-    .sub-navbar a:hover {
-        color: #0d6efd;
-    }
-</style>
+</div>
 
 <div class="page-container">
 
-    <h1 class="page-title">會員專區</h1>
+    <h1 class="page-title">
+        會員專區
+    </h1>
 
-    <div class="card-box">
-        <h2>會員功能中心</h2>
-        <p>這裡未來可以放會員相關功能。</p>
+    <!-- 我的推薦餐廳 -->
+
+    <div id="recommend" class="info-card">
+
+        <h2>🍜 我的推薦餐廳</h2>
+
+        <p>
+            您目前已推薦
+            <span class="highlight">5</span>
+            家餐廳。
+        </p>
 
         <ul>
-            <li>我的推薦餐廳</li>
-            <li>我的按讚紀錄</li>
-            <li>會員等級</li>
-            <li>每日使用次數</li>
+            <li>鼎泰豐</li>
+            <li>欣葉台菜</li>
+            <li>豐盛號</li>
+            <li>阿宗麵線</li>
+            <li>火鍋達人</li>
         </ul>
+
+    </div>
+
+    <!-- 我的按讚紀錄 -->
+
+    <div id="likes" class="info-card">
+
+        <h2>❤️ 我的按讚紀錄</h2>
+
+        <p>
+            本月累積按讚：
+            <span class="highlight">37</span>
+            次
+        </p>
+
+        <p>
+            今日剩餘按讚次數：
+            <span class="highlight">3</span>
+            次
+        </p>
+
+    </div>
+
+    <!-- 會員等級 -->
+
+    <div id="tier" class="info-card">
+
+        <h2>👑 會員等級</h2>
+
+        <p>
+            目前等級：
+            <span class="highlight">一般會員</span>
+        </p>
+
+        <p>
+            註冊日期：
+            2026-05-18
+        </p>
+
+        <p>
+            累積推薦餐廳：
+            5 家
+        </p>
+
+    </div>
+
+    <!-- 每日使用次數 -->
+
+    <div id="usage" class="info-card">
+
+        <h2>📊 每日使用次數</h2>
+
+        <p>
+            AI 搜尋次數：
+            <span class="highlight">12</span>
+            次
+        </p>
+
+        <p>
+            餐廳推薦次數：
+            <span class="highlight">2</span>
+            次
+        </p>
+
+        <p>
+            按讚次數：
+            <span class="highlight">2 / 5</span>
+        </p>
+
     </div>
 
 </div>
 
 </body>
+
 </html>
