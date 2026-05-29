@@ -1,63 +1,370 @@
 <!DOCTYPE html>
 <html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
-    <div th:replace="fragments/sub-navbar :: subNavbar"></div>
     <title>討論區</title>
+
     <link rel="stylesheet" th:href="@{/navbar.css}">
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            background: #f4f6f8;
+            color: #2c3e50;
+        }
+
+        .page-container {
+            width: 85%;
+            max-width: 1200px;
+            margin: 40px auto 60px;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 42px;
+            font-weight: bold;
+            margin-bottom: 35px;
+        }
+
+        .forum-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            border: none;
+            padding: 12px 24px;
+            border-radius: 999px;
+            background: white;
+            color: #2c3e50;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn.active {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .forum-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px 34px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+        }
+
+        #forumContent {
+            scroll-margin-top: 140px;
+        }
+
+        .current-topic {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        #currentTopicName {
+            color: #e67e22;
+        }
+
+        .forum-header {
+            display: grid;
+            grid-template-columns: 70px 1fr 150px 120px 120px;
+            padding: 14px 18px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .forum-row {
+            display: grid;
+            grid-template-columns: 70px 1fr 150px 120px 120px;
+            align-items: center;
+            padding: 16px 18px;
+            border-bottom: 1px solid #e5e9ef;
+        }
+
+        .forum-row:hover {
+            background: #f8fafc;
+        }
+
+        .rank {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e67e22;
+        }
+
+        .topic-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .topic-desc {
+            margin-top: 6px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .author,
+        .reply,
+        .view {
+            font-size: 15px;
+            color: #555;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .page-btn {
+            border: none;
+            padding: 9px 15px;
+            border-radius: 8px;
+            background: #e9eef3;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .page-btn.active {
+            background: #2c3e50;
+            color: white;
+        }
+
+        @media (max-width: 900px) {
+            .forum-header {
+                display: none;
+            }
+
+            .forum-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .rank::before {
+                content: "排名：";
+            }
+
+            .author::before {
+                content: "作者：";
+                font-weight: bold;
+            }
+
+            .reply::before {
+                content: "回覆：";
+                font-weight: bold;
+            }
+
+            .view::before {
+                content: "瀏覽：";
+                font-weight: bold;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
-<div th:replace="fragments/sub-navbar :: subNavbar"></div>
+<div th:replace="fragments/main-navbar :: mainNavbar"></div>
 
-<style>
-    .sub-navbar {
-        height: 46px;
-        background: #eef5f8;
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 36px;
-
-        border-bottom: 1px solid #d9e4ea;
-
-        position: sticky;
-        top: 64px;
-
-        z-index: 900;
-    }
-
-    .sub-navbar a {
-        color: #24384a;
-        font-weight: 700;
-        text-decoration: none;
-    }
-
-    .sub-navbar a:hover {
-        color: #0d6efd;
-    }
-</style>
 <div class="page-container">
 
-    <h1 class="page-title">討論區</h1>
+    <div class="page-title">討論區</div>
 
-    <div class="card-box">
-        <h2>會員美食討論區</h2>
-        <p>這裡未來可以做會員留言與美食心得分享。</p>
+    <div class="forum-tabs">
+        <button class="tab-btn active" onclick="switchCategory('food', this)">美食心得分享</button>
+        <button class="tab-btn" onclick="switchCategory('newshop', this)">新店討論</button>
+        <button class="tab-btn" onclick="switchCategory('queue', this)">排隊名店交流</button>
+        <button class="tab-btn" onclick="switchCategory('avoid', this)">地雷店避雷</button>
+    </div>
 
-        <ul>
-            <li>餐廳心得分享</li>
-            <li>熱門美食話題</li>
-            <li>會員留言討論</li>
-            <li>推薦排行榜討論</li>
-        </ul>
+    <div class="forum-card" id="forumContent">
+
+        <div class="current-topic">
+            主題：<span id="currentTopicName">美食心得分享</span>
+        </div>
+
+        <div class="forum-header">
+            <div>排名</div>
+            <div>討論主題</div>
+            <div>發文者</div>
+            <div>回覆數</div>
+            <div>瀏覽數</div>
+        </div>
+
+        <div id="forumList"></div>
+
+        <div class="pagination" id="pagination"></div>
+
     </div>
 
 </div>
+
+<script>
+    const pageSize = 10;
+    let currentCategory = "food";
+    let currentPage = 1;
+
+    const topicNames = {
+        food: "美食心得分享",
+        newshop: "新店討論",
+        queue: "排隊名店交流",
+        avoid: "地雷店避雷"
+    };
+
+    const forumData = {
+        food: [
+            ["台北牛肉麵哪一家最值得排隊？", "大家推薦哪一家湯頭最濃？", "小明", 28, 560],
+            ["鼎泰豐小籠包是不是還是第一名？", "價格高但品質穩定，大家覺得呢？", "Amy", 24, 490],
+            ["夜市必吃小吃排行榜", "鹽酥雞、蚵仔煎、臭豆腐怎麼排？", "阿國", 22, 430],
+            ["台中燒肉店心得分享", "最近吃了幾家，想聽大家意見。", "王小姐", 20, 398],
+            ["高雄海鮮餐廳推薦", "想找新鮮又不太貴的店。", "Leo", 18, 350],
+            ["早餐店最強組合是什麼？", "蛋餅加奶茶是不是經典？", "美美", 16, 320],
+            ["拉麵控請進", "豚骨、醬油、味噌大家最愛哪一種？", "Ken", 15, 300],
+            ["火鍋湯底選擇困難", "麻辣鍋、酸菜白肉鍋、昆布鍋？", "安安", 14, 280],
+            ["便當店CP值討論", "現在100元以下好難找。", "志明", 12, 260],
+            ["咖啡廳甜點分享", "哪家蛋糕最好吃？", "Lily", 11, 240],
+            ["台南小吃三日遊心得", "牛肉湯、碗粿、蝦仁飯都好吃。", "阿哲", 10, 220],
+            ["素食餐廳推薦", "想找好吃又不油膩的素食。", "小芳", 9, 200]
+        ],
+
+        newshop: [
+            ["信義區新開義大利麵店", "裝潢漂亮，想知道味道如何。", "David", 21, 450],
+            ["中山站新開甜點店", "排隊人很多，有人吃過嗎？", "Nina", 20, 430],
+            ["板橋新開韓式料理", "烤肉和部隊鍋評價如何？", "阿凱", 19, 400],
+            ["台中新開早午餐店", "份量看起來很大。", "小慧", 17, 360],
+            ["高雄新開拉麵店", "湯頭偏鹹還是剛好？", "Tony", 16, 340],
+            ["新竹新開咖哩飯", "聽說雞肉很嫩。", "Mina", 15, 320],
+            ["桃園新開燒肉店", "價格中上，值得嗎？", "Jason", 14, 300],
+            ["士林新開冰品店", "夏天好像很適合。", "小宇", 13, 280],
+            ["永和新開牛排館", "平價牛排升級版？", "阿豪", 12, 260],
+            ["東區新開酒食餐館", "氣氛很好，適合聚餐。", "Ivy", 11, 240],
+            ["南港新開健康餐盒", "健身族會喜歡嗎？", "Allen", 10, 220],
+            ["淡水新開海景咖啡", "景色美但餐點不知道如何。", "Cindy", 8, 180]
+        ],
+
+        queue: [
+            ["阜杭豆漿到底要幾點去？", "想避開排隊人潮。", "阿明", 35, 720],
+            ["一蘭拉麵排隊心得", "假日排隊時間分享。", "Ken", 30, 680],
+            ["鼎泰豐現場候位多久？", "平日晚上需要等嗎？", "Amy", 28, 640],
+            ["藏壽司抽號碼牌技巧", "怎樣比較快吃到？", "小美", 26, 600],
+            ["台南牛肉湯排隊名店", "早上幾點去最好？", "阿哲", 24, 560],
+            ["台中屋馬訂位困難嗎？", "臨時去有機會嗎？", "Leo", 22, 530],
+            ["高雄丹丹漢堡排隊分享", "哪間分店比較快？", "小芳", 20, 500],
+            ["人氣早餐店排隊排行", "哪家真的值得等？", "志明", 18, 450],
+            ["甜點店限量商品討論", "每天幾點賣完？", "Nina", 16, 410],
+            ["夜市排隊小吃心得", "排很長的一定好吃嗎？", "阿國", 14, 390],
+            ["火鍋名店訂位技巧", "熱門時段怎麼搶？", "David", 12, 350],
+            ["排隊美食真的值得嗎？", "大家願意排多久？", "Ivy", 10, 300]
+        ],
+
+        avoid: [
+            ["服務態度不佳的餐廳討論", "希望大家理性分享經驗。", "小明", 23, 520],
+            ["照片和實物差很多", "點餐前真的要看評價。", "Amy", 21, 500],
+            ["價格偏高但份量少", "CP值不如預期。", "Ken", 20, 460],
+            ["環境衛生需要注意", "用餐環境會影響心情。", "小芳", 18, 430],
+            ["排隊很久但普通", "名氣和味道不一定成正比。", "阿國", 17, 410],
+            ["外送餐點品質落差", "現場吃和外送差很多。", "Leo", 16, 390],
+            ["態度冷淡的店員", "服務也是用餐體驗一部分。", "Nina", 15, 360],
+            ["菜單價格標示不清", "結帳才發現加價。", "David", 14, 340],
+            ["餐點等待時間太久", "人手不足還是流程問題？", "Ivy", 12, 310],
+            ["踩雷火鍋店分享", "湯底普通、食材也普通。", "阿凱", 11, 290],
+            ["甜點過甜不推薦", "網美店不一定好吃。", "Mina", 10, 260],
+            ["餐廳音樂太吵", "聊天很困難。", "Jason", 8, 220]
+        ]
+    };
+
+    function switchCategory(category, btn) {
+        currentCategory = category;
+        currentPage = 1;
+
+        document.querySelectorAll(".tab-btn").forEach(button => {
+            button.classList.remove("active");
+        });
+
+        btn.classList.add("active");
+
+        document.getElementById("currentTopicName").textContent = topicNames[category];
+
+        renderForum();
+
+        document.getElementById("forumContent").scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+
+    function renderForum() {
+        const list = document.getElementById("forumList");
+        const pagination = document.getElementById("pagination");
+
+        const data = forumData[currentCategory];
+        const start = (currentPage - 1) * pageSize;
+        const end = start + pageSize;
+        const pageData = data.slice(start, end);
+
+        list.innerHTML = "";
+
+        pageData.forEach((item, index) => {
+            const rankNumber = start + index + 1;
+
+            list.innerHTML += `
+                <div class="forum-row">
+                    <div class="rank">#${rankNumber}</div>
+
+                    <div>
+                        <div class="topic-title">${item[0]}</div>
+                        <div class="topic-desc">${item[1]}</div>
+                    </div>
+
+                    <div class="author">${item[2]}</div>
+                    <div class="reply">${item[3]}</div>
+                    <div class="view">${item[4]}</div>
+                </div>
+            `;
+        });
+
+        const totalPages = Math.ceil(data.length / pageSize);
+        pagination.innerHTML = "";
+
+        for (let i = 1; i <= totalPages; i++) {
+            pagination.innerHTML += `
+                <button class="page-btn ${i === currentPage ? 'active' : ''}"
+                        onclick="changePage(${i})">
+                    ${i}
+                </button>
+            `;
+        }
+    }
+
+    function changePage(page) {
+        currentPage = page;
+        renderForum();
+
+        document.getElementById("forumContent").scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+
+    renderForum();
+</script>
 
 </body>
 </html>
