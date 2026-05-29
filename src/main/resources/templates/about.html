@@ -5,55 +5,190 @@
   <meta charset="UTF-8">
   <title>關於我</title>
   <link rel="stylesheet" th:href="@{/navbar.css}">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft JhengHei", sans-serif;
+      background: #f4f6f8;
+    }
 
+    .page-container {
+      width: 85%;
+      max-width: 1000px;
+      margin: 40px auto 50px;
+    }
+
+    .page-title {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 25px;
+      color: #222;
+    }
+
+    .notice-box {
+      background: white;
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+      border-left: 8px solid #0d6efd;
+    }
+
+    .notice-box:nth-of-type(3) {
+      border-left-color: #20c997;
+    }
+
+    .notice-box:nth-of-type(4) {
+      border-left-color: #6f42c1;
+    }
+
+    .notice-box:nth-of-type(5) {
+      border-left-color: #198754;
+    }
+
+    .notice-box:nth-of-type(6) {
+      border-left-color: #fd7e14;
+    }
+
+    .notice-box:nth-of-type(7) {
+      border-left-color: #dc3545;
+    }
+
+    .notice-box h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #222;
+      font-size: 24px;
+    }
+
+    .notice-box p {
+      font-size: 18px;
+      line-height: 1.9;
+      color: #444;
+      margin: 0 0 10px;
+    }
+
+    .notice-box ul {
+      margin-top: 10px;
+      padding-left: 24px;
+    }
+
+    .notice-box li {
+      line-height: 2;
+      font-size: 18px;
+      color: #444;
+    }
+
+    .sub-navbar {
+      height: 46px;
+      background: #eef5f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 36px;
+      border-bottom: 1px solid #d9e4ea;
+      position: sticky;
+      top: 64px;
+      z-index: 900;
+    }
+
+    .sub-navbar a {
+      color: #24384a;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .sub-navbar a:hover {
+      color: #0d6efd;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .notice-box {
+      scroll-margin-top: 130px;
+    }
+  </style>
 </head>
 
 <body>
 
 <div th:replace="fragments/main-navbar :: mainNavbar"></div>
-<div th:replace="fragments/sub-navbar :: subNavbar"></div>
-
-<style>
-  .sub-navbar {
-    height: 46px;
-    background: #eef5f8;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 36px;
-
-    border-bottom: 1px solid #d9e4ea;
-
-    position: sticky;
-    top: 64px;
-
-    z-index: 900;
-  }
-
-  .sub-navbar a {
-    color: #24384a;
-    font-weight: 700;
-    text-decoration: none;
-  }
-
-  .sub-navbar a:hover {
-    color: #0d6efd;
-  }
-</style>
+<div th:replace="
+     fragments/about-sub-navbar:: aboutSubNavbar">
+</div>
 
 <div class="page-container">
 
   <h1 class="page-title">關於 TopFood AI</h1>
 
-  <div class="card-box">
-    <h2>網站介紹</h2>
-
+  <div id="intro" class="notice-box">
+    <h2>平台介紹</h2>
     <p>
-      TopFood AI 是一個 AI 美食推薦平台，
-      結合 ChatGPT、Google Places API、
-      會員推薦、排行榜與按讚系統，
-      提供智慧化的餐廳探索體驗。
+      TopFood AI 是一個結合人工智慧與會員推薦機制的美食平台，
+      透過 ChatGPT、Google Places API、會員推薦、
+      排行榜與按讚系統，協助使用者快速發現優質餐廳。
+    </p>
+  </div>
+
+  <div id="feature" class="notice-box">
+    <h2>功能特色</h2>
+    <ul>
+      <li>AI 智慧美食搜尋</li>
+      <li>會員推薦餐廳分享</li>
+      <li>會員餐廳排行榜</li>
+      <li>每日按讚限制機制</li>
+      <li>Google Maps 地圖整合</li>
+      <li>餐廳檢舉與管理系統</li>
+      <li>會員帳號與 Email 驗證機制</li>
+    </ul>
+  </div>
+
+  <div id="idea" class="notice-box">
+    <h2>開發理念</h2>
+    <p>
+      我們相信美食資訊應該更容易被發現。
+      TopFood AI 希望透過 AI 技術結合社群力量，
+      降低使用者搜尋成本，
+      提供更快速、更真實、更有價值的餐廳推薦體驗。
+    </p>
+  </div>
+
+  <div id="privacy" class="notice-box">
+    <h2>隱私權政策</h2>
+    <p>
+      本網站重視會員個人資料保護。
+      會員註冊時所提供之資料，
+      僅用於帳號管理、會員服務與網站功能運作，
+      不會任意提供給第三方使用。
+    </p>
+    <p>
+      使用者應妥善保管個人帳號及密碼，
+      避免資料外洩風險。
+    </p>
+  </div>
+
+  <div id="terms" class="notice-box">
+    <h2>使用條款</h2>
+    <p>
+      使用者於本網站發布推薦內容時，
+      應遵守相關法律規定，
+      不得發布不實、侵權、違法或不當內容。
+    </p>
+    <p>
+      本網站保留刪除違規內容、
+      暫停或終止帳號使用權限之權利。
+    </p>
+  </div>
+
+  <div id="contact" class="notice-box">
+    <h2>聯絡我們</h2>
+    <p>網站名稱：TopFood AI</p>
+    <p>Email：mm365day@gmail.com</p>
+    <p>
+      若您有功能建議、合作提案、
+      系統問題回報或其他意見，
+      歡迎透過 Email 與我們聯絡。
     </p>
   </div>
 
