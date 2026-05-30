@@ -10,8 +10,9 @@
 
 <body>
 
-<div th:replace="fragments/main-navbar :: mainNavbar"></div>
-<div th:replace="fragments/sub-navbar :: subNavbar"></div>
+<div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
+
+<div th:replace="~{fragments/sub-navbar :: subNavbar}"></div>
 
      <style>
     .sub-navbar {

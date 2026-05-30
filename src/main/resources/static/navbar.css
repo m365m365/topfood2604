@@ -10,6 +10,16 @@ body {
     font-family: Arial, sans-serif;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+#restaurant-discount,
+#food-exhibition,
+#partner-activity,
+#brand-recommend {
+    scroll-margin-top: 130px;
+}
 
 /* =========================
    第一條：總導覽列
@@ -307,4 +317,32 @@ body {
     margin-bottom: 30px;
 
     line-height: 1.8;
+}
+.business-sub-navbar {
+    background: #eef2f5;
+    border-bottom: 1px solid #d8dde3;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+
+    min-height: 48px;
+}
+
+.business-sub-navbar a {
+    display: inline-block;
+    padding: 14px 28px;
+
+    text-decoration: none;
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 16px;
+
+    transition: all 0.25s ease;
+}
+
+.business-sub-navbar a:hover {
+    background: #dce4ea;
+    color: #0f4c81;
 }
