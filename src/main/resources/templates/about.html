@@ -24,15 +24,21 @@
     }
 
     .page-title {
-      text-align: center;
-      font-size: 42px;
+
+      color: white;
+
+      text-shadow:
+              0 3px 10px rgba(0,0,0,0.8);
+
+      font-size: 56px;
+
       font-weight: bold;
-      color: #2c3e50;
-      margin-bottom: 30px;
     }
 
     .notice-box {
-      background: white;
+      background: rgba(255,255,255,0.92);
+
+      backdrop-filter: blur(8px);
       border-radius: 14px;
       padding: 28px 32px;
       margin-bottom: 25px;
@@ -116,10 +122,21 @@
     html {
       scroll-behavior: smooth;
     }
+    .about-page {
+
+      background-image:
+              url('https://337123.com.tw/wp-content/uploads/2023/12/%E5%8F%B0%E5%8C%97%E5%A4%9C%E5%B8%82-658a9cac39f8f.jpg');
+
+      background-size: cover;
+
+      background-position: center;
+
+      background-attachment: fixed;
+    }
   </style>
 </head>
 
-<body>
+<body class="about-page">
 
 <div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
 

@@ -18,7 +18,7 @@ public class AiRestaurantController {
     }
 
     /**
-     * AI 搜尋餐廳
+     * 首頁 AI 搜尋餐廳
      * 不寫入資料庫
      * 直接回傳 JSON 給前端
      */
@@ -28,7 +28,47 @@ public class AiRestaurantController {
     })
     public ResponseEntity<List<AiRestaurantInfo>> aiSearchFull() {
 
-        List<AiRestaurantInfo> list = aiRestaurantService.aiSearchFull();
+        List<AiRestaurantInfo> list =
+                aiRestaurantService.aiSearchFull();
+
+        return ResponseEntity.ok(list);
+    }
+
+    /**
+     * 進階 AI 搜尋餐廳
+     * 專門給 search.html 使用
+     *
+     * 範例：
+     * /api/restaurants/ai/search/advanced?city=新北市&district=板橋區&styles=約會&styles=安靜&keyword=牛排
+     */
+    @GetMapping("/api/restaurants/ai/search/advanced")
+    public ResponseEntity<List<AiRestaurantInfo>> advancedSearch(
+
+            @RequestParam String city,
+
+            @RequestParam(required = false)
+            String district,
+
+            @RequestParam(required = false)
+            List<String> styles,
+
+            @RequestParam(defaultValue = "美食")
+            String keyword
+    ) {
+
+        String finalKeyword =
+                city + " " +
+                        (district == null ? "" : district) + " " +
+                        String.join(
+                                " ",
+                                styles == null
+                                        ? List.of()
+                                        : styles
+                        ) + " " +
+                        keyword;
+
+        List<AiRestaurantInfo> list =
+                aiRestaurantService.aiSearchFull(finalKeyword);
 
         return ResponseEntity.ok(list);
     }
@@ -43,7 +83,8 @@ public class AiRestaurantController {
     })
     public ResponseEntity<List<AiRestaurantInfo>> getRestaurants() {
 
-        List<AiRestaurantInfo> list = aiRestaurantService.findAll();
+        List<AiRestaurantInfo> list =
+                aiRestaurantService.findAll();
 
         return ResponseEntity.ok(list);
     }

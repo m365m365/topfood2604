@@ -3,9 +3,232 @@
 
 <head>
     <meta charset="UTF-8">
+    <title>依地區搜尋餐廳</title>
 
-    <title>精準尋查</title>
     <link rel="stylesheet" th:href="@{/navbar.css}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            background: #f4f6f8;
+        }
+
+        .page-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto 60px;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 42px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 35px;
+        }
+
+        .ai-search-panel {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+
+        .ai-panel-title {
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .ai-panel-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 35px;
+        }
+
+        .ai-section {
+            margin-bottom: 28px;
+            padding: 26px;
+            border-radius: 18px;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+        }
+
+        .ai-section-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 18px;
+        }
+
+        select,
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            font-size: 17px;
+            box-sizing: border-box;
+        }
+
+        .ai-option-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .ai-option-group label {
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 16px;
+        }
+
+        .ai-option-group label:hover {
+            background: #eaf3ff;
+            border-color: #3498db;
+        }
+
+        .ai-option-group input {
+            margin-right: 6px;
+        }
+
+        .ai-option-group label:has(input:checked) {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .hint-text {
+            margin-top: 10px;
+            color: #777;
+            font-size: 15px;
+        }
+
+        .preview-box {
+            margin-top: 5px;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 14px;
+            background: #eef6ff;
+            border: 1px solid #cfe2ff;
+            color: #2c3e50;
+            line-height: 1.8;
+            font-size: 16px;
+            min-height: 120px;
+        }
+
+        .ai-search-button {
+            width: 100%;
+            height: 70px;
+            font-size: 28px;
+            font-weight: bold;
+            border: none;
+            border-radius: 16px;
+            color: white;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .ai-search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(52,152,219,0.35);
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 34px;
+            }
+
+            .ai-search-panel {
+                padding: 24px;
+            }
+
+            .ai-section-title {
+                font-size: 21px;
+            }
+        }
+        .ai-result-section {
+            margin-top: 40px;
+            opacity: 0;
+            transform: translateY(80px);
+            transition: all 0.7s ease;
+            display: none;
+        }
+
+        .ai-result-section.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .ai-result-title {
+            text-align: center;
+            font-size: 32px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .ai-card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 26px;
+        }
+
+        .ai-restaurant-card {
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            transition: 0.25s;
+        }
+
+        .ai-restaurant-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .ai-restaurant-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .ai-card-body {
+            padding: 20px;
+        }
+
+        .ai-card-body h3 {
+            margin: 0 0 12px;
+            color: #2c3e50;
+        }
+
+        .ai-card-body p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .ai-card-body a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #3498db;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        @media (max-width: 900px) {
+            .ai-card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -14,52 +237,341 @@
 
 <div th:replace="~{fragments/sub-navbar :: subNavbar}"></div>
 
-     <style>
-    .sub-navbar {
-        height: 46px;
-        background: #eef5f8;
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 36px;
-
-        border-bottom: 1px solid #d9e4ea;
-
-        position: sticky;
-        top: 64px;
-
-        z-index: 900;
-    }
-
-    .sub-navbar a {
-        color: #24384a;
-        font-weight: 700;
-        text-decoration: none;
-    }
-
-    .sub-navbar a:hover {
-        color: #0d6efd;
-    }
-    </style>
-
 <div class="page-container">
 
-    <h1 class="page-title">精準尋查</h1>
+    <div class="page-title">依地區搜尋餐廳</div>
 
-    <div class="card-box">
-        <h2>AI 美食精準搜尋</h2>
-        <p>這裡未來可以放進階搜尋功能。</p>
+    <div class="ai-search-panel">
 
-        <ul>
-            <li>依地區搜尋餐廳</li>
-            <li>依美食類型搜尋</li>
-            <li>依價格範圍搜尋</li>
-            <li>AI 智慧推薦餐廳</li>
-        </ul>
+        <div class="ai-panel-title">AI 美食精準搜尋</div>
+
+        <div class="ai-panel-subtitle">
+            選擇地區、用餐風格，再輸入想吃的餐點，讓 AI 幫你找餐廳。
+        </div>
+
+        <!-- 1區 -->
+        <div class="ai-section">
+            <div class="ai-section-title">1. 選擇地區</div>
+
+            <select id="citySelect" onchange="renderDistricts(); updatePreview();">
+                <option value="">請選擇縣市</option>
+                <option value="台北市">台北市</option>
+                <option value="新北市">新北市</option>
+                <option value="桃園市">桃園市</option>
+                <option value="台中市">台中市</option>
+                <option value="台南市">台南市</option>
+                <option value="高雄市">高雄市</option>
+            </select>
+
+            <div id="districtArea" class="ai-option-group"></div>
+        </div>
+
+        <!-- 2區 -->
+        <div class="ai-section">
+            <div class="ai-section-title">2. 選擇用餐風格</div>
+
+            <div class="ai-option-group">
+                <label><input type="checkbox" value="約會">約會</label>
+                <label><input type="checkbox" value="慶生">慶生</label>
+                <label><input type="checkbox" value="明亮">明亮</label>
+                <label><input type="checkbox" value="寬敞">寬敞</label>
+                <label><input type="checkbox" value="溫暖">溫暖</label>
+                <label><input type="checkbox" value="鄉村">鄉村</label>
+                <label><input type="checkbox" value="歡樂">歡樂</label>
+                <label><input type="checkbox" value="休閒">休閒</label>
+                <label><input type="checkbox" value="安靜">安靜</label>
+                <label><input type="checkbox" value="景觀">景觀</label>
+                <label><input type="checkbox" value="網美">網美</label>
+                <label><input type="checkbox" value="親子">親子</label>
+                <label><input type="checkbox" value="聚餐">聚餐</label>
+                <label><input type="checkbox" value="平價">平價</label>
+                <label><input type="checkbox" value="高級">高級</label>
+            </div>
+        </div>
+
+        <!-- 3區 -->
+        <div class="ai-section">
+            <div class="ai-section-title">3. 想吃什麼？</div>
+
+            <input type="text"
+                   id="customKeyword"
+                   placeholder="例如：牛排、火鍋、燒肉、義大利麵、拉麵"
+                   onkeyup="updatePreview()"
+                   onchange="updatePreview()">
+
+            <div class="hint-text">
+                如果沒有輸入，系統會自動使用「美食」當作搜尋關鍵字。
+            </div>
+        </div>
+
+        <!-- 4區 -->
+        <div class="ai-section">
+            <div class="ai-section-title">4. AI 智慧搜尋</div>
+
+            <div id="previewBox" class="preview-box">
+                <b>搜尋條件</b><br><br>
+
+                📍 縣市：尚未選擇<br>
+                📍 區域：尚未選擇<br><br>
+
+                🎨 風格：尚未選擇<br><br>
+
+                🍜 關鍵字：美食
+            </div>
+
+            <button type="button"
+                    class="ai-search-button"
+                    onclick="searchRestaurant()">
+                🔍 AI 搜尋餐廳
+            </button>
+
+        </div>
+        <!-- AI 搜尋結果區 -->
+        <div id="aiResultSection" class="ai-result-section">
+
+            <h2 class="ai-result-title">AI 推薦餐廳</h2>
+
+            <div id="aiRestaurantCards" class="ai-card-grid">
+                <!-- 6 張餐廳卡片會出現在這裡 -->
+            </div>
+
+        </div>
+
     </div>
-
 </div>
+
+<script>
+    const districts = {
+        "台北市": [
+            "中正區", "大同區", "中山區", "松山區",
+            "大安區", "萬華區", "信義區", "士林區",
+            "北投區", "內湖區", "南港區", "文山區"
+        ],
+
+        "新北市": [
+            "板橋區", "新莊區", "中和區", "永和區",
+            "三重區", "新店區", "土城區", "蘆洲區",
+            "淡水區", "汐止區", "林口區"
+        ],
+
+        "桃園市": [
+            "桃園區", "中壢區", "平鎮區", "八德區",
+            "楊梅區", "蘆竹區", "龜山區", "大溪區"
+        ],
+
+        "台中市": [
+            "中區", "東區", "南區", "西區", "北區",
+            "西屯區", "南屯區", "北屯區", "豐原區", "太平區"
+        ],
+
+        "台南市": [
+            "中西區", "東區", "南區", "北區",
+            "安平區", "安南區", "永康區", "仁德區"
+        ],
+
+        "高雄市": [
+            "新興區", "前金區", "苓雅區", "鹽埕區",
+            "鼓山區", "左營區", "三民區", "前鎮區",
+            "鳳山區"
+        ]
+    };
+
+    function renderDistricts() {
+        const city = document.getElementById("citySelect").value;
+        const area = document.getElementById("districtArea");
+
+        area.innerHTML = "";
+
+        if (!city) {
+            updatePreview();
+            return;
+        }
+
+        districts[city].forEach(function (district) {
+            area.innerHTML += `
+                <label>
+                    <input type="radio"
+                           name="district"
+                           value="${district}"
+                           onchange="updatePreview()">
+                    ${district}
+                </label>
+            `;
+        });
+
+        updatePreview();
+    }
+
+    function updatePreview() {
+        const city = document.getElementById("citySelect").value;
+
+        const districtInput =
+            document.querySelector("input[name='district']:checked");
+
+        const district =
+            districtInput ? districtInput.value : "";
+
+        const styles =
+            Array.from(
+                document.querySelectorAll(
+                    ".ai-section input[type='checkbox']:checked"
+                )
+            ).map(item => item.value);
+
+        let keyword =
+            document.getElementById("customKeyword").value.trim();
+
+        if (keyword === "") {
+            keyword = "美食";
+        }
+
+        document.getElementById("previewBox").innerHTML =
+            "<b>搜尋條件</b><br><br>" +
+
+            "📍 縣市：" +
+            (city || "尚未選擇") +
+            "<br>" +
+
+            "📍 區域：" +
+            (district || "尚未選擇") +
+            "<br><br>" +
+
+            "🎨 風格：" +
+            (styles.length > 0 ? styles.join("、") : "尚未選擇") +
+            "<br><br>" +
+
+            "🍜 關鍵字：" +
+            keyword;
+    }
+
+    async function searchRestaurant() {
+        const city = document.getElementById("citySelect").value;
+
+        const districtInput =
+            document.querySelector("input[name='district']:checked");
+
+        const district =
+            districtInput ? districtInput.value : "";
+
+        const styles =
+            Array.from(
+                document.querySelectorAll(
+                    ".ai-section input[type='checkbox']:checked"
+                )
+            ).map(item => item.value);
+
+        let keyword =
+            document.getElementById("customKeyword").value.trim();
+
+        if (keyword === "") {
+            keyword = "美食";
+        }
+
+        const finalKeyword =
+            city + " " +
+            district + " " +
+            styles.join(" ") + " " +
+            keyword;
+
+        updatePreview();
+
+        const resultSection =
+            document.getElementById("aiResultSection");
+
+        const cardBox =
+            document.getElementById("aiRestaurantCards");
+
+        resultSection.style.display = "block";
+        cardBox.innerHTML = "<p style='text-align:center;'>AI 搜尋中，請稍候...</p>";
+
+        setTimeout(function () {
+            resultSection.classList.add("show");
+            resultSection.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }, 100);
+
+        try {
+            const params = new URLSearchParams();
+
+            params.append("city", city);
+            params.append("district", district);
+            params.append("keyword", keyword);
+
+            styles.forEach(function (style) {
+                params.append("styles", style);
+            });
+
+            const response = await fetch(
+                "/api/restaurants/ai/search/advanced?" + params.toString()
+            );
+
+            const restaurants = await response.json();
+
+            renderAiCards(restaurants);
+
+        } catch (error) {
+            cardBox.innerHTML =
+                "<p style='color:red;text-align:center;'>搜尋失敗，請稍後再試。</p>";
+        }
+    }
+    function renderAiCards(restaurants) {
+        const cardBox =
+            document.getElementById("aiRestaurantCards");
+
+        cardBox.innerHTML = "";
+
+        restaurants.slice(0, 6).forEach(function (r) {
+
+            const name =
+                r.name || "未命名餐廳";
+
+            const address =
+                r.address || "暫無地址";
+
+            const url =
+                r.url || "#";
+
+            const imageUrl =
+                r.photoUrl ||
+                r.imageUrl ||
+                "https://via.placeholder.com/600x400?text=No+Image";
+
+            cardBox.innerHTML += `
+            <div class="ai-restaurant-card">
+
+                <img src="${imageUrl}"
+                     alt="${name}"
+                     onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=No+Image';">
+
+                <div class="ai-card-body">
+
+                    <h3>${name}</h3>
+
+                    <p>${address}</p>
+
+                    <a href="${url}" target="_blank">
+                        查看餐廳
+                    </a>
+
+                </div>
+
+            </div>
+        `;
+        });
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+
+        document
+            .querySelectorAll(".ai-section input[type='checkbox']")
+            .forEach(function (item) {
+                item.addEventListener("change", updatePreview);
+            });
+
+        updatePreview();
+    });
+</script>
 
 </body>
 </html>

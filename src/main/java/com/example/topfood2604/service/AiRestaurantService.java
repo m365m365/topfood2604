@@ -31,17 +31,19 @@ public class AiRestaurantService {
                     + "{\"name\":\"欣葉台菜\",\"url\":\"https://www.shinyeh.com.tw/\"}"
                     + "]";
 
-    public AiRestaurantService(ChatGptService chatGptService,
-                               GooglePlacesService googlePlacesService,
-                               AiRestaurantRepository aiRestaurantRepository) {
+    public AiRestaurantService(
+            ChatGptService chatGptService,
+            GooglePlacesService googlePlacesService,
+            AiRestaurantRepository aiRestaurantRepository
+    ) {
         this.chatGptService = chatGptService;
         this.googlePlacesService = googlePlacesService;
         this.aiRestaurantRepository = aiRestaurantRepository;
     }
 
     /**
-     * AI 搜尋流程：
-     * 1. GPT 取得餐廳 name + url
+     * 首頁 AI 搜尋流程：
+     * 1. GPT 取得台北熱門餐廳 name + url
      * 2. 修正 GPT 壞網址
      * 3. Google Places 補 imageUrl / address / mapUrl / embedMapUrl / lat / lng
      * 4. 不存 MySQL，直接回傳給前端
@@ -50,24 +52,86 @@ public class AiRestaurantService {
 
         String result = chatGptService.ask(PROMPT);
 
-        System.out.println("=== ChatGPT 回傳 ===");
+        System.out.println("=== ChatGPT 首頁搜尋回傳 ===");
         System.out.println(result);
 
-        List<AiRestaurantInfo> list = JsonUtil.parseRestaurantJson(result);
+        List<AiRestaurantInfo> list =
+                JsonUtil.parseRestaurantJson(result);
+
+        enrichRestaurantsWithGooglePlaces(list, "台北 美食");
+
+        return list;
+    }
+
+    /**
+     * 進階 AI 搜尋流程：
+     * 給 search.html 使用。
+     *
+     * 例如：
+     * 新北市 板橋區 約會 安靜 牛排
+     */
+    public List<AiRestaurantInfo> aiSearchFull(String keyword) {
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            keyword = "台北 美食";
+        }
+
+        String prompt =
+                "請列出「" + keyword + "」相關的6家熱門美食餐廳，只回傳 JSON 陣列，不要加任何說明文字，不要加 markdown。"
+                        + "只回傳合法 JSON array，最後一定是 ]，不能出現 )，不能加 markdown，不能加說明文字。"
+                        + "每筆必須包含 name 和 url。"
+                        + "url 優先使用餐廳官方網站。"
+                        + "如果沒有官方網站，請使用該餐廳可公開瀏覽的介紹頁網址。"
+                        + "絕對不要使用 https://example.com。"
+                        + "絕對不要使用假網址。"
+                        + "絕對不要使用空字串。"
+                        + "格式範例：["
+                        + "{\"name\":\"鼎泰豐\",\"url\":\"https://www.dintaifung.com.tw/\"},"
+                        + "{\"name\":\"欣葉台菜\",\"url\":\"https://www.shinyeh.com.tw/\"}"
+                        + "]";
+
+        String result = chatGptService.ask(prompt);
+
+        System.out.println("=== ChatGPT 進階搜尋關鍵字 ===");
+        System.out.println(keyword);
+
+        System.out.println("=== ChatGPT 進階搜尋回傳 ===");
+        System.out.println(result);
+
+        List<AiRestaurantInfo> list =
+                JsonUtil.parseRestaurantJson(result);
+
+        enrichRestaurantsWithGooglePlaces(list, keyword);
+
+        return list;
+    }
+
+    /**
+     * 統一補 Google Places 資料
+     */
+    private void enrichRestaurantsWithGooglePlaces(
+            List<AiRestaurantInfo> list,
+            String searchKeyword
+    ) {
 
         for (AiRestaurantInfo restaurant : list) {
 
-            // 不存資料庫，所以 id 保持 null
             restaurant.setId(null);
             restaurant.setState("GPT_OK");
 
             if (isBadUrl(restaurant.getUrl())) {
-                restaurant.setUrl(buildGoogleSearchUrl(restaurant.getName()));
+                restaurant.setUrl(
+                        buildGoogleSearchUrl(
+                                searchKeyword + " " + restaurant.getName()
+                        )
+                );
             }
 
             try {
                 Map<String, String> place =
-                        googlePlacesService.findRestaurantPhoto(restaurant.getName());
+                        googlePlacesService.findRestaurantPhoto(
+                                searchKeyword + " " + restaurant.getName()
+                        );
 
                 if (place.containsKey("photoUrl")) {
                     restaurant.setImageUrl(place.get("photoUrl"));
@@ -96,18 +160,21 @@ public class AiRestaurantService {
                 restaurant.setState("GOOGLE_OK");
 
             } catch (Exception e) {
+
                 restaurant.setState("GOOGLE_ERROR");
 
                 if (isBadUrl(restaurant.getUrl())) {
-                    restaurant.setUrl(buildGoogleSearchUrl(restaurant.getName()));
+                    restaurant.setUrl(
+                            buildGoogleSearchUrl(
+                                    searchKeyword + " " + restaurant.getName()
+                            )
+                    );
                 }
 
                 System.out.println("Google Places 查詢失敗：" + restaurant.getName());
                 e.printStackTrace();
             }
         }
-
-        return list;
     }
 
     public List<AiRestaurantInfo> findAll() {
@@ -136,7 +203,8 @@ public class AiRestaurantService {
 
     private String buildGoogleSearchUrl(String name) {
         String keyword = name == null ? "台北 餐廳" : name;
-        String encoded = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
+        String encoded =
+                URLEncoder.encode(keyword, StandardCharsets.UTF_8);
 
         return "https://www.google.com/search?q=" + encoded;
     }
