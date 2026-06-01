@@ -538,26 +538,34 @@
                 r.imageUrl ||
                 "https://via.placeholder.com/600x400?text=No+Image";
 
+            const detailUrl =
+                "/restaurant-ai-detail.html"
+                + "?name=" + encodeURIComponent(name)
+                + "&address=" + encodeURIComponent(address)
+                + "&photo=" + encodeURIComponent(imageUrl)
+                + "&url=" + encodeURIComponent(url);
+
             cardBox.innerHTML += `
-            <div class="ai-restaurant-card">
+                <div class="ai-restaurant-card">
 
-                <img src="${imageUrl}"
-                     alt="${name}"
-                     onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=No+Image';">
+                    <img src="${imageUrl}"
+                         alt="${name}"
+                         onerror="this.onerror=null;this.src='https://via.placeholder.com/600x400?text=No+Image';">
 
-                <div class="ai-card-body">
+                    <div class="ai-card-body">
 
-                    <h3>${name}</h3>
+                        <h3>${name}</h3>
 
-                    <p>${address}</p>
+                        <p>${address}</p>
 
-                    <a href="${url}" target="_blank">
-                        查看餐廳
-                    </a>
+                        <a href="${detailUrl}" target="_blank">
+                            查看餐廳
+                        </a>
+
+                    </div>
 
                 </div>
 
-            </div>
         `;
         });
     }
