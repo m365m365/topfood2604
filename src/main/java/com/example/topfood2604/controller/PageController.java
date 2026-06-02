@@ -61,7 +61,17 @@ public class PageController {
 
     @GetMapping("/about")
     public String aboutPage(Model model) {
-        model.addAttribute("subMenus", pageConfigService.getSubMenu("about"));
+
+        model.addAttribute(
+                "subMenus",
+                pageConfigService.getSubMenu("about")
+        );
+
+        model.addAttribute(
+                "backgroundImageUrl",
+                "https://topfood2604-images.s3.ap-northeast-1.amazonaws.com/homepageImage/taipei-nightmarket.jpg"
+        );
+
         return "about";
     }
 
