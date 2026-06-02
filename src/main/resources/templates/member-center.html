@@ -22,17 +22,13 @@
         .sub-navbar {
             height: 46px;
             background: #eef5f8;
-
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 36px;
-
             border-bottom: 1px solid #d9e4ea;
-
             position: sticky;
             top: 53px;
-
             z-index: 900;
         }
 
@@ -60,17 +56,34 @@
             margin-bottom: 40px;
         }
 
+        .welcome-box {
+            background: white;
+            border-radius: 14px;
+            padding: 20px 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            border-left: 8px solid #0d6efd;
+        }
+
+        .welcome-title {
+            font-size: 26px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .welcome-subtitle {
+            margin-top: 12px;
+            color: #6c757d;
+            font-size: 16px;
+        }
+
         .info-card {
-
             scroll-margin-top: 130px;
-
             background: white;
             border-radius: 14px;
             padding: 28px 32px;
             margin-bottom: 25px;
-
             box-shadow: 0 4px 14px rgba(0,0,0,0.12);
-
             border-left: 8px solid #0d6efd;
         }
 
@@ -84,6 +97,10 @@
 
         #usage {
             border-left-color: #6f42c1;
+        }
+
+        #change {
+            border-left-color: #0d6efd;
         }
 
         .info-card h2 {
@@ -112,6 +129,81 @@
             font-weight: bold;
         }
 
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .form-group input {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px 14px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .save-btn {
+            background: #0d6efd;
+            color: white;
+            border: none;
+            padding: 12px 26px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .save-btn:hover {
+            background: #0b5ed7;
+        }
+
+        .disabled-btn {
+            background: #adb5bd !important;
+            cursor: not-allowed;
+            opacity: 0.75;
+        }
+
+        .login-warning {
+            color: #6c757d;
+            font-size: 17px;
+            margin-bottom: 18px;
+        }
+        .success-message {
+
+            background: #d1e7dd;
+
+            color: #0f5132;
+
+            padding: 12px 16px;
+
+            border-radius: 8px;
+
+            margin-bottom: 18px;
+
+            font-weight: bold;
+        }
+
+        .error-message {
+
+            background: #f8d7da;
+
+            color: #842029;
+
+            padding: 12px 16px;
+
+            border-radius: 8px;
+
+            margin-bottom: 18px;
+
+            font-weight: bold;
+        }
+
     </style>
 
 </head>
@@ -121,24 +213,36 @@
 <div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
 
 <div class="sub-navbar">
-
     <a href="#recommend">我的推薦餐廳</a>
-
     <a href="#likes">我的按讚紀錄</a>
-
     <a href="#tier">會員等級</a>
-
     <a href="#usage">每日使用次數</a>
-
+    <a href="#change">變更密碼</a>
 </div>
 
 <div class="page-container">
 
-    <h1 class="page-title">
-        會員專區
-    </h1>
+    <h1 class="page-title">會員專區</h1>
 
-    <!-- 我的推薦餐廳 -->
+    <div class="welcome-box">
+        <div class="welcome-title">
+            👋 Hi，
+            <span class="highlight"
+                  th:text="${loggedIn} ? ${loginDisplayName} : '訪客'">
+                使用者
+            </span>
+        </div>
+
+        <div class="welcome-subtitle"
+             th:if="${loggedIn}">
+            歡迎回來，祝您今天找到好餐廳！
+        </div>
+
+        <div class="welcome-subtitle"
+             th:unless="${loggedIn}">
+            您目前尚未登入，部分會員功能無法使用。
+        </div>
+    </div>
 
     <div id="recommend" class="info-card">
 
@@ -160,8 +264,6 @@
 
     </div>
 
-    <!-- 我的按讚紀錄 -->
-
     <div id="likes" class="info-card">
 
         <h2>❤️ 我的按讚紀錄</h2>
@@ -179,8 +281,6 @@
         </p>
 
     </div>
-
-    <!-- 會員等級 -->
 
     <div id="tier" class="info-card">
 
@@ -202,8 +302,6 @@
         </p>
 
     </div>
-
-    <!-- 每日使用次數 -->
 
     <div id="usage" class="info-card">
 
@@ -228,7 +326,77 @@
 
     </div>
 
+    <div id="change" class="info-card">
+
+        <h2 th:if="${loggedIn}">🔐 變更密碼</h2>
+        <h2 th:unless="${loggedIn}">🔒 變更密碼</h2>
+
+        <!-- 成功訊息 -->
+        <div th:if="${success}"
+             class="success-message"
+             th:text="${success}">
+        </div>
+
+        <!-- 錯誤訊息 -->
+        <div th:if="${error}"
+             class="error-message"
+             th:text="${error}">
+        </div>
+
+        <div th:if="${loggedIn}">
+
+            <form action="/change-password" method="post">
+
+                <div class="form-group">
+                    <label>目前密碼</label>
+                    <input type="password"
+                           name="oldPassword"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>新密碼</label>
+                    <input type="password"
+                           name="newPassword"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>確認新密碼</label>
+                    <input type="password"
+                           name="confirmPassword"
+                           required>
+                </div>
+
+                <button type="submit" class="save-btn">
+                    儲存變更
+                </button>
+
+            </form>
+
+        </div>
+
+        <div th:unless="${loggedIn}">
+
+            <p class="login-warning">
+                請先登入會員後才能修改密碼。
+            </p>
+
+            <button class="save-btn disabled-btn" disabled>
+                請先登入
+            </button>
+
+        </div>
+
+    </div>
+
 </div>
+
+<script th:if="${forceLogout}">
+    setTimeout(function () {
+        window.location.href = "/logout";
+    }, 3000);
+</script>
 
 </body>
 

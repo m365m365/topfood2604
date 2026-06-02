@@ -39,7 +39,8 @@ public class PageConfigService {
                         "我的推薦餐廳",
                         "我的按讚紀錄",
                         "會員等級",
-                        "每日使用次數"
+                        "每日使用次數",
+                        "變更密碼"
                 );
 
             case "about":
