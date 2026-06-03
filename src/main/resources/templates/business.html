@@ -212,6 +212,78 @@
                 grid-template-columns: 1fr;
             }
         }
+        .qty-wrapper {
+            margin: 15px 0;
+        }
+
+        .qty-label {
+
+            font-size: 14px;
+            font-weight: 600;
+
+            color: #666;
+
+            margin-bottom: 8px;
+        }
+
+        .qty-box {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            border: 2px solid #dcdfe6;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            background: white;
+        }
+
+        .qty-box button {
+
+            width: 42px;
+            height: 42px;
+
+            border: none;
+
+            background: #f8f9fa;
+
+            color: #2c3e50;
+
+            font-size: 22px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: all 0.2s;
+        }
+
+        .qty-box button:hover {
+
+            background: #2c3e50;
+
+            color: white;
+        }
+
+        .qty-num {
+
+            width: 55px;
+
+            text-align: center;
+
+            font-size: 22px;
+            font-weight: bold;
+
+            color: #2c3e50;
+        }
+        .qty-box button:hover {
+
+            background: #27ae60;
+
+            color: white;
+        }
     </style>
 </head>
 
@@ -346,127 +418,14 @@
         <h2>🎁 Gift Store 禮物商城</h2>
         <p>精選餐廳禮券、伴手禮與小禮物，可加入購物車展示電商流程。</p>
 
-        <div class="gift-grid">
-
-            <div class="gift-card" data-name="TopFood 美食禮券" data-price="500">
-                <div class="gift-img">🎫</div>
-                <h3>TopFood 美食禮券</h3>
-                <p>可折抵合作餐廳消費。</p>
-                <div class="price">單價：NT$ 500</div>
-                <div class="qty-box">
-                    <button type="button" class="qty-minus">-</button>
-                    <span class="qty-num">0</span>
-                    <button type="button" class="qty-plus">+</button>
-                </div>
-                <div class="subtotal">小計：NT$ 0</div>
-                <button type="button" class="add-cart-btn">加入購物車</button>
-            </div>
-
-            <div class="gift-card" data-name="咖啡優惠券" data-price="150">
-                <div class="gift-img">☕</div>
-                <h3>咖啡優惠券</h3>
-                <p>精選咖啡店飲品兌換券。</p>
-                <div class="price">單價：NT$ 150</div>
-                <div class="qty-box">
-                    <button type="button" class="qty-minus">-</button>
-                    <span class="qty-num">0</span>
-                    <button type="button" class="qty-plus">+</button>
-                </div>
-                <div class="subtotal">小計：NT$ 0</div>
-                <button type="button" class="add-cart-btn">加入購物車</button>
-            </div>
-
-            <div class="gift-card" data-name="甜點禮盒" data-price="680">
-                <div class="gift-img">🍰</div>
-                <h3>甜點禮盒</h3>
-                <p>適合下午茶與節日送禮。</p>
-                <div class="price">單價：NT$ 680</div>
-                <div class="qty-box">
-                    <button type="button" class="qty-minus">-</button>
-                    <span class="qty-num">0</span>
-                    <button type="button" class="qty-plus">+</button>
-                </div>
-                <div class="subtotal">小計：NT$ 0</div>
-                <button type="button" class="add-cart-btn">加入購物車</button>
-            </div>
-
-            <div class="gift-card" data-name="拉麵套餐券" data-price="399">
-                <div class="gift-img">🍜</div>
-                <h3>拉麵套餐券</h3>
-                <p>合作拉麵店雙人套餐。</p>
-                <div class="price">單價：NT$ 399</div>
-                <div class="qty-box">
-                    <button type="button" class="qty-minus">-</button>
-                    <span class="qty-num">0</span>
-                    <button type="button" class="qty-plus">+</button>
-                </div>
-                <div class="subtotal">小計：NT$ 0</div>
-                <button type="button" class="add-cart-btn">加入購物車</button>
-            </div>
-
-            <div class="gift-card" data-name="牛排餐券" data-price="980">
-                <div class="gift-img">🥩</div>
-                <h3>牛排餐券</h3>
-                <p>高級牛排餐廳體驗券。</p>
-                <div class="price">單價：NT$ 980</div>
-                <div class="qty-box">
-                    <button type="button" class="qty-minus">-</button>
-                    <span class="qty-num">0</span>
-                    <button type="button" class="qty-plus">+</button>
-                </div>
-                <div class="subtotal">小計：NT$ 0</div>
-                <button type="button" class="add-cart-btn">加入購物車</button>
-            </div>
-
-            <div class="gift-card" data-name="台灣茶禮盒" data-price="750">
-                <div class="gift-img">🍵</div>
-                <h3>台灣茶禮盒</h3>
-                <p>精選高山茶葉伴手禮。</p>
-                <div class="price">單價：NT$ 750</div>
-                <div class="qty-box">
-                    <button type="button" class="qty-minus">-</button>
-                    <span class="qty-num">0</span>
-                    <button type="button" class="qty-plus">+</button>
-                </div>
-                <div class="subtotal">小計：NT$ 0</div>
-                <button type="button" class="add-cart-btn">加入購物車</button>
-            </div>
-
-            <div class="gift-card" data-name="手工餅乾禮盒" data-price="520">
-                <div class="gift-img">🍪</div>
-                <h3>手工餅乾禮盒</h3>
-                <p>節慶送禮人氣商品。</p>
-                <div class="price">單價：NT$ 520</div>
-                <div class="qty-box">
-                    <button type="button" class="qty-minus">-</button>
-                    <span class="qty-num">0</span>
-                    <button type="button" class="qty-plus">+</button>
-                </div>
-                <div class="subtotal">小計：NT$ 0</div>
-                <button type="button" class="add-cart-btn">加入購物車</button>
-            </div>
-
-            <div class="gift-card" data-name="商務便當券" data-price="220">
-                <div class="gift-img">🍱</div>
-                <h3>商務便當券</h3>
-                <p>企業會議與活動餐盒優惠。</p>
-                <div class="price">單價：NT$ 220</div>
-                <div class="qty-box">
-                    <button type="button" class="qty-minus">-</button>
-                    <span class="qty-num">0</span>
-                    <button type="button" class="qty-plus">+</button>
-                </div>
-                <div class="subtotal">小計：NT$ 0</div>
-                <button type="button" class="add-cart-btn">加入購物車</button>
-            </div>
-
-        </div>
+        <div class="gift-grid" id="productContainer"></div>
 
     </section>
 
 </div>
 
-<script>
+<script th:inline="javascript">
+
     document.addEventListener("DOMContentLoaded", function () {
 
         const loggedIn = [[${loggedIn}]];
@@ -481,6 +440,7 @@
 
         function updateCartCount() {
             const cart = getCart();
+
             let totalQty = 0;
 
             cart.forEach(function (item) {
@@ -494,90 +454,171 @@
             }
         }
 
-        document.querySelectorAll(".gift-card").forEach(function (card) {
+        async function loadProducts() {
 
-            const minusBtn = card.querySelector(".qty-minus");
-            const plusBtn = card.querySelector(".qty-plus");
-            const qtyNum = card.querySelector(".qty-num");
-            const subtotalBox = card.querySelector(".subtotal");
-            const addCartBtn = card.querySelector(".add-cart-btn");
+            const response = await fetch("/api/products");
+            const products = await response.json();
 
-            const name = card.dataset.name;
-            const price = Number(card.dataset.price);
+            const container = document.getElementById("productContainer");
 
-            function updateSubtotal() {
-                const qty = Number(qtyNum.textContent);
-                const subtotal = price * qty;
-                subtotalBox.textContent = "小計：NT$ " + subtotal;
-            }
+            container.innerHTML = "";
 
-            minusBtn.addEventListener("click", function () {
-                let qty = Number(qtyNum.textContent);
+            products.forEach(function (product) {
 
-                if (qty > 0) {
-                    qty--;
-                    qtyNum.textContent = qty;
-                    updateSubtotal();
-                }
+                container.innerHTML += `
+                    <div
+                        class="gift-card"
+                        data-id="${product.id}"
+                        data-name="${product.productName}"
+                        data-price="${product.price}">
+
+                        <div class="gift-icon">
+                            🎁
+                        </div>
+
+                        <h3>${product.productName}</h3>
+
+                        <p>${product.description}</p>
+
+                        <div class="gift-price">
+                            單價：NT$ ${product.price}
+                        </div>
+
+                        <div class="stock-info">
+                            庫存：${product.stock}
+                        </div>
+
+                        <div class="qty-wrapper">
+
+                                <div class="qty-label">
+                                    購買數量
+                                </div>
+
+                                <div class="qty-box">
+
+                                    <button class="qty-minus">
+                                        −
+                                    </button>
+
+                                    <span class="qty-num">
+                                        0
+                                    </span>
+
+                                    <button class="qty-plus">
+                                        ＋
+                                    </button>
+
+                                </div>
+
+                        </div>
+
+
+
+                        <div class="subtotal">
+                            小計：NT$ 0
+                        </div>
+
+                        <button class="add-cart-btn">
+                            加入購物車
+                        </button>
+
+                    </div>
+                `;
             });
 
-            plusBtn.addEventListener("click", function () {
-                let qty = Number(qtyNum.textContent);
+            bindGiftCardEvents();
+        }
 
-                qty++;
-                qtyNum.textContent = qty;
-                updateSubtotal();
-            });
+        function bindGiftCardEvents() {
 
-            addCartBtn.addEventListener("click", function () {
+            document.querySelectorAll(".gift-card").forEach(function (card) {
 
-                if (!loggedIn) {
-                    alert("請先登入會員，才能加入購物車");
-                    window.location.href = "/login";
-                    return;
+                const minusBtn = card.querySelector(".qty-minus");
+                const plusBtn = card.querySelector(".qty-plus");
+                const qtyNum = card.querySelector(".qty-num");
+                const subtotalBox = card.querySelector(".subtotal");
+                const addCartBtn = card.querySelector(".add-cart-btn");
+
+                const id = card.dataset.id;
+                const name = card.dataset.name;
+                const price = Number(card.dataset.price);
+
+                function updateSubtotal() {
+                    const qty = Number(qtyNum.textContent);
+                    const subtotal = price * qty;
+                    subtotalBox.textContent = "小計：NT$ " + subtotal;
                 }
 
-                const qty = Number(qtyNum.textContent);
+                minusBtn.addEventListener("click", function () {
+                    let qty = Number(qtyNum.textContent);
 
-                if (qty === 0) {
-                    alert("請先選擇商品數量");
-                    return;
-                }
-
-                const cart = getCart();
-
-                const existingItem = cart.find(function (item) {
-                    return item.name === name;
+                    if (qty > 0) {
+                        qty--;
+                        qtyNum.textContent = qty;
+                        updateSubtotal();
+                    }
                 });
 
-                if (existingItem) {
-                    existingItem.qty += qty;
-                    existingItem.subtotal = existingItem.price * existingItem.qty;
-                } else {
-                    cart.push({
-                        name: name,
-                        price: price,
-                        qty: qty,
-                        subtotal: price * qty
+                plusBtn.addEventListener("click", function () {
+                    let qty = Number(qtyNum.textContent);
+
+                    qty++;
+                    qtyNum.textContent = qty;
+                    updateSubtotal();
+                });
+
+                addCartBtn.addEventListener("click", function () {
+
+                    if (!loggedIn) {
+                        alert("請先登入會員，才能加入購物車");
+                        window.location.href = "/login";
+                        return;
+                    }
+
+                    const qty = Number(qtyNum.textContent);
+
+                    if (qty === 0) {
+                        alert("請先選擇商品數量");
+                        return;
+                    }
+
+                    const cart = getCart();
+
+                    const existingItem = cart.find(function (item) {
+                        return Number(item.id) === Number(id);
                     });
-                }
 
-                saveCart(cart);
-                updateCartCount();
+                    if (existingItem) {
+                        existingItem.qty += qty;
+                        existingItem.subtotal = existingItem.price * existingItem.qty;
+                    } else {
+                        cart.push({
+                            id: Number(id),
+                            name: name,
+                            price: price,
+                            qty: qty,
+                            subtotal: price * qty
+                        });
+                    }
 
-                addCartBtn.textContent = "已加入購物車 ✓";
+                    saveCart(cart);
+                    updateCartCount();
 
-                setTimeout(function () {
-                    addCartBtn.textContent = "加入購物車";
-                }, 1200);
+                    addCartBtn.textContent = "已加入購物車 ✓";
+
+                    setTimeout(function () {
+                        addCartBtn.textContent = "加入購物車";
+                    }, 1200);
+                });
+
+                updateSubtotal();
             });
+        }
 
-            updateSubtotal();
-        });
-
+        loadProducts();
         updateCartCount();
     });
-</script>
 
+</script>
 </body>
 </html>
