@@ -31,22 +31,37 @@ html {
     height: 52px;
 
     background: #2c3e50;
-
     border-bottom: 1px solid #1f2d3a;
+
+    display: flex;
+    align-items: center;
+
+    position: sticky;
+    top: 0;
+    z-index: 10000;
+}
+
+/* 中間主選單 */
+.nav-menu {
+    flex: 1;
 
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 40px;
+}
 
-    position: sticky;
-    top: 0;
+/* 右側會員 + 購物車 */
+.nav-user {
+    position: absolute;
+    right: 25px;
 
-    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 18px;
 }
 
 .main-navbar a {
-
     text-decoration: none;
     color: white;
 
@@ -57,10 +72,28 @@ html {
 }
 
 .main-navbar a:hover {
-
     color: #f1c40f;
 }
 
+.welcome-text {
+    color: #66b3ff;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.cart-link {
+    color: #ffd54f !important;
+}
+.logout-link {
+    color: #ffcc66;
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 12px;
+}
+
+.logout-link:hover {
+    color: #ffd98a;
+}
 
 /* =========================
    第二條：會員 navbar

@@ -7,10 +7,26 @@
 <div class="sub-navbar"
      th:fragment="businessSubNavbar">
 
-  <a href="#restaurant-discount">餐廳優惠活動</a>
-  <a href="#food-exhibition">美食展覽資訊</a>
-  <a href="#partner-activity">合作商家活動</a>
-  <a href="#brand-recommend">品牌聯名推薦</a>
+  <div class="sub-navbar">
+
+    <a href="#restaurant-promo">餐廳優惠活動</a>
+    <a href="#food-expo">美食展覽資訊</a>
+    <a href="#partner-event">合作商家活動</a>
+    <a href="#brand">品牌聯名推薦</a>
+    <a href="#Gift Store">🎁 Gift Store禮物商城</a>
+
+    <div class="sub-navbar-right">
+
+      <a th:if="${loggedIn}"
+         href="/logout"
+         class="logout-link">
+        🚪 登出
+      </a>
+
+    </div>
+
+  </div>
+
 
 </div>
 

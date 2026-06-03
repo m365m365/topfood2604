@@ -7,10 +7,10 @@
     <link rel="stylesheet" th:href="@{/navbar.css}">
 
     <style>
-
         html {
             scroll-behavior: smooth;
         }
+
         body {
             margin: 0;
             font-family: Arial, "Microsoft JhengHei", sans-serif;
@@ -31,7 +31,8 @@
             margin-bottom: 40px;
         }
 
-        .section-card {
+        .section-card,
+        .business-section {
             background: white;
             border-radius: 14px;
             padding: 28px 32px;
@@ -39,7 +40,8 @@
             box-shadow: 0 3px 12px rgba(0,0,0,0.12);
         }
 
-        .section-card h2 {
+        .section-card h2,
+        .business-section h2 {
             margin-top: 0;
             color: #1f3a52;
             font-size: 26px;
@@ -97,62 +99,132 @@
         .btn:hover {
             background: #1a252f;
         }
-        .sub-navbar {
-            height: 46px;
-            background: #eef5f8;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 36px;
-
-            border-bottom: 1px solid #d9e4ea;
-
-            position: sticky;
-            top: 53px;
-
-            z-index: 900;
-        }
-
-        .sub-navbar a {
-            color: #24384a;
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .sub-navbar a:hover {
-            color: #0d6efd;
-        }
-
-        .page-container {
-            width: 85%;
-            max-width: 1200px;
-            margin: 40px auto 50px;
-        }
 
         #restaurant-discount,
         #food-exhibition,
         #partner-activity,
-        #brand-recommend {
+        #brand-recommend,
+        #gift-store {
             scroll-margin-top: 150px;
+        }
+
+        .gift-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
+            margin-top: 25px;
+        }
+
+        .gift-card {
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: 0.2s;
+        }
+
+        .gift-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.14);
+        }
+
+        .gift-img {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
+
+        .gift-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .gift-card p {
+            color: #555;
+            font-size: 14px;
+            min-height: 42px;
+        }
+
+        .price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e67e22;
+            margin: 12px 0;
+        }
+
+        .qty-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .qty-box button {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: #2c3e50;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .qty-box button:hover {
+            background: #1a252f;
+        }
+
+        .qty-num {
+            font-weight: bold;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .subtotal {
+            margin-bottom: 12px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .add-cart-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background: #27ae60;
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .add-cart-btn:hover {
+            background: #219150;
+        }
+
+        @media (max-width: 1000px) {
+            .gift-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .gift-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<!-- 第一導覽列 -->
 <div th:replace="fragments/main-navbar :: mainNavbar"></div>
 
-<!-- 第二導覽列 -->
-<div th:replace="~{fragments/business-sub-navbar :: businessSubNavbar}">
-</div>
+<div th:replace="~{fragments/business-sub-navbar :: businessSubNavbar}"></div>
 
 <div class="page-container">
 
     <div class="page-title">商業活動</div>
 
-    <!-- 餐廳優惠活動 -->
     <div class="section-card" id="restaurant-discount">
         <h2>餐廳優惠活動</h2>
         <p>精選近期餐廳優惠、套餐折扣與會員專屬活動。</p>
@@ -184,7 +256,6 @@
         </div>
     </div>
 
-    <!-- 美食展覽資訊 -->
     <div class="section-card" id="food-exhibition">
         <h2>美食展覽資訊</h2>
         <p>提供近期美食展、餐飲設備展、地方小吃展等資訊。</p>
@@ -216,7 +287,6 @@
         </div>
     </div>
 
-    <!-- 合作商家活動 -->
     <div class="section-card" id="partner-activity">
         <h2>合作商家活動</h2>
         <p>合作餐廳、品牌商家與平台共同推出的推廣活動。</p>
@@ -240,7 +310,6 @@
         </div>
     </div>
 
-    <!-- 品牌聯名推薦 -->
     <div class="section-card" id="brand-recommend">
         <h2>品牌聯名推薦</h2>
         <p>精選餐飲品牌與特色店家的聯名推薦內容。</p>
@@ -272,7 +341,243 @@
         </div>
     </div>
 
+    <section id="gift-store" class="business-section">
+
+        <h2>🎁 Gift Store 禮物商城</h2>
+        <p>精選餐廳禮券、伴手禮與小禮物，可加入購物車展示電商流程。</p>
+
+        <div class="gift-grid">
+
+            <div class="gift-card" data-name="TopFood 美食禮券" data-price="500">
+                <div class="gift-img">🎫</div>
+                <h3>TopFood 美食禮券</h3>
+                <p>可折抵合作餐廳消費。</p>
+                <div class="price">單價：NT$ 500</div>
+                <div class="qty-box">
+                    <button type="button" class="qty-minus">-</button>
+                    <span class="qty-num">0</span>
+                    <button type="button" class="qty-plus">+</button>
+                </div>
+                <div class="subtotal">小計：NT$ 0</div>
+                <button type="button" class="add-cart-btn">加入購物車</button>
+            </div>
+
+            <div class="gift-card" data-name="咖啡優惠券" data-price="150">
+                <div class="gift-img">☕</div>
+                <h3>咖啡優惠券</h3>
+                <p>精選咖啡店飲品兌換券。</p>
+                <div class="price">單價：NT$ 150</div>
+                <div class="qty-box">
+                    <button type="button" class="qty-minus">-</button>
+                    <span class="qty-num">0</span>
+                    <button type="button" class="qty-plus">+</button>
+                </div>
+                <div class="subtotal">小計：NT$ 0</div>
+                <button type="button" class="add-cart-btn">加入購物車</button>
+            </div>
+
+            <div class="gift-card" data-name="甜點禮盒" data-price="680">
+                <div class="gift-img">🍰</div>
+                <h3>甜點禮盒</h3>
+                <p>適合下午茶與節日送禮。</p>
+                <div class="price">單價：NT$ 680</div>
+                <div class="qty-box">
+                    <button type="button" class="qty-minus">-</button>
+                    <span class="qty-num">0</span>
+                    <button type="button" class="qty-plus">+</button>
+                </div>
+                <div class="subtotal">小計：NT$ 0</div>
+                <button type="button" class="add-cart-btn">加入購物車</button>
+            </div>
+
+            <div class="gift-card" data-name="拉麵套餐券" data-price="399">
+                <div class="gift-img">🍜</div>
+                <h3>拉麵套餐券</h3>
+                <p>合作拉麵店雙人套餐。</p>
+                <div class="price">單價：NT$ 399</div>
+                <div class="qty-box">
+                    <button type="button" class="qty-minus">-</button>
+                    <span class="qty-num">0</span>
+                    <button type="button" class="qty-plus">+</button>
+                </div>
+                <div class="subtotal">小計：NT$ 0</div>
+                <button type="button" class="add-cart-btn">加入購物車</button>
+            </div>
+
+            <div class="gift-card" data-name="牛排餐券" data-price="980">
+                <div class="gift-img">🥩</div>
+                <h3>牛排餐券</h3>
+                <p>高級牛排餐廳體驗券。</p>
+                <div class="price">單價：NT$ 980</div>
+                <div class="qty-box">
+                    <button type="button" class="qty-minus">-</button>
+                    <span class="qty-num">0</span>
+                    <button type="button" class="qty-plus">+</button>
+                </div>
+                <div class="subtotal">小計：NT$ 0</div>
+                <button type="button" class="add-cart-btn">加入購物車</button>
+            </div>
+
+            <div class="gift-card" data-name="台灣茶禮盒" data-price="750">
+                <div class="gift-img">🍵</div>
+                <h3>台灣茶禮盒</h3>
+                <p>精選高山茶葉伴手禮。</p>
+                <div class="price">單價：NT$ 750</div>
+                <div class="qty-box">
+                    <button type="button" class="qty-minus">-</button>
+                    <span class="qty-num">0</span>
+                    <button type="button" class="qty-plus">+</button>
+                </div>
+                <div class="subtotal">小計：NT$ 0</div>
+                <button type="button" class="add-cart-btn">加入購物車</button>
+            </div>
+
+            <div class="gift-card" data-name="手工餅乾禮盒" data-price="520">
+                <div class="gift-img">🍪</div>
+                <h3>手工餅乾禮盒</h3>
+                <p>節慶送禮人氣商品。</p>
+                <div class="price">單價：NT$ 520</div>
+                <div class="qty-box">
+                    <button type="button" class="qty-minus">-</button>
+                    <span class="qty-num">0</span>
+                    <button type="button" class="qty-plus">+</button>
+                </div>
+                <div class="subtotal">小計：NT$ 0</div>
+                <button type="button" class="add-cart-btn">加入購物車</button>
+            </div>
+
+            <div class="gift-card" data-name="商務便當券" data-price="220">
+                <div class="gift-img">🍱</div>
+                <h3>商務便當券</h3>
+                <p>企業會議與活動餐盒優惠。</p>
+                <div class="price">單價：NT$ 220</div>
+                <div class="qty-box">
+                    <button type="button" class="qty-minus">-</button>
+                    <span class="qty-num">0</span>
+                    <button type="button" class="qty-plus">+</button>
+                </div>
+                <div class="subtotal">小計：NT$ 0</div>
+                <button type="button" class="add-cart-btn">加入購物車</button>
+            </div>
+
+        </div>
+
+    </section>
+
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const loggedIn = [[${loggedIn}]];
+
+        function getCart() {
+            return JSON.parse(localStorage.getItem("giftCart")) || [];
+        }
+
+        function saveCart(cart) {
+            localStorage.setItem("giftCart", JSON.stringify(cart));
+        }
+
+        function updateCartCount() {
+            const cart = getCart();
+            let totalQty = 0;
+
+            cart.forEach(function (item) {
+                totalQty += item.qty;
+            });
+
+            const cartCount = document.getElementById("cartCount");
+
+            if (cartCount) {
+                cartCount.textContent = totalQty;
+            }
+        }
+
+        document.querySelectorAll(".gift-card").forEach(function (card) {
+
+            const minusBtn = card.querySelector(".qty-minus");
+            const plusBtn = card.querySelector(".qty-plus");
+            const qtyNum = card.querySelector(".qty-num");
+            const subtotalBox = card.querySelector(".subtotal");
+            const addCartBtn = card.querySelector(".add-cart-btn");
+
+            const name = card.dataset.name;
+            const price = Number(card.dataset.price);
+
+            function updateSubtotal() {
+                const qty = Number(qtyNum.textContent);
+                const subtotal = price * qty;
+                subtotalBox.textContent = "小計：NT$ " + subtotal;
+            }
+
+            minusBtn.addEventListener("click", function () {
+                let qty = Number(qtyNum.textContent);
+
+                if (qty > 0) {
+                    qty--;
+                    qtyNum.textContent = qty;
+                    updateSubtotal();
+                }
+            });
+
+            plusBtn.addEventListener("click", function () {
+                let qty = Number(qtyNum.textContent);
+
+                qty++;
+                qtyNum.textContent = qty;
+                updateSubtotal();
+            });
+
+            addCartBtn.addEventListener("click", function () {
+
+                if (!loggedIn) {
+                    alert("請先登入會員，才能加入購物車");
+                    window.location.href = "/login";
+                    return;
+                }
+
+                const qty = Number(qtyNum.textContent);
+
+                if (qty === 0) {
+                    alert("請先選擇商品數量");
+                    return;
+                }
+
+                const cart = getCart();
+
+                const existingItem = cart.find(function (item) {
+                    return item.name === name;
+                });
+
+                if (existingItem) {
+                    existingItem.qty += qty;
+                    existingItem.subtotal = existingItem.price * existingItem.qty;
+                } else {
+                    cart.push({
+                        name: name,
+                        price: price,
+                        qty: qty,
+                        subtotal: price * qty
+                    });
+                }
+
+                saveCart(cart);
+                updateCartCount();
+
+                addCartBtn.textContent = "已加入購物車 ✓";
+
+                setTimeout(function () {
+                    addCartBtn.textContent = "加入購物車";
+                }, 1200);
+            });
+
+            updateSubtotal();
+        });
+
+        updateCartCount();
+    });
+</script>
 
 </body>
 </html>

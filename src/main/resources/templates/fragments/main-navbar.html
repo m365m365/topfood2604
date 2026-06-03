@@ -1,17 +1,86 @@
-<!DOCTYPE html>
-<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
-<body>
-
 <nav class="main-navbar" th:fragment="mainNavbar">
 
-    <a th:href="@{/}">首頁</a>
-    <a th:href="@{/search}">精準尋查</a>
-    <a th:href="@{/business}">商業活動</a>
-    <a th:href="@{/forum}">討論區</a>
-    <a th:href="@{/member-center}">會員專區</a>
-    <a th:href="@{/about}">關於我</a>
+    <div class="nav-menu">
+        <a th:href="@{/}">首頁</a>
+        <a th:href="@{/search}">精準尋查</a>
+        <a th:href="@{/business}">商業活動</a>
+        <a th:href="@{/forum}">討論區</a>
+        <a th:href="@{/member-center}">會員專區</a>
+        <a th:href="@{/about}">關於我</a>
+    </div>
 
+    <div class="nav-user">
+        <span th:if="${loggedIn}" class="welcome-text">
+            👋 Hi,
+            <span th:text="${loginDisplayName}">會員</span>
+        </span>
+
+        <a href="/cart" class="cart-link">
+            🛒(<span id="cartCount">0</span>)
+        </a>
+
+        <a th:if="${loggedIn}"
+           href="/logout"
+           class="logout-link"
+           onclick="clearCart()">
+            🚪 登出
+        </a>
+    </div>
+    <script th:inline="javascript">
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const isLoggedIn = [[${loggedIn}]];
+
+            function getCart() {
+                return JSON.parse(localStorage.getItem("giftCart")) || [];
+            }
+
+            function updateCartCount() {
+
+                const cartCount =
+                    document.getElementById("cartCount");
+
+                if (!cartCount) {
+                    return;
+                }
+
+                // 未登入
+                if (!isLoggedIn) {
+
+                    localStorage.removeItem("giftCart");
+
+                    cartCount.textContent = "0";
+
+                    return;
+                }
+
+                // 已登入
+                const cart = getCart();
+
+                let totalQty = 0;
+
+                cart.forEach(function (item) {
+                    totalQty += item.qty;
+                });
+
+                cartCount.textContent = totalQty;
+            }
+
+            updateCartCount();
+        });
+
+        function clearCart() {
+
+            localStorage.removeItem("giftCart");
+
+            const cartCount =
+                document.getElementById("cartCount");
+
+            if (cartCount) {
+                cartCount.textContent = "0";
+            }
+        }
+
+    </script>
 </nav>
-
-</body>
-</html>

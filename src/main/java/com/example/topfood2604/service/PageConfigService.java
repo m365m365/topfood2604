@@ -24,7 +24,8 @@ public class PageConfigService {
                         "餐廳優惠活動",
                         "美食展覽資訊",
                         "合作商家活動",
-                        "品牌聯名推薦"
+                        "品牌聯名推薦",
+                        "🎁 禮券小禮物商城"
                 );
 
             case "forum":
