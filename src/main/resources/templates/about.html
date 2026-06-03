@@ -22,11 +22,8 @@
     }
 
     .about-page {
-
       min-height: 100vh;
-
       padding-bottom: 80px;
-
     }
 
     .page-container {
@@ -36,37 +33,22 @@
     }
 
     .page-title {
-
       color: white;
-
-      text-shadow:
-              0 3px 10px rgba(0,0,0,0.8);
-
+      text-shadow: 0 3px 10px rgba(0,0,0,0.8);
       font-size: 56px;
-
       font-weight: bold;
-
       text-align: center;
-
       margin-bottom: 40px;
     }
 
     .notice-box {
-
       background: rgba(255,255,255,0.92);
-
       backdrop-filter: blur(8px);
-
       border-radius: 14px;
-
       padding: 28px 32px;
-
       margin-bottom: 25px;
-
       box-shadow: 0 4px 14px rgba(0,0,0,0.12);
-
       border-left: 8px solid #0d6efd;
-
       scroll-margin-top: 150px;
     }
 
@@ -93,8 +75,10 @@
     .notice-box h2 {
       margin-top: 0;
       margin-bottom: 15px;
-      color: #222;
+      color: #2c3e50;
       font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 1px;
     }
 
     .notice-box p {
@@ -106,6 +90,38 @@
     .notice-box li {
       line-height: 2;
       font-size: 18px;
+    }
+
+    .terms-content {
+      max-height: 45px;
+      overflow: hidden;
+      margin-top: 15px;
+      transition: max-height 0.35s ease;
+    }
+
+    .terms-content.expanded {
+      max-height: 500px;
+    }
+
+    .terms-content p {
+      margin-top: 0;
+      margin-bottom: 18px;
+    }
+
+    .terms-arrow {
+      display: block;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+      color: #222;
+      user-select: none;
+      transition: all 0.25s ease;
+    }
+    .terms-arrow:hover {
+      color: #20c997;
+      transform: scale(1.5);
     }
 
   </style>
@@ -171,12 +187,29 @@
     </div>
 
     <div id="terms" class="notice-box">
+
       <h2>使用條款</h2>
 
-      <p>
-        使用者於本網站發布推薦內容時，
-        應遵守相關法律規定。
-      </p>
+      <div id="termsContent" class="terms-content">
+
+        <p>1. 使用者於本網站發布推薦內容時，應遵守相關法律規定。</p>
+
+        <p>2. 使用推薦次數限制，依會員等級限制。</p>
+
+        <p>3. 使用檢舉次數限制，依會員等級限制。</p>
+
+        <p>4. 推薦文章和內容圖片，以美食和餐廳相關為主。</p>
+
+        <p>5. 文章內容請注意禮節。</p>
+
+      </div>
+
+      <span id="termsArrow"
+            class="terms-arrow"
+            onclick="toggleTerms()">
+        ⌄⌄
+      </span>
+
     </div>
 
     <div id="contact" class="notice-box">
@@ -185,11 +218,44 @@
       <p>Email：mm365day@gmail.com</p>
     </div>
 
-  </div>
-  <!-- page-container -->
+    <div id="Technology Stack" class="notice-box">
+      <h2>Technology Stack</h2>
 
+      <p>• Spring Boot</p>
+      <p>• Thymeleaf</p>
+      <p>• MySQL</p>
+      <p>• Amazon S3</p>
+      <p>• OpenAI GPT</p>
+      <p>• Google Places API</p>
+      <p>• Spring Security</p>
+    </div>
+
+  </div>
 </div>
-<!-- about-page -->
+
+<script>
+
+  function toggleTerms() {
+
+    const content =
+            document.getElementById("termsContent");
+
+    const arrow =
+            document.getElementById("termsArrow");
+
+    content.classList.toggle("expanded");
+
+    if (content.classList.contains("expanded")) {
+
+      arrow.innerHTML = "⌃⌃";
+
+    } else {
+
+      arrow.innerHTML = "⌄⌄";
+    }
+  }
+
+</script>
 
 </body>
 </html>
