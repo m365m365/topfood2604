@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>商品表單</title>
+
+    <link rel="stylesheet" th:href="@{/navbar.css}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            background: #f4f6f8;
+        }
+
+        .container {
+            width: 600px;
+            margin: 100px auto 40px;
+            background: white;
+            padding: 32px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 16px;
+            color: #2c3e50;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        textarea {
+            height: 110px;
+            resize: vertical;
+        }
+
+        .preview-img {
+            width: 180px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .btn-row {
+            margin-top: 28px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .save-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 11px 22px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .back-btn {
+            background: #7f8c8d;
+            color: white;
+            padding: 11px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+
+    <h1 th:if="${mode == 'create'}">＋ 新增商品</h1>
+    <h1 th:if="${mode == 'edit'}">✏️ 修改商品</h1>
+
+    <form th:action="${mode == 'create'} ?
+                    @{/admin/products/create} :
+                    @{/admin/products/update/{id}(id=${product.id})}"
+          method="post"
+          enctype="multipart/form-data"
+          th:object="${product}">
+
+        <label>商品名稱</label>
+        <input type="text"
+               th:field="*{name}"
+               required>
+
+        <label>商品描述</label>
+        <textarea th:field="*{description}"
+                  placeholder="請輸入商品描述"></textarea>
+
+        <label>價格</label>
+        <input type="number"
+               th:field="*{price}"
+               min="0"
+               required>
+
+        <label>庫存</label>
+        <input type="number"
+               th:field="*{stock}"
+               min="0"
+               required>
+
+        <label>商品圖片</label>
+        <input type="file"
+               name="imageFile"
+               accept="image/*">
+
+        <div th:if="${product.imageUrl != null}">
+            <p>目前圖片：</p>
+            <img th:src="${product.imageUrl}"
+                 class="preview-img">
+        </div>
+
+        <div class="btn-row">
+            <a class="back-btn" th:href="@{/admin/products}">
+                返回列表
+            </a>
+
+            <button class="save-btn" type="submit">
+                儲存商品
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

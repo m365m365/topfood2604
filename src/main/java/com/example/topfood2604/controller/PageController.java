@@ -81,5 +81,16 @@ public class PageController {
         return "recommend";
     }
 
+    @GetMapping("/cart")
+    public String cartPage(Model model) {
+
+        model.addAttribute(
+                "subMenus",
+                pageConfigService.getSubMenu("business")
+        );
+
+        return "cart";
+    }
+
 
 }

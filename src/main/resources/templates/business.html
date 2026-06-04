@@ -110,18 +110,26 @@
 
         .gift-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 22px;
             margin-top: 25px;
         }
 
         .gift-card {
-            background: #ffffff;
+
+            background: #fff;
+
             border: 1px solid #ddd;
+
             border-radius: 14px;
-            padding: 22px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            transition: 0.2s;
+
+            padding: 20px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            height: 100%;
         }
 
         .gift-card:hover {
@@ -129,20 +137,37 @@
             box-shadow: 0 6px 18px rgba(0,0,0,0.14);
         }
 
-        .gift-img {
-            font-size: 42px;
+        .gift-product-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #eee;
+        }
+
+        .gift-icon {
+            height: 150px;
+            border-radius: 10px;
+            background: #f4f6f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 54px;
             margin-bottom: 12px;
         }
 
         .gift-card h3 {
             color: #2c3e50;
             margin-bottom: 10px;
+            font-size: 20px;
         }
 
         .gift-card p {
             color: #555;
             font-size: 14px;
             min-height: 42px;
+            line-height: 1.6;
         }
 
         .price {
@@ -152,32 +177,55 @@
             margin: 12px 0;
         }
 
+        .stock-info {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .qty-wrapper {
+            margin: 15px 0;
+        }
+
+        .qty-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
         .qty-box {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
+            border: 2px solid #dcdfe6;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
         }
 
         .qty-box button {
-            width: 28px;
-            height: 28px;
+            width: 42px;
+            height: 42px;
             border: none;
-            background: #2c3e50;
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-size: 22px;
             font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
         .qty-box button:hover {
-            background: #1a252f;
+            background: #27ae60;
+            color: white;
         }
 
         .qty-num {
-            font-weight: bold;
-            min-width: 20px;
+            width: 55px;
             text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
         }
 
         .subtotal {
@@ -187,18 +235,55 @@
         }
 
         .add-cart-btn {
-            width: 100%;
-            padding: 10px;
+
+            width: 52px;
+            height: 46px;
+
             border: none;
-            background: #27ae60;
+
+            border-radius: 10px;
+
+            background: #2c3e50;
+
             color: white;
-            border-radius: 8px;
-            font-weight: bold;
+
+            font-size: 22px;
+
             cursor: pointer;
         }
 
         .add-cart-btn:hover {
-            background: #219150;
+
+            background: #e67e22;
+        }
+
+
+
+        .gift-pagination {
+            text-align: center;
+            margin-top: 28px;
+        }
+
+        .page-btn {
+            margin: 0 5px;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 7px;
+            background: #2c3e50;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .page-btn.active {
+            background: #27ae60;
+        }
+
+        .empty-products {
+            text-align: center;
+            color: #777;
+            padding: 30px;
+            font-size: 16px;
         }
 
         @media (max-width: 1000px) {
@@ -212,77 +297,68 @@
                 grid-template-columns: 1fr;
             }
         }
-        .qty-wrapper {
-            margin: 15px 0;
-        }
+        .qty-row {
 
-        .qty-label {
-
-            font-size: 14px;
-            font-weight: 600;
-
-            color: #666;
-
-            margin-bottom: 8px;
-        }
-
-        .qty-box {
-
-            display: inline-flex;
+            display: flex;
 
             align-items: center;
 
-            border: 2px solid #dcdfe6;
-
-            border-radius: 12px;
-
-            overflow: hidden;
-
-            background: white;
+            gap: 12px;
         }
 
-        .qty-box button {
+        .add-cart-btn {
 
-            width: 42px;
-            height: 42px;
+            width: 52px;
+            height: 46px;
 
             border: none;
 
-            background: #f8f9fa;
-
-            color: #2c3e50;
-
-            font-size: 22px;
-            font-weight: bold;
-
-            cursor: pointer;
-
-            transition: all 0.2s;
-        }
-
-        .qty-box button:hover {
-
-            background: #2c3e50;
-
-            color: white;
-        }
-
-        .qty-num {
-
-            width: 55px;
-
-            text-align: center;
-
-            font-size: 22px;
-            font-weight: bold;
-
-            color: #2c3e50;
-        }
-        .qty-box button:hover {
+            border-radius: 10px;
 
             background: #27ae60;
 
             color: white;
+
+            font-size: 22px;
+
+            cursor: pointer;
+
+            flex-shrink: 0;
+        }
+
+        .add-cart-btn:hover {
+
+            background: #219150;
+        }
+        .gift-card {
+
+            display: flex;
+
+            flex-direction: column;
+
+            height: 100%;
+        }
+
+        .gift-content {
+
+            flex: 1;
+        }
+
+        .gift-footer {
+
+            margin-top: auto;
+        }
+
+        .gift-card h3 {
+
+            min-height: 56px;
+        }
+
+        .gift-card p {
+
+            min-height: 70px;
+
+            line-height: 1.6;
         }
     </style>
 </head>
@@ -420,6 +496,8 @@
 
         <div class="gift-grid" id="productContainer"></div>
 
+        <div class="gift-pagination" id="productPagination"></div>
+
     </section>
 
 </div>
@@ -429,6 +507,10 @@
     document.addEventListener("DOMContentLoaded", function () {
 
         const loggedIn = [[${loggedIn}]];
+
+        let allProducts = [];
+        let currentPage = 1;
+        const pageSize = 6;
 
         function getCart() {
             return JSON.parse(localStorage.getItem("giftCart")) || [];
@@ -456,77 +538,174 @@
 
         async function loadProducts() {
 
-            const response = await fetch("/api/products");
-            const products = await response.json();
+            const container = document.getElementById("productContainer");
+
+            try {
+                const response = await fetch("/api/products");
+
+                if (!response.ok) {
+                    throw new Error("商品資料讀取失敗");
+                }
+
+                allProducts = await response.json();
+
+                currentPage = 1;
+
+                renderProducts();
+                renderPagination();
+
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="empty-products">
+                        商品資料載入失敗，請稍後再試。
+                    </div>
+                `;
+            }
+        }
+
+        function renderProducts() {
 
             const container = document.getElementById("productContainer");
 
             container.innerHTML = "";
 
-            products.forEach(function (product) {
+            if (!allProducts || allProducts.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-products">
+                        目前沒有上架商品。
+                    </div>
+                `;
+                return;
+            }
+
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+
+            const pageProducts = allProducts.slice(startIndex, endIndex);
+
+            pageProducts.forEach(function (product) {
+
+                const productName = product.name || "未命名商品";
+                const description = product.description || "暫無商品描述";
+                const price = product.price || 0;
+                const stock = product.stock || 0;
 
                 container.innerHTML += `
                     <div
                         class="gift-card"
                         data-id="${product.id}"
-                        data-name="${product.productName}"
-                        data-price="${product.price}">
+                        data-name="${productName}"
+                        data-price="${price}"
+                        data-stock="${stock}">
 
-                        <div class="gift-icon">
-                            🎁
+                        <div class="gift-content">
+
+                            ${
+                                        product.imageUrl
+                                            ? `<img src="${product.imageUrl}"
+                                            class="gift-product-img"
+                                            alt="${productName}">`
+                                            : `<div class="gift-icon">🎁</div>`
+                                    }
+
+                            <h3>${productName}</h3>
+
+                            <p>${description}</p>
+
                         </div>
 
-                        <h3>${product.productName}</h3>
+                        <div class="gift-footer">
 
-                        <p>${product.description}</p>
+                            <div class="price">
+                                單價：NT$ ${price}
+                            </div>
 
-                        <div class="gift-price">
-                            單價：NT$ ${product.price}
-                        </div>
+                            <div class="stock-info">
+                                庫存：${stock}
+                            </div>
 
-                        <div class="stock-info">
-                            庫存：${product.stock}
-                        </div>
-
-                        <div class="qty-wrapper">
+                            <div class="qty-wrapper">
 
                                 <div class="qty-label">
                                     購買數量
                                 </div>
 
-                                <div class="qty-box">
+                                <div class="qty-row">
 
-                                    <button class="qty-minus">
-                                        −
-                                    </button>
+                                    <div class="qty-box">
 
-                                    <span class="qty-num">
-                                        0
-                                    </span>
+                                        <button class="qty-minus">
+                                            −
+                                        </button>
 
-                                    <button class="qty-plus">
-                                        ＋
+                                        <span class="qty-num">
+                                            0
+                                        </span>
+
+                                        <button class="qty-plus">
+                                            ＋
+                                        </button>
+
+                                    </div>
+
+                                    <button class="add-cart-btn">
+                                        🛒
                                     </button>
 
                                 </div>
 
+                            </div>
+
+                            <div class="subtotal">
+                                小計：NT$ 0
+                            </div>
+
                         </div>
-
-
-
-                        <div class="subtotal">
-                            小計：NT$ 0
-                        </div>
-
-                        <button class="add-cart-btn">
-                            加入購物車
-                        </button>
 
                     </div>
-                `;
+                    `;
             });
 
             bindGiftCardEvents();
+        }
+
+        function renderPagination() {
+
+            const pagination = document.getElementById("productPagination");
+
+            pagination.innerHTML = "";
+
+            const totalPages = Math.ceil(allProducts.length / pageSize);
+
+            if (totalPages <= 1) {
+                return;
+            }
+
+            for (let i = 1; i <= totalPages; i++) {
+
+                pagination.innerHTML += `
+                    <button
+                        class="page-btn ${i === currentPage ? 'active' : ''}"
+                        type="button"
+                        data-page="${i}">
+                        ${i}
+                    </button>
+                `;
+            }
+
+            document.querySelectorAll(".page-btn").forEach(function (btn) {
+
+                btn.addEventListener("click", function () {
+
+                    currentPage = Number(this.dataset.page);
+
+                    renderProducts();
+                    renderPagination();
+
+                    document.getElementById("gift-store")
+                        .scrollIntoView({ behavior: "smooth" });
+                });
+            });
         }
 
         function bindGiftCardEvents() {
@@ -542,6 +721,7 @@
                 const id = card.dataset.id;
                 const name = card.dataset.name;
                 const price = Number(card.dataset.price);
+                const stock = Number(card.dataset.stock);
 
                 function updateSubtotal() {
                     const qty = Number(qtyNum.textContent);
@@ -561,6 +741,16 @@
 
                 plusBtn.addEventListener("click", function () {
                     let qty = Number(qtyNum.textContent);
+
+                    if (stock <= 0) {
+                        alert("此商品目前沒有庫存");
+                        return;
+                    }
+
+                    if (qty >= stock) {
+                        alert("購買數量不能超過庫存");
+                        return;
+                    }
 
                     qty++;
                     qtyNum.textContent = qty;
@@ -589,14 +779,26 @@
                     });
 
                     if (existingItem) {
-                        existingItem.qty += qty;
+
+                        const newQty = existingItem.qty + qty;
+
+                        if (newQty > stock) {
+                            alert("已超過庫存數量");
+                            return;
+                        }
+
+                        existingItem.qty = newQty;
+                        existingItem.stock = stock;
                         existingItem.subtotal = existingItem.price * existingItem.qty;
+
                     } else {
+
                         cart.push({
                             id: Number(id),
                             name: name,
                             price: price,
                             qty: qty,
+                            stock: stock,
                             subtotal: price * qty
                         });
                     }

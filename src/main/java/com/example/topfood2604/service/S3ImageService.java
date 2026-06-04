@@ -46,6 +46,25 @@ public class S3ImageService {
         );
     }
 
+    public ImageResult uploadProductImage(Long productId, MultipartFile photo) throws Exception {
+
+        BufferedImage originalImage = ImageIO.read(photo.getInputStream());
+
+        byte[] coverBytes = resize(originalImage, 1200, 800, 0.75);
+        byte[] thumbBytes = resize(originalImage, 400, 300, 0.65);
+
+        String coverKey = "gift-product/" + productId + "/cover.jpg";
+        String thumbKey = "gift-product/" + productId + "/thumb.jpg";
+
+        upload(coverKey, coverBytes);
+        upload(thumbKey, thumbBytes);
+
+        return new ImageResult(
+                imageBaseUrl + "/" + coverKey,
+                imageBaseUrl + "/" + thumbKey
+        );
+    }
+
     private byte[] resize(
             BufferedImage image,
             int width,

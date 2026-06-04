@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>購物車</title>
+
+  <link rel="stylesheet" th:href="@{/navbar.css}">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft JhengHei";
+      background: #f4f6f8;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 100px auto 50px;
+    }
+
+    .page-title {
+      font-size: 36px;
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .cart-item {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+
+    .cart-image {
+      width: 120px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 10px;
+      background: #eee;
+    }
+
+    .cart-info {
+      flex: 1;
+    }
+
+    .cart-name {
+      font-size: 22px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .cart-price {
+      color: #e67e22;
+      font-size: 20px;
+      margin-top: 10px;
+    }
+
+    .cart-subtotal {
+      font-size: 20px;
+      font-weight: bold;
+      color: #27ae60;
+      min-width: 120px;
+      text-align: right;
+    }
+
+    .remove-btn {
+      border: none;
+      background: #e74c3c;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .remove-btn:hover {
+      background: #c0392b;
+    }
+
+    .summary {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      text-align: right;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+
+    .total {
+      font-size: 28px;
+      font-weight: bold;
+      color: #e67e22;
+    }
+
+    .checkout-btn {
+      margin-top: 20px;
+      padding: 14px 28px;
+      border: none;
+      background: #27ae60;
+      color: white;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .checkout-btn:hover {
+      background: #219150;
+    }
+
+    .cart-qty-box {
+      display: inline-flex;
+      align-items: center;
+      border: 2px solid #dcdfe6;
+      border-radius: 10px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .cart-qty-box button {
+      width: 38px;
+      height: 38px;
+      border: none;
+      background: #f8f9fa;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #2c3e50;
+    }
+
+    .cart-qty-box button:hover {
+      background: #27ae60;
+      color: white;
+    }
+
+    .cart-qty-num {
+      width: 45px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .empty-cart {
+      background: white;
+      border-radius: 16px;
+      padding: 60px 30px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
+
+    .empty-cart-icon {
+      font-size: 64px;
+      margin-bottom: 15px;
+    }
+
+    .empty-cart h2 {
+      color: #2c3e50;
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .empty-cart p {
+      color: #777;
+      font-size: 16px;
+      margin-bottom: 25px;
+    }
+
+    .go-shop-btn {
+      display: inline-block;
+      background: #e67e22;
+      color: white;
+      text-decoration: none;
+      padding: 13px 24px;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .go-shop-btn:hover {
+      background: #d35400;
+    }
+  </style>
+</head>
+
+<body>
+
+<div th:replace="fragments/main-navbar :: mainNavbar"></div>
+
+<div class="container">
+
+  <div class="page-title">
+    🛒 我的購物車
+  </div>
+
+  <div id="cartContainer"></div>
+
+  <div class="summary">
+
+    <div class="total">
+      總計：NT$
+      <span id="grandTotal">0</span>
+    </div>
+
+    <button class="checkout-btn">
+      前往結帳
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+  const cart =
+          JSON.parse(localStorage.getItem("giftCart")) || [];
+
+  const container =
+          document.getElementById("cartContainer");
+
+  let total = 0;
+
+  if (cart.length === 0) {
+
+    container.innerHTML = `
+            <div class="empty-cart">
+
+                <div class="empty-cart-icon">
+                    🛒
+                </div>
+
+                <h2>
+                    購物車是空的
+                </h2>
+
+                <p>
+                    目前尚未加入任何商品
+                </p>
+
+                <a href="/business#gift-store" class="go-shop-btn">
+                    去逛 Gift Store →
+                </a>
+
+            </div>
+        `;
+
+    document.querySelector(".summary").style.display = "none";
+
+  } else {
+
+    cart.forEach(function (item) {
+
+      total += Number(item.subtotal);
+
+      container.innerHTML += `
+
+                <div class="cart-item">
+
+                    <img
+                        src="${item.imageUrl ? item.imageUrl : 'https://via.placeholder.com/120x90'}"
+                        class="cart-image">
+
+                    <div class="cart-info">
+
+                        <div class="cart-name">
+                            ${item.name}
+                        </div>
+
+                        <div class="cart-price">
+                            單價：NT$ ${item.price}
+                        </div>
+
+                    </div>
+
+                    <div class="cart-qty-box">
+
+                        <button
+                            class="cart-minus"
+                            onclick="decreaseQty(${item.id})">
+                            −
+                        </button>
+
+                        <span class="cart-qty-num">
+                            ${item.qty}
+                        </span>
+
+                        <button
+                            class="cart-plus"
+                            onclick="increaseQty(${item.id})">
+                            ＋
+                        </button>
+
+                    </div>
+
+                    <div class="cart-subtotal">
+                        NT$ ${item.subtotal}
+                    </div>
+
+                    <button
+                        class="remove-btn"
+                        onclick="removeItem(${item.id})">
+                        刪除
+                    </button>
+
+                </div>
+            `;
+    });
+
+    document.getElementById("grandTotal").textContent = total;
+  }
+
+  function removeItem(id) {
+
+    let cart =
+            JSON.parse(localStorage.getItem("giftCart")) || [];
+
+    cart =
+            cart.filter(function (item) {
+              return Number(item.id) !== Number(id);
+            });
+
+    localStorage.setItem(
+            "giftCart",
+            JSON.stringify(cart)
+    );
+
+    location.reload();
+  }
+
+  function increaseQty(id) {
+
+    let cart =
+            JSON.parse(localStorage.getItem("giftCart")) || [];
+
+    const item =
+            cart.find(function (item) {
+              return Number(item.id) === Number(id);
+            });
+
+    if (item) {
+
+      if (Number(item.qty) >= Number(item.stock)) {
+        alert("已超過庫存數量");
+        return;
+      }
+
+      item.qty++;
+      item.subtotal = item.price * item.qty;
+    }
+
+    localStorage.setItem(
+            "giftCart",
+            JSON.stringify(cart)
+    );
+
+    location.reload();
+  }
+
+  function decreaseQty(id) {
+
+    let cart =
+            JSON.parse(localStorage.getItem("giftCart")) || [];
+
+    const item =
+            cart.find(function (item) {
+              return Number(item.id) === Number(id);
+            });
+
+    if (item) {
+
+      item.qty--;
+
+      if (item.qty <= 0) {
+
+        cart =
+                cart.filter(function (cartItem) {
+                  return Number(cartItem.id) !== Number(id);
+                });
+
+      } else {
+
+        item.subtotal = item.price * item.qty;
+      }
+    }
+
+    localStorage.setItem(
+            "giftCart",
+            JSON.stringify(cart)
+    );
+
+    location.reload();
+  }
+
+</script>
+
+</body>
+</html>
