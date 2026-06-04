@@ -589,6 +589,7 @@
                 const description = product.description || "暫無商品描述";
                 const price = product.price || 0;
                 const stock = product.stock || 0;
+                const imageUrl = product.imageUrl || "";
 
                 container.innerHTML += `
                     <div
@@ -596,17 +597,18 @@
                         data-id="${product.id}"
                         data-name="${productName}"
                         data-price="${price}"
-                        data-stock="${stock}">
+                        data-stock="${stock}"
+                        data-image-url="${imageUrl}">
 
                         <div class="gift-content">
 
                             ${
-                                        product.imageUrl
-                                            ? `<img src="${product.imageUrl}"
+                    imageUrl
+                        ? `<img src="${imageUrl}"
                                             class="gift-product-img"
                                             alt="${productName}">`
-                                            : `<div class="gift-icon">🎁</div>`
-                                    }
+                        : `<div class="gift-icon">🎁</div>`
+                }
 
                             <h3>${productName}</h3>
 
@@ -663,7 +665,7 @@
                         </div>
 
                     </div>
-                    `;
+                `;
             });
 
             bindGiftCardEvents();
@@ -722,6 +724,7 @@
                 const name = card.dataset.name;
                 const price = Number(card.dataset.price);
                 const stock = Number(card.dataset.stock);
+                const imageUrl = card.dataset.imageUrl || "";
 
                 function updateSubtotal() {
                     const qty = Number(qtyNum.textContent);
@@ -789,6 +792,7 @@
 
                         existingItem.qty = newQty;
                         existingItem.stock = stock;
+                        existingItem.imageUrl = imageUrl;
                         existingItem.subtotal = existingItem.price * existingItem.qty;
 
                     } else {
@@ -798,6 +802,7 @@
                             name: name,
                             price: price,
                             qty: qty,
+                            imageUrl: imageUrl,
                             stock: stock,
                             subtotal: price * qty
                         });

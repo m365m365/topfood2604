@@ -91,6 +91,10 @@ public class PageController {
 
         return "cart";
     }
+    @GetMapping("/checkout")
+    public String checkoutPage() {
+        return "checkout";
+    }
 
 
 }
