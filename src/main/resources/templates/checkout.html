@@ -75,6 +75,20 @@
             font-size: 18px;
         }
 
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .product-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #eee;
+        }
+
         .product-name {
             color: #2c3e50;
         }
@@ -114,36 +128,11 @@
         .checkout-btn:hover {
             background: #219150;
         }
-        .product-info {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .product-img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 10px;
-            background: #eee;
-        }
-        .product-info {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-        }
-
-        .product-img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 10px;
-            background: #eee;
-        }
     </style>
 </head>
 
 <body>
+
 <div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
@@ -161,17 +150,17 @@
 
         <div class="form-group">
             <label>收件人</label>
-            <input type="text" placeholder="請輸入收件人姓名">
+            <input id="receiverName" type="text" placeholder="請輸入收件人姓名">
         </div>
 
         <div class="form-group">
             <label>聯絡電話</label>
-            <input type="text" placeholder="請輸入聯絡電話">
+            <input id="receiverPhone" type="text" placeholder="請輸入聯絡電話">
         </div>
 
         <div class="form-group">
             <label>收件地址</label>
-            <input type="text" placeholder="請輸入收件地址">
+            <input id="receiverAddress" type="text" placeholder="請輸入收件地址">
         </div>
 
         <div class="divider"></div>
@@ -203,7 +192,7 @@
 
         </div>
 
-        <button class="checkout-btn">
+        <button id="checkoutBtn" class="checkout-btn">
             確認訂單
         </button>
 
@@ -212,20 +201,22 @@
 </div>
 
 <script>
-
-        document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
 
         const cart =
-        JSON.parse(localStorage.getItem("giftCart")) || [];
+            JSON.parse(localStorage.getItem("giftCart")) || [];
 
         const checkoutItems =
-        document.getElementById("checkoutItems");
+            document.getElementById("checkoutItems");
 
         const subtotalText =
-        document.getElementById("subtotalText");
+            document.getElementById("subtotalText");
 
         const totalText =
-        document.getElementById("totalText");
+            document.getElementById("totalText");
+
+        const checkoutBtn =
+            document.getElementById("checkoutBtn");
 
         let total = 0;
 
@@ -233,28 +224,31 @@
 
         if (cart.length === 0) {
 
-        checkoutItems.innerHTML = `
+            checkoutItems.innerHTML = `
                 <div class="empty-cart">
                     目前購物車沒有商品
                 </div>
             `;
 
-        subtotalText.textContent = "NT$0";
-        totalText.textContent = "NT$0";
+            subtotalText.textContent = "NT$0";
+            totalText.textContent = "NT$0";
 
-        return;
-    }
+            checkoutBtn.disabled = true;
+            checkoutBtn.style.background = "#aaa";
+            checkoutBtn.textContent = "購物車沒有商品";
+
+            return;
+        }
 
         cart.forEach(function (item) {
 
-        const itemTotal = item.price * item.qty;
+            const itemTotal = item.price * item.qty;
+            total += itemTotal;
 
-        total += itemTotal;
+            const imageUrl =
+                item.imageUrl || item.image || "/images/no-image.png";
 
-        const imageUrl =
-        item.imageUrl || item.image || "/images/no-image.png";
-
-        checkoutItems.innerHTML += `
+            checkoutItems.innerHTML += `
                 <div class="product-item">
 
                     <div class="product-info">
@@ -275,10 +269,76 @@
 
                 </div>
             `;
-    });
+        });
 
         subtotalText.textContent = "NT$" + total;
         totalText.textContent = "NT$" + total;
+
+        checkoutBtn.addEventListener("click", async function () {
+
+            const receiverName =
+                document.getElementById("receiverName").value.trim();
+
+            const receiverPhone =
+                document.getElementById("receiverPhone").value.trim();
+
+            const receiverAddress =
+                document.getElementById("receiverAddress").value.trim();
+
+            if (receiverName === "" || receiverPhone === "" || receiverAddress === "") {
+                alert("請完整填寫收件人、電話、地址");
+                return;
+            }
+
+            const orderRequest = {
+                memberId: 1,
+                receiverName: receiverName,
+                receiverEmail: "mm365day@gmail.com",
+                receiverPhone: receiverPhone,
+                note: receiverAddress,
+                items: cart.map(function (item) {
+                    return {
+                        productId: item.id,
+                        productName: item.name,
+                        price: item.price,
+                        quantity: item.qty
+                    };
+                })
+            };
+
+            try {
+
+                checkoutBtn.disabled = true;
+                checkoutBtn.textContent = "訂單建立中...";
+
+                const response = await fetch("http://localhost:8081/api/orders", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(orderRequest)
+                });
+
+                if (!response.ok) {
+                    throw new Error("建立訂單失敗");
+                }
+
+                const result = await response.json();
+
+                localStorage.removeItem("giftCart");
+
+                alert("訂單建立成功！訂單編號：" + result.orderNo);
+
+                window.location.href = "/cart";
+
+            } catch (error) {
+
+                alert("訂單建立失敗，請確認 order-service 是否啟動");
+
+                checkoutBtn.disabled = false;
+                checkoutBtn.textContent = "確認訂單";
+            }
+        });
     });
 </script>
 
