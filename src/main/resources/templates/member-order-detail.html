@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>訂單明細</title>
+
+    <link rel="stylesheet" th:href="@{/navbar.css}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            background: #f4f6f8;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 110px auto 50px;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 40px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 35px;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 18px;
+            margin-bottom: 25px;
+        }
+
+        .order-no {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .CREATED {
+            background: #27ae60;
+        }
+
+        .CANCELLED {
+            background: #e74c3c;
+        }
+
+        .PAID {
+            background: #f39c12;
+        }
+
+        .info-box {
+            line-height: 2;
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #34495e;
+            margin: 25px 0 15px;
+        }
+
+        .item-row {
+            display: grid;
+            grid-template-columns: 1fr 120px 120px 120px;
+            gap: 15px;
+            padding: 14px 0;
+            border-bottom: 1px dashed #ddd;
+            font-size: 17px;
+        }
+
+        .item-header {
+            font-weight: bold;
+            color: #2c3e50;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .total {
+            text-align: right;
+            margin-top: 25px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 28px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            background: #2980b9;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background: #21618c;
+        }
+
+        .empty {
+            background: white;
+            border-radius: 14px;
+            padding: 60px;
+            text-align: center;
+            color: #999;
+            font-size: 22px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+
+    <div class="page-title">
+        📦 訂單明細
+    </div>
+
+    <div id="orderDetail"></div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        loadOrderDetail();
+
+        async function loadOrderDetail() {
+
+            const orderDetail =
+                document.getElementById("orderDetail");
+
+            const orderId =
+                window.location.pathname.split("/").pop();
+
+            try {
+
+                const response =
+                    await fetch("http://localhost:8081/api/orders/" + orderId);
+
+                const order = await response.json();
+
+                if (!order || !order.id) {
+                    orderDetail.innerHTML = `
+                        <div class="empty">
+                            找不到此訂單
+                        </div>
+                    `;
+                    return;
+                }
+
+                let itemsHtml = "";
+
+                order.items.forEach(function (item) {
+                    itemsHtml += `
+                        <div class="item-row">
+                            <div>${item.productName}</div>
+                            <div>NT$${item.price}</div>
+                            <div>${item.quantity}</div>
+                            <div>NT$${item.subtotal}</div>
+                        </div>
+                    `;
+                });
+
+                orderDetail.innerHTML = `
+                    <div class="detail-card">
+
+                        <div class="order-header">
+                            <div class="order-no">
+                                訂單編號：${order.orderNo}
+                            </div>
+
+                            <div class="status ${order.status}">
+                                ${getStatusText(order.status)}
+                            </div>
+                        </div>
+
+                        <div class="info-box">
+                            收件人：${order.receiverName}<br>
+                            電話：${order.receiverPhone}<br>
+                            地址：${order.note}<br>
+                            建立時間：${order.createdAt}<br>
+                            付款狀態：${getPaymentText(order.paymentStatus)}
+                        </div>
+
+                        <div class="section-title">
+                            🛍 商品明細
+                        </div>
+
+                        <div class="item-row item-header">
+                            <div>商品名稱</div>
+                            <div>單價</div>
+                            <div>數量</div>
+                            <div>小計</div>
+                        </div>
+
+                        ${itemsHtml}
+
+                        <div class="total">
+                            總計：NT$${order.totalAmount}
+                        </div>
+
+                        <a class="back-btn" href="/member-orders">
+                            ← 返回我的訂單
+                        </a>
+
+                    </div>
+                `;
+
+            } catch (error) {
+
+                orderDetail.innerHTML = `
+                    <div class="empty">
+                        無法讀取訂單明細，請確認 order-service 是否啟動
+                    </div>
+                `;
+            }
+        }
+    });
+
+    function getStatusText(status) {
+
+        switch (status) {
+
+            case "CREATED":
+                return "🟢 已成立";
+
+            case "CANCELLED":
+                return "🔴 已取消";
+
+            case "PAID":
+                return "💰 已付款";
+
+            default:
+                return status;
+        }
+    }
+
+    function getPaymentText(status) {
+
+        switch (status) {
+
+            case "UNPAID":
+                return "未付款";
+
+            case "PAID":
+                return "已付款";
+
+            default:
+                return status;
+        }
+    }
+</script>
+
+</body>
+</html>

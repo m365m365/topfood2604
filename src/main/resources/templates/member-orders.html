@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>我的訂單</title>
+
+    <link rel="stylesheet" th:href="@{/navbar.css}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            background: #f4f6f8;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 110px auto 50px;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 40px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 35px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px 28px;
+            margin-bottom: 22px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 14px;
+        }
+
+        .order-no {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .status {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .CREATED {
+            background: #27ae60;
+        }
+
+        .CANCELLED {
+            background: #e74c3c;
+        }
+
+        .order-info {
+            line-height: 1.9;
+            font-size: 17px;
+            color: #555;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .total {
+            text-align: right;
+            margin-top: 18px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .cancel-btn {
+            margin-top: 18px;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #e74c3c;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cancel-btn:hover {
+            background: #c0392b;
+        }
+        .detail-btn {
+            display: inline-block;
+            margin-top: 18px;
+            margin-right: 10px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            background: #2980b9;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .detail-btn:hover {
+            background: #21618c;
+        }
+        .empty {
+            background: white;
+            border-radius: 14px;
+            padding: 60px;
+            text-align: center;
+            color: #999;
+            font-size: 22px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+
+    <div class="page-title">
+        📦 我的訂單
+    </div>
+
+    <div id="orderList"></div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        loadOrders();
+
+        async function loadOrders() {
+
+            const orderList = document.getElementById("orderList");
+
+            try {
+
+                const response =
+                    await fetch("http://localhost:8081/api/orders/member/1");
+
+                const orders = await response.json();
+
+                orderList.innerHTML = "";
+
+                if (orders.length === 0) {
+                    orderList.innerHTML = `
+                        <div class="empty">
+                            目前沒有任何訂單
+                        </div>
+                    `;
+                    return;
+                }
+
+                orders.forEach(function (order) {
+
+                    let itemsHtml = "";
+
+                    order.items.forEach(function (item) {
+                        itemsHtml += `
+                            <div class="item-row">
+                                <span>${item.productName} × ${item.quantity}</span>
+                                <span>NT$${item.subtotal}</span>
+                            </div>
+                        `;
+                    });
+
+                    let cancelButton = "";
+
+                    if (order.status === "CREATED") {
+                        cancelButton = `
+                            <button class="cancel-btn"
+                                    onclick="cancelOrder(${order.id})">
+                                取消訂單
+                            </button>
+                        `;
+                    }
+
+                    orderList.innerHTML += `
+                        <div class="order-card">
+
+                            <div class="order-header">
+                                <div class="order-no">
+                                    訂單編號：${order.orderNo}
+                                </div>
+
+                                <div class="status  ${order.status}">
+                                     ${getStatusText(order.status)}
+                                </div>
+                            </div>
+
+                            <div class="order-info">
+                                收件人：${order.receiverName}<br>
+                                電話：${order.receiverPhone}<br>
+                                地址：${order.note}<br>
+                                建立時間：${order.createdAt}
+                            </div>
+
+                            <hr>
+
+                            ${itemsHtml}
+
+                            <div class="total">
+                                總計：NT$${order.totalAmount}
+                            </div>
+
+                            <a class="detail-btn" href="/member-orders/${order.id}">
+                                    查看明細
+                                </a>
+
+                                ${cancelButton}
+
+                        </div>
+                    `;
+                });
+
+            } catch (error) {
+
+                orderList.innerHTML = `
+                    <div class="empty">
+                        無法讀取訂單，請確認 order-service 是否啟動
+                    </div>
+                `;
+            }
+        }
+
+        window.cancelOrder = async function (orderId) {
+
+            if (!confirm("確定要取消這筆訂單嗎？")) {
+                return;
+            }
+
+            await fetch("http://localhost:8081/api/orders/" + orderId + "/cancel", {
+                method: "PUT"
+            });
+
+            alert("訂單已取消");
+
+            loadOrders();
+        };
+    });
+
+    function getStatusText(status) {
+
+        switch (status) {
+
+            case "CREATED":
+                return "🟢 已成立";
+
+            case "CANCELLED":
+                return "🔴 已取消";
+
+            case "PAID":
+                return "💰 已付款";
+
+            default:
+                return status;
+        }
+    }
+</script>
+
+</body>
+</html>
