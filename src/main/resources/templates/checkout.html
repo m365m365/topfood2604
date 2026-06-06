@@ -203,8 +203,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
 
-        const cart =
-            JSON.parse(localStorage.getItem("giftCart")) || [];
+        let cart = [];
 
         const checkoutItems =
             document.getElementById("checkoutItems");
@@ -218,61 +217,98 @@
         const checkoutBtn =
             document.getElementById("checkoutBtn");
 
-        let total = 0;
+        loadCheckoutCart();
 
-        checkoutItems.innerHTML = "";
+        async function loadCheckoutCart() {
 
-        if (cart.length === 0) {
+            try {
 
-            checkoutItems.innerHTML = `
-                <div class="empty-cart">
-                    目前購物車沒有商品
-                </div>
-            `;
+                const response =
+                    await fetch("/api/cart/detail");
 
-            subtotalText.textContent = "NT$0";
-            totalText.textContent = "NT$0";
+                if (!response.ok) {
+                    throw new Error("讀取購物車失敗");
+                }
 
-            checkoutBtn.disabled = true;
-            checkoutBtn.style.background = "#aaa";
-            checkoutBtn.textContent = "購物車沒有商品";
+                cart =
+                    await response.json();
 
-            return;
+                renderCheckoutItems();
+
+            } catch (error) {
+
+                checkoutItems.innerHTML = `
+                    <div class="empty-cart">
+                        讀取購物車失敗，請確認是否已登入會員
+                    </div>
+                `;
+
+                subtotalText.textContent = "NT$0";
+                totalText.textContent = "NT$0";
+
+                checkoutBtn.disabled = true;
+                checkoutBtn.style.background = "#aaa";
+                checkoutBtn.textContent = "無法結帳";
+            }
         }
 
-        cart.forEach(function (item) {
+        function renderCheckoutItems() {
 
-            const itemTotal = item.price * item.qty;
-            total += itemTotal;
+            let total = 0;
 
-            const imageUrl =
-                item.imageUrl || item.image || "/images/no-image.png";
+            checkoutItems.innerHTML = "";
 
-            checkoutItems.innerHTML += `
-                <div class="product-item">
+            if (cart.length === 0) {
 
-                    <div class="product-info">
+                checkoutItems.innerHTML = `
+                    <div class="empty-cart">
+                        目前購物車沒有商品
+                    </div>
+                `;
 
-                        <img class="product-img"
-                             src="${imageUrl}"
-                             alt="${item.name}">
+                subtotalText.textContent = "NT$0";
+                totalText.textContent = "NT$0";
 
-                        <span class="product-name">
-                            ${item.name} × ${item.qty}
+                checkoutBtn.disabled = true;
+                checkoutBtn.style.background = "#aaa";
+                checkoutBtn.textContent = "購物車沒有商品";
+
+                return;
+            }
+
+            cart.forEach(function (item) {
+
+                total += Number(item.subtotal);
+
+                const imageUrl =
+                    item.imageUrl || "/images/no-image.png";
+
+                checkoutItems.innerHTML += `
+                    <div class="product-item">
+
+                        <div class="product-info">
+
+                            <img class="product-img"
+                                 src="${imageUrl}"
+                                 alt="${item.productName}">
+
+                            <span class="product-name">
+                                ${item.productName} × ${item.quantity}
+                            </span>
+
+                        </div>
+
+                        <span class="product-price">
+                            NT$${item.subtotal}
                         </span>
 
                     </div>
+                `;
+            });
 
-                    <span class="product-price">
-                        NT$${itemTotal}
-                    </span>
-
-                </div>
-            `;
-        });
-
-        subtotalText.textContent = "NT$" + total;
-        totalText.textContent = "NT$" + total;
+            subtotalText.textContent = "NT$" + total;
+            totalText.textContent = "NT$" + total;
+        }
 
         checkoutBtn.addEventListener("click", async function () {
 
@@ -290,6 +326,11 @@
                 return;
             }
 
+            if (cart.length === 0) {
+                alert("購物車沒有商品");
+                return;
+            }
+
             const orderRequest = {
                 memberId: 1,
                 receiverName: receiverName,
@@ -298,10 +339,10 @@
                 note: receiverAddress,
                 items: cart.map(function (item) {
                     return {
-                        productId: item.id,
-                        productName: item.name,
+                        productId: item.productId,
+                        productName: item.productName,
                         price: item.price,
-                        quantity: item.qty
+                        quantity: item.quantity
                     };
                 })
             };
@@ -325,11 +366,18 @@
 
                 const result = await response.json();
 
-                localStorage.removeItem("giftCart");
+                /* 成功建立訂單後，清空會員資料庫購物車 */
+                const clearResponse = await fetch("/api/cart/clear", {
+                    method: "POST"
+                });
+
+                if (!clearResponse.ok) {
+                    throw new Error("清空購物車失敗");
+                }
 
                 alert("訂單建立成功！訂單編號：" + result.orderNo);
 
-                window.location.href = "/cart";
+                window.location.href = "/member-orders";
 
             } catch (error) {
 

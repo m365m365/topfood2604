@@ -10,9 +10,12 @@
     </div>
 
     <div class="nav-user">
+
         <span th:if="${loggedIn}" class="welcome-text">
             👋 Hi,
-            <span th:text="${loginDisplayName}">會員</span>
+            <span th:text="${loginDisplayName}">
+                會員
+            </span>
         </span>
 
         <a href="/cart" class="cart-link">
@@ -20,29 +23,26 @@
             🛒
 
             <span id="cartCount">
-                 0
+                0
             </span>
 
         </a>
 
         <a th:if="${loggedIn}"
            href="/logout"
-           class="logout-link"
-           onclick="clearCart()">
+           class="logout-link">
             🚪 登出
         </a>
+
     </div>
+
     <script th:inline="javascript">
 
         document.addEventListener("DOMContentLoaded", function () {
 
             const isLoggedIn = [[${loggedIn}]];
 
-            function getCart() {
-                return JSON.parse(localStorage.getItem("giftCart")) || [];
-            }
-
-            function updateCartCount() {
+            async function updateCartCount() {
 
                 const cartCount =
                     document.getElementById("cartCount");
@@ -54,39 +54,48 @@
                 // 未登入
                 if (!isLoggedIn) {
 
-                    localStorage.removeItem("giftCart");
-
                     cartCount.textContent = "0";
 
                     return;
                 }
 
-                // 已登入
-                const cart = getCart();
+                try {
 
-                let totalQty = 0;
+                    const response =
+                        await fetch("/api/cart/detail");
 
-                cart.forEach(function (item) {
-                    totalQty += item.qty;
-                });
+                    if (!response.ok) {
 
-                cartCount.textContent = totalQty;
+                        cartCount.textContent = "0";
+
+                        return;
+                    }
+
+                    const cartItems =
+                        await response.json();
+
+                    let totalQty = 0;
+
+                    cartItems.forEach(function (item) {
+
+                        totalQty +=
+                            Number(item.quantity);
+                    });
+
+                    cartCount.textContent =
+                        totalQty;
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    cartCount.textContent = "0";
+                }
             }
 
             updateCartCount();
         });
 
-        function clearCart() {
-
-            localStorage.removeItem("giftCart");
-
-            const cartCount =
-                document.getElementById("cartCount");
-
-            if (cartCount) {
-                cartCount.textContent = "0";
-            }
-        }
-
     </script>
+
 </nav>

@@ -88,6 +88,11 @@ public class SecurityConfig {
                                 "/api/recommended-restaurants/home"
                         ).permitAll()
 
+                        // 購物車 API：需要登入
+                        .requestMatchers(
+                                "/api/cart/**"
+                        ).authenticated()
+
                         // =========================
                         // 按讚 API：需要登入
                         // =========================

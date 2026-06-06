@@ -217,7 +217,12 @@
     <a href="#likes">我的按讚紀錄</a>
     <a href="#tier">會員等級</a>
     <a href="#usage">每日使用次數</a>
-    <a href="/member-orders">📦 我的訂單</a>
+    <a th:if="${loggedIn}" href="/member-orders">📦 我的訂單</a>
+
+    <a th:unless="${loggedIn}" href="/login"
+       onclick="alert('請先登入會員，才能查看我的訂單');">
+        📦 我的訂單
+    </a>
     <a href="#change">變更密碼</a>
 </div>
 

@@ -87,28 +87,26 @@
     }
 
     .summary {
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      text-align: right;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 15px;
+      margin-top: 20px;
+      padding: 20px;
     }
 
     .total {
-      font-size: 28px;
+      font-size: 42px;
       font-weight: bold;
       color: #e67e22;
     }
 
     .checkout-btn {
-      margin-top: 20px;
-      padding: 14px 28px;
-      border: none;
-      background: #27ae60;
+      background: #28a745;
       color: white;
-      font-size: 18px;
-      border-radius: 10px;
-      cursor: pointer;
+      padding: 12px 30px;
+      border-radius: 8px;
+      text-decoration: none;
       font-weight: bold;
     }
 
@@ -218,184 +216,182 @@
 
 <script>
 
-  const cart =
-          JSON.parse(localStorage.getItem("giftCart")) || [];
-
   const container =
           document.getElementById("cartContainer");
 
-  let total = 0;
+  const summaryBox =
+          document.querySelector(".summary");
 
-  if (cart.length === 0) {
+  async function loadCart() {
 
-    container.innerHTML = `
-            <div class="empty-cart">
+    try {
 
-                <div class="empty-cart-icon">
-                    🛒
-                </div>
+      const response =
+              await fetch("/api/cart/detail");
 
-                <h2>
-                    購物車是空的
-                </h2>
+      if (!response.ok) {
+        throw new Error("讀取購物車失敗");
+      }
 
-                <p>
-                    目前尚未加入任何商品
-                </p>
+      const cartItems =
+              await response.json();
 
-                <a href="/business#gift-store" class="go-shop-btn">
-                    去逛 Gift Store →
-                </a>
+      container.innerHTML = "";
 
+      let total = 0;
+
+      if (cartItems.length === 0) {
+
+        container.innerHTML = `
+          <div class="empty-cart">
+
+            <div class="empty-cart-icon">
+              🛒
             </div>
+
+            <h2>
+              購物車是空的
+            </h2>
+
+            <p>
+              目前尚未加入任何商品
+            </p>
+
+            <a href="/business#gift-store" class="go-shop-btn">
+              去逛 Gift Store →
+            </a>
+
+          </div>
         `;
 
-    document.querySelector(".summary").style.display = "none";
+        summaryBox.style.display = "none";
 
-  } else {
-
-    cart.forEach(function (item) {
-
-      total += Number(item.subtotal);
-
-      container.innerHTML += `
-
-                <div class="cart-item">
-
-                    <img
-                        src="${item.imageUrl ? item.imageUrl : 'https://via.placeholder.com/120x90'}"
-                        class="cart-image">
-
-                    <div class="cart-info">
-
-                        <div class="cart-name">
-                            ${item.name}
-                        </div>
-
-                        <div class="cart-price">
-                            單價：NT$ ${item.price}
-                        </div>
-
-                    </div>
-
-                    <div class="cart-qty-box">
-
-                        <button
-                            class="cart-minus"
-                            onclick="decreaseQty(${item.id})">
-                            −
-                        </button>
-
-                        <span class="cart-qty-num">
-                            ${item.qty}
-                        </span>
-
-                        <button
-                            class="cart-plus"
-                            onclick="increaseQty(${item.id})">
-                            ＋
-                        </button>
-
-                    </div>
-
-                    <div class="cart-subtotal">
-                        NT$ ${item.subtotal}
-                    </div>
-
-                    <button
-                        class="remove-btn"
-                        onclick="removeItem(${item.id})">
-                        刪除
-                    </button>
-
-                </div>
-            `;
-    });
-
-    document.getElementById("grandTotal").textContent = total;
-  }
-
-  function removeItem(id) {
-
-    let cart =
-            JSON.parse(localStorage.getItem("giftCart")) || [];
-
-    cart =
-            cart.filter(function (item) {
-              return Number(item.id) !== Number(id);
-            });
-
-    localStorage.setItem(
-            "giftCart",
-            JSON.stringify(cart)
-    );
-
-    location.reload();
-  }
-
-  function increaseQty(id) {
-
-    let cart =
-            JSON.parse(localStorage.getItem("giftCart")) || [];
-
-    const item =
-            cart.find(function (item) {
-              return Number(item.id) === Number(id);
-            });
-
-    if (item) {
-
-      if (Number(item.qty) >= Number(item.stock)) {
-        alert("已超過庫存數量");
         return;
       }
 
-      item.qty++;
-      item.subtotal = item.price * item.qty;
+      summaryBox.style.display = "flex";
+
+      cartItems.forEach(function (item) {
+
+        total += Number(item.subtotal);
+
+        container.innerHTML += `
+          <div class="cart-item">
+
+            <img
+              src="${item.imageUrl || 'https://via.placeholder.com/120x90'}"
+              class="cart-image">
+
+            <div class="cart-info">
+
+              <div class="cart-name">
+                ${item.productName}
+              </div>
+
+              <div class="cart-price">
+                單價：NT$ ${item.price}
+              </div>
+
+            </div>
+
+            <div class="cart-qty-box">
+
+              <button onclick="decreaseQty(${item.productId}, ${item.quantity})">
+                −
+              </button>
+
+              <span class="cart-qty-num">
+                ${item.quantity}
+              </span>
+
+              <button onclick="increaseQty(${item.productId}, ${item.quantity}, ${item.stock})">
+                ＋
+              </button>
+
+            </div>
+
+            <div class="cart-subtotal">
+              NT$ ${item.subtotal}
+            </div>
+
+            <button
+              class="remove-btn"
+              onclick="removeItem(${item.productId})">
+              刪除
+            </button>
+
+          </div>
+        `;
+      });
+
+      document.getElementById("grandTotal").textContent = total;
+
+    } catch (error) {
+
+      container.innerHTML = `
+        <div class="empty-cart">
+          <h2>讀取購物車失敗</h2>
+          <p>請確認是否已登入會員</p>
+        </div>
+      `;
+
+      summaryBox.style.display = "none";
     }
-
-    localStorage.setItem(
-            "giftCart",
-            JSON.stringify(cart)
-    );
-
-    location.reload();
   }
 
-  function decreaseQty(id) {
+  async function increaseQty(productId, quantity, stock) {
 
-    let cart =
-            JSON.parse(localStorage.getItem("giftCart")) || [];
-
-    const item =
-            cart.find(function (item) {
-              return Number(item.id) === Number(id);
-            });
-
-    if (item) {
-
-      item.qty--;
-
-      if (item.qty <= 0) {
-
-        cart =
-                cart.filter(function (cartItem) {
-                  return Number(cartItem.id) !== Number(id);
-                });
-
-      } else {
-
-        item.subtotal = item.price * item.qty;
-      }
+    if (quantity >= stock) {
+      alert("已超過庫存數量");
+      return;
     }
 
-    localStorage.setItem(
-            "giftCart",
-            JSON.stringify(cart)
-    );
+    await fetch("/api/cart/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        productId: productId,
+        quantity: quantity + 1
+      })
+    });
 
-    location.reload();
+    loadCart();
   }
+
+  async function decreaseQty(productId, quantity) {
+
+    await fetch("/api/cart/update", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        productId: productId,
+        quantity: quantity - 1
+      })
+    });
+
+    loadCart();
+  }
+
+  async function removeItem(productId) {
+
+    await fetch("/api/cart/delete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        productId: productId
+      })
+    });
+
+    loadCart();
+  }
+
+  loadCart();
 
 </script>
 

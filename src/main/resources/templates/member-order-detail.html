@@ -253,11 +253,20 @@
             case "CREATED":
                 return "🟢 已成立";
 
-            case "CANCELLED":
-                return "🔴 已取消";
-
             case "PAID":
                 return "💰 已付款";
+
+            case "PREPARING":
+                return "📦 備貨中";
+
+            case "SHIPPING":
+                return "🚚 配送中";
+
+            case "COMPLETED":
+                return "✅ 已完成";
+
+            case "CANCELLED":
+                return "🔴 已取消";
 
             default:
                 return status;

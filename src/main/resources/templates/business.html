@@ -235,21 +235,27 @@
         }
 
         .add-cart-btn {
-
-            width: 52px;
+            min-width: 120px;
             height: 46px;
 
-            border: none;
+            padding: 0 16px;
 
+            border: none;
             border-radius: 10px;
 
-            background: #2c3e50;
-
+            background: #27ae60;
             color: white;
 
-            font-size: 22px;
+            font-size: 18px;
+            font-weight: bold;
 
             cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            white-space: nowrap;
         }
 
         .add-cart-btn:hover {
@@ -760,7 +766,7 @@
                     updateSubtotal();
                 });
 
-                addCartBtn.addEventListener("click", function () {
+                addCartBtn.addEventListener("click", async function () {
 
                     if (!loggedIn) {
                         alert("請先登入會員，才能加入購物車");
@@ -775,47 +781,34 @@
                         return;
                     }
 
-                    const cart = getCart();
+                    try {
 
-                    const existingItem = cart.find(function (item) {
-                        return Number(item.id) === Number(id);
-                    });
+                        const response = await fetch("/api/cart/add", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                productId: Number(id),
+                                quantity: qty
+                            })
+                        });
 
-                    if (existingItem) {
-
-                        const newQty = existingItem.qty + qty;
-
-                        if (newQty > stock) {
-                            alert("已超過庫存數量");
-                            return;
+                        if (!response.ok) {
+                            throw new Error("加入購物車失敗");
                         }
 
-                        existingItem.qty = newQty;
-                        existingItem.stock = stock;
-                        existingItem.imageUrl = imageUrl;
-                        existingItem.subtotal = existingItem.price * existingItem.qty;
+                        addCartBtn.textContent = "已加入購物車 ✓";
 
-                    } else {
+                        setTimeout(function () {
+                            addCartBtn.textContent = "加入購物車";
+                        }, 1200);
 
-                        cart.push({
-                            id: Number(id),
-                            name: name,
-                            price: price,
-                            qty: qty,
-                            imageUrl: imageUrl,
-                            stock: stock,
-                            subtotal: price * qty
-                        });
+                        updateCartCount();
+
+                    } catch (error) {
+                        alert("加入購物車失敗，請稍後再試");
                     }
-
-                    saveCart(cart);
-                    updateCartCount();
-
-                    addCartBtn.textContent = "已加入購物車 ✓";
-
-                    setTimeout(function () {
-                        addCartBtn.textContent = "加入購物車";
-                    }, 1200);
                 });
 
                 updateSubtotal();

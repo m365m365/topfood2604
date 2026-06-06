@@ -125,6 +125,29 @@
             font-size: 22px;
             box-shadow: 0 3px 12px rgba(0,0,0,0.12);
         }
+        .CREATED {
+            background: #27ae60;
+        }
+
+        .PAID {
+            background: #f39c12;
+        }
+
+        .PREPARING {
+            background: #3498db;
+        }
+
+        .SHIPPING {
+            background: #8e44ad;
+        }
+
+        .COMPLETED {
+            background: #2ecc71;
+        }
+
+        .CANCELLED {
+            background: #e74c3c;
+        }
     </style>
 </head>
 
@@ -265,11 +288,20 @@
             case "CREATED":
                 return "🟢 已成立";
 
-            case "CANCELLED":
-                return "🔴 已取消";
-
             case "PAID":
                 return "💰 已付款";
+
+            case "PREPARING":
+                return "📦 備貨中";
+
+            case "SHIPPING":
+                return "🚚 配送中";
+
+            case "COMPLETED":
+                return "✅ 已完成";
+
+            case "CANCELLED":
+                return "🔴 已取消";
 
             default:
                 return status;
