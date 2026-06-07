@@ -1,0 +1,314 @@
+/* =========================
+   妖市貓公小幫手
+========================= */
+
+#catHelper {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+
+    width: 90px;
+
+    cursor: pointer;
+
+    z-index: 9999;
+
+    transition: all .3s ease;
+}
+
+#catHelper img {
+    width: 100%;
+    display: block;
+
+    border-radius: 50%;
+
+    box-shadow:
+            0 8px 20px rgba(255,120,160,.35);
+
+    transition: all .3s;
+}
+
+#catHelper:hover img {
+    transform: scale(1.08);
+}
+
+/* =========================
+   提示泡泡
+========================= */
+
+#catBubble {
+
+    position: fixed;
+
+    right: 115px;
+    bottom: 70px;
+
+    background: white;
+
+    padding: 10px 16px;
+
+    border-radius: 20px;
+
+    border: 2px solid #ffb6c8;
+
+    color: #555;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    box-shadow:
+            0 4px 15px rgba(0,0,0,.12);
+
+    z-index: 9999;
+}
+
+/* =========================
+   聊天視窗
+========================= */
+
+#catChatWindow {
+
+    position: fixed;
+
+    right: 20px;
+    bottom: 130px;
+
+    width: 360px;
+
+    display: none;
+
+    background: white;
+
+    border-radius: 20px;
+
+    box-shadow:
+            0 8px 30px rgba(0,0,0,.18);
+
+    overflow: hidden;
+
+    z-index: 9999;
+}
+
+/* =========================
+   Header
+========================= */
+
+.chat-header {
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #ff9db5,
+                    #ff7ea1
+            );
+
+    color: white;
+
+    padding: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+.chat-header img {
+
+    width: 52px;
+    height: 52px;
+
+    border-radius: 50%;
+
+    background: white;
+}
+
+.chat-title {
+
+    font-size: 20px;
+
+    font-weight: bold;
+}
+
+.chat-subtitle {
+
+    font-size: 13px;
+
+    margin-top: 4px;
+}
+
+.chat-close {
+
+    margin-left: auto;
+
+    cursor: pointer;
+
+    font-size: 26px;
+
+    font-weight: bold;
+}
+
+/* =========================
+   Body
+========================= */
+
+.chat-body {
+    padding: 18px;
+}
+
+.chat-message {
+
+    background: #fff1f5;
+
+    border: 1px solid #ffd0dc;
+
+    border-radius: 15px;
+
+    padding: 14px;
+
+    color: #444;
+
+    line-height: 1.8;
+
+    margin-bottom: 15px;
+
+    max-height: 220px;
+
+    overflow-y: auto;
+}
+
+/* =========================
+   快速按鈕
+========================= */
+
+.quick-btn {
+
+    width: 100%;
+
+    padding: 13px;
+
+    margin-bottom: 10px;
+
+    border: 1px solid #ffb6c8;
+
+    border-radius: 12px;
+
+    background: white;
+
+    color: #333;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    text-align: left;
+
+    transition: all .2s;
+}
+
+.quick-btn:hover {
+
+    background: #fff1f5;
+
+    transform: translateX(3px);
+}
+
+/* =========================
+   輸入框
+========================= */
+
+.chat-input-area {
+
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 12px;
+}
+
+#chatInput {
+
+    flex: 1;
+
+    padding: 12px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 20px;
+
+    outline: none;
+}
+
+.send-btn {
+
+    width: 45px;
+    height: 45px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #ff7ea1;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 18px;
+}
+
+.send-btn:hover {
+
+    background: #ff5f8c;
+}
+
+/* =========================
+   貓咪走動動畫
+========================= */
+
+@keyframes catWalk {
+
+    0% {
+        transform: translateX(0);
+    }
+
+    30% {
+        transform: translateX(-10px);
+    }
+
+    60% {
+        transform: translateX(8px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+#catUnreadBadge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+
+    width: 24px;
+    height: 24px;
+
+    background: #ff3b5c;
+    color: white;
+
+    border-radius: 50%;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 3px 10px rgba(255, 59, 92, .45);
+
+    z-index: 10000;
+}

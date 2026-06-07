@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>妖市貓公小幫手</title>
+    <link rel="stylesheet"
+          th:href="@{/css/cat-helper.css}">
+
+</head>
+
+<body>
+<div th:fragment="catHelper">
+<div id="catBubble">
+    點我找小喵聊聊喵～
+</div>
+
+<div id="catHelper" onclick="toggleCatChat()">
+    <span id="catUnreadBadge">1</span>
+    <img src="/images/catHelper.png" alt="妖市貓公小幫手">
+</div>
+
+<div id="catChatWindow">
+
+    <div class="chat-header">
+
+        <img src="/images/cat-avatar.png" alt="小喵客服">
+
+        <div>
+            <div class="chat-title">
+                妖市貓公小幫手
+            </div>
+
+            <div class="chat-subtitle">
+                真人客服為您服務喵～
+            </div>
+        </div>
+
+        <div class="chat-close" onclick="toggleCatChat()">
+            ×
+        </div>
+
+    </div>
+
+    <div class="chat-body">
+
+        <div class="chat-message" id="chatMessages">
+            您好～我是小喵 🎀<br>
+            很高興為您服務！<br>
+            請問有什麼可以幫您呢？
+        </div>
+
+        <button class="quick-btn"
+                onclick="appendCat('您的訂單可到「會員專區 → 我的訂單」查詢喵～')">
+            📦 我的訂單查詢
+        </button>
+
+        <button class="quick-btn"
+                onclick="appendCat('付款成功後，系統會寄出 Email 通知，訂單狀態會變成「已付款」喵～')">
+            💳 付款問題
+        </button>
+
+        <button class="quick-btn"
+                onclick="appendCat('付款後可在訂單明細看到假物流進度：備貨中、已出貨、預計送達喵～')">
+            🚚 配送進度查詢
+        </button>
+
+        <button class="quick-btn"
+                onclick="appendCat('商品優惠可以到 Gift Store 禮物商城查看喵～')">
+            🎁 商品優惠問題
+        </button>
+
+        <button class="quick-btn"
+                onclick="appendCat('目前是真人客服風格的假客服版，之後可以升級串接 AI 喵～')">
+            👩 真人客服
+        </button>
+
+        <div class="chat-input-area">
+
+            <input id="chatInput"
+                   type="text"
+                   placeholder="請輸入您的問題...">
+
+            <button class="send-btn"
+                    onclick="sendMessage()">
+                ➤
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function toggleCatChat() {
+
+        const chat =
+            document.getElementById("catChatWindow");
+
+        const bubble =
+            document.getElementById("catBubble");
+
+        const badge =
+            document.getElementById("catUnreadBadge");
+
+        if (chat.style.display === "block") {
+
+            chat.style.display = "none";
+            bubble.style.display = "block";
+
+        } else {
+
+            chat.style.display = "block";
+            bubble.style.display = "none";
+            badge.style.display = "none";
+        }
+    }
+
+    function appendCat(message) {
+
+        const box =
+            document.getElementById("chatMessages");
+
+        box.innerHTML += `
+            <hr>
+            <div>
+                小喵：${message}
+            </div>
+        `;
+    }
+
+    function sendMessage() {
+
+        const input =
+            document.getElementById("chatInput");
+
+        const msg =
+            input.value.trim();
+
+        if (msg === "") {
+            return;
+        }
+
+        const box =
+            document.getElementById("chatMessages");
+
+        box.innerHTML += `
+            <hr>
+            <div>
+                您：${msg}
+            </div>
+        `;
+
+        input.value = "";
+
+        setTimeout(function () {
+
+            appendCat(
+                "收到您的問題喵～小喵建議您先查看會員專區或我的訂單喵～"
+            );
+
+        }, 600);
+    }
+
+    setInterval(function () {
+
+        const cat =
+            document.getElementById("catHelper");
+
+        cat.style.animation =
+            "catWalk 0.8s";
+
+        setTimeout(function () {
+            cat.style.animation = "";
+        }, 800);
+
+    }, 20000);
+
+    function showUnreadNotice() {
+
+        const chat =
+            document.getElementById("catChatWindow");
+
+        const badge =
+            document.getElementById("catUnreadBadge");
+
+        const bubble =
+            document.getElementById("catBubble");
+
+        if (chat.style.display === "block") {
+            return;
+        }
+
+        badge.style.display = "flex";
+        badge.textContent = "1";
+
+        bubble.textContent = "喵～需要幫忙嗎？";
+        bubble.style.display = "block";
+    }
+
+    setInterval(function () {
+        showUnreadNotice();
+    }, 10000);
+</script>
+
+</div>
+</body>
+
+
+</html>
