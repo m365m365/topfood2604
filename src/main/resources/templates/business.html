@@ -529,19 +529,33 @@
             localStorage.setItem("giftCart", JSON.stringify(cart));
         }
 
-        function updateCartCount() {
-            const cart = getCart();
-
-            let totalQty = 0;
-
-            cart.forEach(function (item) {
-                totalQty += item.qty;
-            });
+        async function updateCartCount() {
 
             const cartCount = document.getElementById("cartCount");
 
-            if (cartCount) {
-                cartCount.textContent = totalQty;
+            if (!cartCount) {
+                return;
+            }
+
+            if (!loggedIn) {
+                cartCount.textContent = 0;
+                return;
+            }
+
+            try {
+                const response = await fetch("/api/cart/count");
+
+                if (!response.ok) {
+                    cartCount.textContent = 0;
+                    return;
+                }
+
+                const data = await response.json();
+
+                cartCount.textContent = data.count;
+
+            } catch (error) {
+                cartCount.textContent = 0;
             }
         }
 
@@ -801,15 +815,19 @@
                             throw new Error("加入購物車失敗");
                         }
 
+                        // 重新抓取資料庫中的購物車數量
+                        await updateCartCount();
+
                         addCartBtn.textContent = "已加入購物車 ✓";
 
                         setTimeout(function () {
-                            addCartBtn.textContent = "加入購物車";
+                            addCartBtn.textContent = "🛒";
                         }, 1200);
 
-                        updateCartCount();
-
                     } catch (error) {
+
+                        console.error(error);
+
                         alert("加入購物車失敗，請稍後再試");
                     }
                 });
@@ -819,8 +837,9 @@
         }
 
         loadProducts();
-        updateCartCount();
+        updateCartCount() ;
     });
+
 
 </script>
 </body>

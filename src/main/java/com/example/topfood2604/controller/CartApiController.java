@@ -73,6 +73,18 @@ public class CartApiController {
         return cartService.getCartItems(memberId);
     }
 
+    @GetMapping("/count")
+    public Map<String, Object> getCartCount(Authentication authentication) {
+
+        Long memberId = getLoginMemberId(authentication);
+
+        int count = cartService.getCartCount(memberId);
+
+        return Map.of(
+                "count", count
+        );
+    }
+
     @PostMapping("/update")
     public String updateCart(
             @RequestBody Map<String, Object> request,

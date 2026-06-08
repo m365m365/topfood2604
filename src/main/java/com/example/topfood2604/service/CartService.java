@@ -55,6 +55,20 @@ public class CartService {
         return memberCartItemRepository.findByMemberId(memberId);
     }
 
+    public int getCartCount(Long memberId) {
+
+        List<MemberCartItem> cartItems =
+                memberCartItemRepository.findByMemberId(memberId);
+
+        int totalQty = 0;
+
+        for (MemberCartItem item : cartItems) {
+            totalQty += item.getQuantity();
+        }
+
+        return totalQty;
+    }
+
     public List<CartItemDto> getCartItemDtos(Long memberId) {
 
         List<MemberCartItem> cartItems =
