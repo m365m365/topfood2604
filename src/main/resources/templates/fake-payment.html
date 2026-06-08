@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>假付款頁</title>
+
+  <link rel="stylesheet" th:href="@{/navbar.css}">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft JhengHei";
+      background: #f4f6f8;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 700px;
+      margin: 120px auto;
+    }
+
+    .payment-card {
+      background: white;
+      padding: 35px;
+      border-radius: 16px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #555;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .hint {
+      background: #fff8e1;
+      padding: 15px;
+      border-radius: 10px;
+      color: #8a6d00;
+      margin-bottom: 25px;
+    }
+
+    .pay-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 10px;
+      background: #27ae60;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .pay-btn:hover {
+      background: #219150;
+    }
+  </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/main-navbar :: mainNavbar}"></div>
+
+<div class="container">
+
+  <div class="payment-card">
+
+    <h1>💳 模擬付款</h1>
+
+    <div class="hint">
+      這是練習用假付款頁，不會真的扣款。
+    </div>
+
+    <input type="hidden" id="orderId" th:value="${orderId}">
+
+    <div class="form-group">
+      <label>持卡人姓名</label>
+      <input id="cardName" value="TEST USER">
+    </div>
+
+    <div class="form-group">
+      <label>信用卡號</label>
+      <input id="cardNumber" value="4111 1111 1111 1111">
+    </div>
+
+    <div class="form-group">
+      <label>有效期限</label>
+      <input id="expiry" value="12/30">
+    </div>
+
+    <div class="form-group">
+      <label>安全碼 CVV</label>
+      <input id="cvv" value="123">
+    </div>
+
+    <button class="pay-btn" onclick="fakePay()">
+      確認付款
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+  async function fakePay() {
+
+    const orderId =
+            document.getElementById("orderId").value;
+
+    const response =
+            await fetch("http://localhost:8081/api/orders/" + orderId + "/pay", {
+              method: "PUT"
+            });
+
+    if (!response.ok) {
+      alert("付款失敗");
+      return;
+    }
+
+    alert("付款成功！訂單狀態已改為已付款");
+
+    window.location.href = "/member-orders";
+  }
+</script>
+
+</body>
+</html>

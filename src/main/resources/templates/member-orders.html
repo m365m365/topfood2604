@@ -307,6 +307,46 @@
                 return status;
         }
     }
+
+    if (order.status === "PAID") {
+        actionButton = `
+        <button class="ship-btn"
+                onclick="shipOrder(${order.id})">
+            模擬出貨
+        </button>
+    `;
+    }
+
+    if (order.status === "SHIPPING") {
+        actionButton = `
+        <button class="complete-btn"
+                onclick="completeOrder(${order.id})">
+            模擬完成
+        </button>
+    `;
+    }
+
+    async function shipOrder(orderId) {
+
+        await fetch("http://localhost:8081/api/orders/" + orderId + "/ship", {
+            method: "PUT"
+        });
+
+        alert("訂單已進入配送中");
+
+        loadOrders();
+    }
+
+    async function completeOrder(orderId) {
+
+        await fetch("http://localhost:8081/api/orders/" + orderId + "/complete", {
+            method: "PUT"
+        });
+
+        alert("訂單已完成");
+
+        loadOrders();
+    }
 </script>
 
 </body>

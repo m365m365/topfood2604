@@ -130,6 +130,35 @@
             font-size: 22px;
             box-shadow: 0 3px 12px rgba(0,0,0,0.12);
         }
+
+        .ship-flow {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8fbff;
+            border-radius: 14px;
+            border-left: 6px solid #3498db;
+        }
+
+        .ship-flow h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .ship-step {
+            padding: 12px 0;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .ship-step.done {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .ship-step.current {
+            color: #e67e22;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -146,6 +175,31 @@
 
     <div id="orderDetail"></div>
 
+    <div class="ship-flow" id="shipFlow" style="display:none;">
+
+        <h2>🚚 物流進度</h2>
+
+        <div class="ship-step done">
+            ✅ 訂單成立
+        </div>
+
+        <div class="ship-step done">
+            ✅ 付款完成
+        </div>
+
+        <div class="ship-step current">
+            🚚 商家備貨中
+        </div>
+
+        <div class="ship-step">
+            📦 已出貨
+        </div>
+
+        <div class="ship-step">
+            🏠 預計 2～3 天送達
+        </div>
+
+    </div>
 </div>
 
 <script>
@@ -234,7 +288,16 @@
 
                     </div>
                 `;
-
+                if (
+                    order.status === "PAID" ||
+                    order.status === "PREPARING" ||
+                    order.status === "SHIPPING" ||
+                    order.status === "COMPLETED"
+                ) {
+                    document.getElementById("shipFlow").style.display = "block";
+                } else {
+                    document.getElementById("shipFlow").style.display = "none";
+                }
             } catch (error) {
 
                 orderDetail.innerHTML = `
@@ -244,7 +307,10 @@
                 `;
             }
         }
+
+
     });
+
 
     function getStatusText(status) {
 

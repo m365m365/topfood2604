@@ -399,12 +399,79 @@
 
     </div>
 
+    <div class="info-card" id="orderNotice">
+        <h2>🔔 訂單通知</h2>
+        <div id="orderNoticeContent">
+            讀取中...
+        </div>
+    </div>
+
 </div>
+
+
 
 <script th:if="${forceLogout}">
     setTimeout(function () {
         window.location.href = "/logout";
     }, 3000);
+</script>
+
+<script>
+    async function loadOrderNotice() {
+
+        const box =
+            document.getElementById("orderNoticeContent");
+
+        try {
+
+            const response =
+                await fetch("http://localhost:8081/api/orders/member/1");
+
+            const orders =
+                await response.json();
+
+            const paidOrders =
+                orders.filter(function (order) {
+                    return order.status === "PAID";
+                });
+
+            const shippingOrders =
+                orders.filter(function (order) {
+                    return order.status === "SHIPPING";
+                });
+
+            if (paidOrders.length === 0 && shippingOrders.length === 0) {
+                box.innerHTML = "目前沒有新的訂單通知。";
+                return;
+            }
+
+            let html = "";
+
+            paidOrders.forEach(function (order) {
+                html += `
+                <p>
+                    💰 訂單 <b>${order.orderNo}</b> 已付款，等待出貨中。
+                </p>
+            `;
+            });
+
+            shippingOrders.forEach(function (order) {
+                html += `
+                <p>
+                    🚚 訂單 <b>${order.orderNo}</b> 配送中。
+                </p>
+            `;
+            });
+
+            box.innerHTML = html;
+
+        } catch (error) {
+            box.innerHTML = "無法讀取訂單通知。";
+        }
+    }
+
+    loadOrderNotice();
+
 </script>
 
 </body>
