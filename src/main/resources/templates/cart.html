@@ -330,8 +330,29 @@
 
       container.innerHTML = `
         <div class="empty-cart">
-          <h2>讀取購物車失敗</h2>
-          <p>請確認是否已登入會員</p>
+
+          <div class="empty-cart-icon">
+            🛒
+          </div>
+
+          <h2>
+            購物車為空,購物請點取"商業活動"
+          </h2>
+
+          <p>
+            購物請先加入會員
+          </p>
+
+          <a href="/register" class="go-shop-btn">
+           未註冊,註冊加入會員 →
+          </a>
+
+          <br><br>
+
+          <a href="/login" class="go-shop-btn">
+            會員請先登入 →
+          </a>
+
         </div>
       `;
 
