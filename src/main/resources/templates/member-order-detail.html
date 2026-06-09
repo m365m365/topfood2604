@@ -218,7 +218,7 @@
             try {
 
                 const response =
-                    await fetch("http://localhost:8081/api/orders/" + orderId);
+                    await fetch("https://order.topfoodai.com/api/orders/" + orderId);
 
                 const order = await response.json();
 

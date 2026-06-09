@@ -352,7 +352,7 @@
                 checkoutBtn.disabled = true;
                 checkoutBtn.textContent = "訂單建立中...";
 
-                const response = await fetch("http://localhost:8081/api/orders", {
+                const response = await fetch("https://order.topfoodai.com/api/orders", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
