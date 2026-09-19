@@ -20,7 +20,8 @@ public class RegisterController {
     @GetMapping("/register")
     public String registerPage(Model model) {
         model.addAttribute("registerRequestDto", new RegisterRequestDto());
-        return "register";
+       // return "register";//暫停服務
+        return "redirect:/maintenance";
     }
 
     @PostMapping("/register")
@@ -30,7 +31,8 @@ public class RegisterController {
             Model model
     ) {
         if (bindingResult.hasErrors()) {
-            return "register";
+            //return "register";//暫停服務
+            return "redirect:/maintenance";
         }
 
         try {
@@ -38,7 +40,8 @@ public class RegisterController {
             return "email-confirm";
         } catch (RuntimeException e) {
             model.addAttribute("errorMessage", e.getMessage());
-            return "register";
+            //return "register";//暫停服務
+            return "redirect:/maintenance";
         }
     }
 
